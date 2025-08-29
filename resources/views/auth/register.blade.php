@@ -35,7 +35,7 @@
                     <span class="i-solar-user-bold w-5 h-5 text-gray-400"></span>
                 </div>
             </div>
-            <x-input-error :messages="$errors->get('name')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('name')" class="text-red-500 text-sm" />
         </div>
 
         <!-- Email Address -->
@@ -58,7 +58,7 @@
                     <span class="i-solar-letter-bold w-5 h-5 text-gray-400"></span>
                 </div>
             </div>
-            <x-input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
         </div>
 
         <!-- Password -->
@@ -88,7 +88,7 @@
             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Password harus minimal 8 karakter dengan kombinasi huruf dan angka
             </div>
-            <x-input-error :messages="$errors->get('password')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('password')" class="text-red-500 text-sm" />
         </div>
 
         <!-- Confirm Password -->
@@ -115,7 +115,7 @@
                     <span id="eye-closed-confirmation" class="i-solar-eye-closed-bold w-5 h-5 hidden"></span>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password_confirmation')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('password_confirmation')" class="text-red-500 text-sm" />
         </div>
 
 

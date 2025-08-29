@@ -12,7 +12,7 @@
     </div>
 
     <!-- Session Status -->
-    <x-auth-session-status class="mb-6" :status="session('status')" />
+    <x-ui.auth-session-status class="mb-6" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}" class="space-y-6">
         @csrf
@@ -38,7 +38,7 @@
                     <span class="i-solar-letter-bold w-5 h-5 text-gray-400"></span>
                 </div>
             </div>
-            <x-input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
         </div>
 
         <!-- Password -->
@@ -65,7 +65,7 @@
                     <span id="eye-closed" class="i-solar-eye-closed-bold w-5 h-5 hidden"></span>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password')" class="text-red-500 text-sm" />
+            <x-form.input-error :messages="$errors->get('password')" class="text-red-500 text-sm" />
         </div>
 
         <!-- Remember Me & Forgot Password -->

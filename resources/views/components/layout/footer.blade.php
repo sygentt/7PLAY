@@ -27,14 +27,17 @@
                 <div class="flex items-center space-x-4">
                     <span class="text-gray-400 font-medium">Ikuti Kami:</span>
                     <div class="flex space-x-3">
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Facebook">
                             <span class="i-solar-chat-round-bold w-5 h-5"></span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Instagram">
                             <span class="i-solar-camera-bold w-5 h-5"></span>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200">
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="YouTube">
                             <span class="i-solar-videocamera-bold w-5 h-5"></span>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Twitter">
+                            <span class="i-solar-mention-circle-bold w-5 h-5"></span>
                         </a>
                     </div>
                 </div>
@@ -47,13 +50,13 @@
                 </h3>
                 <ul class="space-y-4">
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('home') }}#now-playing" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <span class="i-solar-play-circle-bold w-4 h-4"></span>
                             <span>Film Sedang Tayang</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('home') }}#coming-soon" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <span class="i-solar-calendar-date-bold w-4 h-4"></span>
                             <span>Film Akan Datang</span>
                         </a>
@@ -107,7 +110,33 @@
             </div>
         </div>
         
-        <!-- Divider -->
+        <!-- Newsletter Section -->
+        <div class="border-t border-gray-800 pt-8 mb-8">
+            <div class="max-w-md mx-auto text-center">
+                <h3 class="text-xl font-bold text-white mb-4">
+                    Dapatkan Info Terbaru
+                </h3>
+                <p class="text-gray-300 mb-6">
+                    Berlangganan newsletter untuk mendapatkan info film terbaru dan promo menarik
+                </p>
+                <form class="flex flex-col sm:flex-row gap-3">
+                    <input 
+                        type="email" 
+                        placeholder="Masukkan email Anda" 
+                        class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200"
+                        required
+                    >
+                    <button 
+                        type="submit" 
+                        class="px-6 py-3 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                        Berlangganan
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Bottom Footer -->
         <div class="border-t border-gray-800 pt-8">
             <div class="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
                 
@@ -115,7 +144,7 @@
                 <div class="flex items-center space-x-6">
                     <p class="text-gray-400 text-sm flex items-center space-x-2">
                         <span class="i-solar-copyright-bold w-4 h-4"></span>
-                        <span>2025 7PLAY. Semua hak dilindungi.</span>
+                        <span>{{ date('Y') }} 7PLAY. Semua hak dilindungi.</span>
                     </p>
                 </div>
                 
@@ -131,6 +160,10 @@
                     <span class="text-gray-600">•</span>
                     <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
                         Kebijakan Privasi
+                    </a>
+                    <span class="text-gray-600">•</span>
+                    <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                        Syarat & Ketentuan
                     </a>
                 </div>
             </div>
@@ -168,4 +201,24 @@
             }
         }
     });
+
+    // Newsletter form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const newsletterForm = document.querySelector('footer form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                
+                // Here you can add AJAX call to subscribe user
+                console.log('Newsletter subscription for:', email);
+                
+                // Show success message (you can customize this)
+                alert('Terima kasih! Anda telah berlangganan newsletter kami.');
+                this.reset();
+            });
+        }
+    });
 </script>
+
+

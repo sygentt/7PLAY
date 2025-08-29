@@ -19,7 +19,7 @@
             <nav class="hidden lg:flex items-center space-x-1">
                 <!-- Films Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                    <button class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'movies' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
                         <span class="text-sm">Film</span>
                         <span class="i-solar-alt-arrow-down-line-duotone w-4 h-4 group-hover:rotate-180 transition-transform duration-200"></span>
                     </button>
@@ -49,13 +49,13 @@
                 </div>
 
                 <!-- Cinemas Link -->
-                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'cinemas' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
                     <span class="i-solar-buildings-bold w-4 h-4"></span>
                     <span class="text-sm">Bioskop</span>
                 </a>
 
                 <!-- Points Link -->
-                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'points' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
                     <span class="i-solar-star-bold w-4 h-4"></span>
                     <span class="text-sm">Poin</span>
                 </a>
@@ -79,23 +79,25 @@
                 <div class="hidden lg:block relative group">
                     <button class="flex items-center space-x-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200">
                         <span class="i-solar-map-point-bold w-4 h-4 text-cinema-500"></span>
-                        <span class="text-sm font-medium">Jakarta</span>
+                        <span class="text-sm font-medium" id="current-city">Jakarta</span>
                         <span class="i-solar-alt-arrow-down-line-duotone w-4 h-4 group-hover:rotate-180 transition-transform duration-200"></span>
                     </button>
                     
-                    <div class="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-lg">
-                        <div class="p-2">
-                            @foreach($cities as $city)
-                                <button 
-                                    onclick="selectCity('{{ $city['name'] }}')"
-                                    class="w-full flex items-center space-x-3 px-4 py-2.5 text-left text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 text-sm"
-                                >
-                                    <span class="i-solar-map-point-bold w-4 h-4"></span>
-                                    <span class="font-medium">{{ $city['name'] }}</span>
-                                </button>
-                            @endforeach
+                    @if(count($cities) > 0)
+                        <div class="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-lg">
+                            <div class="p-2">
+                                @foreach($cities as $city)
+                                    <button 
+                                        onclick="selectCity('{{ $city['name'] ?? $city }}')"
+                                        class="w-full flex items-center space-x-3 px-4 py-2.5 text-left text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 text-sm"
+                                    >
+                                        <span class="i-solar-map-point-bold w-4 h-4"></span>
+                                        <span class="font-medium">{{ $city['name'] ?? $city }}</span>
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Dark Mode Toggle -->
@@ -215,11 +217,16 @@
     // City selection
     function selectCity(cityName) {
         // Update the displayed city name
-        const locationButton = document.querySelector('[onclick="selectCity"]').closest('.group').querySelector('button');
-        const citySpan = locationButton.querySelector('span:nth-child(2)');
-        citySpan.textContent = cityName;
+        const currentCityElement = document.getElementById('current-city');
+        if (currentCityElement) {
+            currentCityElement.textContent = cityName;
+        }
         
         // Here you could add logic to filter cinemas/movies by city
         console.log('Selected city:', cityName);
+        
+        // You can emit an event or call an API to update the content based on selected city
+        window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityName } }));
     }
 </script>
+
