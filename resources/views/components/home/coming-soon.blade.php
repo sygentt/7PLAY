@@ -71,6 +71,11 @@
                                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
                                     <x-heroicon-o-play class="w-8 h-8 text-white" />
                                 </div>
+
+                                <!-- Release Countdown (moved to overlay to keep consistent card height) -->
+                                <div class="absolute top-14 right-4 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-white text-sm font-medium">
+                                    <span id="countdown-{{ $movie['id'] }}">Loading...</span>
+                                </div>
                             </div>
 
                             <!-- Movie Info -->
@@ -91,20 +96,7 @@
                                     </span>
                                 </div>
 
-                                <!-- Release Countdown - Fixed height -->
-                                <div class="bg-gradient-to-r from-gold-50 to-gold-100 dark:from-gold-900/20 dark:to-gold-800/20 rounded-xl p-4 mb-4 border border-gold-200 dark:border-gold-700/30 min-h-[5rem]">
-                                    <div class="flex items-center justify-between h-full">
-                                        <div class="flex-1">
-                                            <div class="text-sm text-gold-600 dark:text-gold-400 font-medium">Rilis dalam</div>
-                                            <div class="text-lg font-bold text-gold-700 dark:text-gold-300" id="countdown-{{ $movie['id'] }}">
-                                                Loading...
-                                            </div>
-                                        </div>
-                                        <div class="w-12 h-12 bg-gold-200 dark:bg-gold-700/50 rounded-full flex items-center justify-center">
-                                            <x-heroicon-o-calendar-days class="w-6 h-6 text-gold-600 dark:text-gold-400" />
-                                        </div>
-                                    </div>
-                                </div>
+                                
 
                                 <!-- Description - Fixed height dengan line-clamp-3 -->
                                 <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 mb-6 leading-relaxed flex-1 min-h-[4.5rem]">
