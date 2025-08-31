@@ -62,10 +62,10 @@
 
                             <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-4">
-                                <button class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                                <a href="{{ route('movies.show', $movie['id']) }}" class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
                                     <x-heroicon-o-ticket class="w-5 h-5" />
                                     <span>Beli Tiket</span>
-                                </button>
+                                </a>
                                 
                                 <button class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-200">
                                     <x-heroicon-o-play class="w-5 h-5" />
