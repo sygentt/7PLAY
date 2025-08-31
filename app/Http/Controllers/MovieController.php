@@ -54,7 +54,9 @@ class MovieController extends Controller
         
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
             $hasShowtimes = $movie->showtimes
-                ->where('show_date', $date->format('Y-m-d'))
+                ->filter(function ($showtime) use ($date) {
+                    return optional($showtime->show_date)->isSameDay($date);
+                })
                 ->isNotEmpty();
 
             // Hanya tampilkan tanggal yang memiliki showtime
@@ -64,7 +66,7 @@ class MovieController extends Controller
                 
             $availableDates->push([
                 'date' => $date->copy(),
-                'formatted_day' => strtolower($date->locale('id')->translatedFormat('D')),
+                'formatted_day' => ucfirst($date->locale('id')->translatedFormat('D')),
                 'formatted_date' => $date->format('d'),
                 'has_showtimes' => true,
                 'is_today' => $date->isToday(),
@@ -80,7 +82,9 @@ class MovieController extends Controller
         
         // Filter showtimes by selected date
         $showtimesByDate = $movie->showtimes
-            ->where('show_date', $selectedDate->format('Y-m-d'));
+            ->filter(function ($showtime) use ($selectedDate) {
+                return optional($showtime->show_date)->isSameDay($selectedDate);
+            });
 
         // Group showtimes by cinema
         $showtimesByCinema = $showtimesByDate->groupBy(function ($showtime) {
