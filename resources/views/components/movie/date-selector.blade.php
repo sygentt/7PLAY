@@ -7,8 +7,8 @@
                $date['date']->isSameDay($selectedDate) 
                    ? 'bg-teal-600 text-white border-teal-600' 
                    : ($date['has_showtimes'] 
-                       ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50' 
-                       : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed')
+                       ? 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700' 
+                       : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-400 border-gray-200 dark:border-gray-600 cursor-not-allowed')
            }}">
             <div class="text-xs font-medium">
                 {{ $date['formatted_day'] }}

@@ -1,12 +1,12 @@
 @props(['cinema', 'showtimes'])
 
-<div class="bg-white rounded-lg border border-gray-200 p-6 mb-4">
+<div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-4">
     <!-- Cinema Header -->
     <div class="flex items-start justify-between mb-4">
         <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-900">{{ $cinema->full_name }}</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $cinema->full_name }}</h3>
             <div class="flex items-center mt-1">
-                <button class="flex items-center text-sm text-teal-600 hover:text-teal-700">
+                <button class="flex items-center text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -15,8 +15,8 @@
             </div>
         </div>
         <div class="text-right">
-            <div class="text-sm text-gray-500">Regular 2D</div>
-            <div class="text-lg font-semibold text-gray-900">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Regular 2D</div>
+            <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {{ $showtimes->first()?->getFormattedPrice() ?? 'Rp60.000' }}
             </div>
         </div>

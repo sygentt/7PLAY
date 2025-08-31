@@ -83,7 +83,7 @@ class ShowtimeSeeder extends Seeder
                         'show_time' => $time,
                         'price' => $basePrice,
                         'available_seats' => $hall->total_seats,
-                        'is_active' => rand(0, 10) > 1, // 90% chance of being active
+                        'is_active' => true,
                     ]);
                 }
             }
