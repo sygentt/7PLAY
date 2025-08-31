@@ -119,12 +119,12 @@
                     </div>
                 @else
                     <div class="hidden lg:flex items-center space-x-3">
-                        <a href="{{ route('login') }}" class="px-4 py-2.5 text-cinema-600 dark:text-cinema-400 hover:text-cinema-700 dark:hover:text-cinema-300 font-medium transition-colors duration-200 text-sm">
+                        <button onclick="openAuthModal('login')" class="px-4 py-2.5 text-cinema-600 dark:text-cinema-400 hover:text-cinema-700 dark:hover:text-cinema-300 font-medium transition-colors duration-200 text-sm">
                             Masuk
-                        </a>
-                        <a href="{{ route('register') }}" class="px-6 py-2.5 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm">
+                        </button>
+                        <button onclick="openAuthModal('register')" class="px-6 py-2.5 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-sm">
                             Daftar Yuk
-                        </a>
+                        </button>
                     </div>
                 @endauth
 
@@ -183,12 +183,12 @@
                 
                 @guest
                     <div class="pt-6 border-t border-gray-200/50 dark:border-gray-700/50 space-y-3">
-                        <a href="{{ route('login') }}" class="block px-4 py-3.5 text-cinema-600 dark:text-cinema-400 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 rounded-xl transition-all duration-200 font-medium text-center">
+                        <button onclick="openAuthModal('login')" class="block w-full px-4 py-3.5 text-cinema-600 dark:text-cinema-400 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 rounded-xl transition-all duration-200 font-medium text-center">
                             Masuk
-                        </a>
-                        <a href="{{ route('register') }}" class="block px-4 py-3.5 bg-gradient-to-r from-cinema-600 to-cinema-700 text-white font-semibold rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        </button>
+                        <button onclick="openAuthModal('register')" class="block w-full px-4 py-3.5 bg-gradient-to-r from-cinema-600 to-cinema-700 text-white font-semibold rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                             Daftar Yuk
-                        </a>
+                        </button>
                     </div>
                 @endguest
             </nav>

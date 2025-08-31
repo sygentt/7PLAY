@@ -52,6 +52,9 @@
     <!-- Footer -->
     @include('components.layout.footer')
     
+    <!-- Auth Modal -->
+    <x-auth.modal-container />
+    
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     

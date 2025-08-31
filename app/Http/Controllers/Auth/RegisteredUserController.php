@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 
 class RegisteredUserController extends Controller
 {
@@ -27,31 +28,61 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['nullable', 'string', 'regex:/^(\+62|62|0)[0-9]{9,13}$/', 'unique:'.User::class],
-            'birth_date' => ['nullable', 'date', 'before:today', 'after:1920-01-01'],
-            'gender' => ['nullable', 'in:male,female,other'],
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'phone' => ['nullable', 'string', 'regex:/^(\+62|62|0)[0-9]{9,13}$/', 'unique:'.User::class],
+                'birth_date' => ['nullable', 'date', 'before:today', 'after:1920-01-01'],
+                'gender' => ['nullable', 'in:male,female,other'],
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'birth_date' => $request->birth_date,
-            'gender' => $request->gender,
-            'is_active' => true, // New users are active by default
-        ]);
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+                'phone' => $validatedData['phone'] ?? null,
+                'birth_date' => $validatedData['birth_date'] ?? null,
+                'gender' => $validatedData['gender'] ?? null,
+                'is_active' => true, // New users are active by default
+            ]);
 
-        event(new Registered($user));
+            event(new Registered($user));
+            Auth::login($user);
 
-        Auth::login($user);
+            // Check if this is an AJAX request
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registrasi berhasil! Selamat datang di 7PLAY.',
+                    'redirect' => route('dashboard', absolute: false)
+                ]);
+            }
 
-        return redirect(route('dashboard', absolute: false));
+            return redirect(route('dashboard', absolute: false));
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data registrasi tidak valid. Silakan periksa kembali.',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            
+            throw $e;
+        } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.'
+                ], 500);
+            }
+            
+            throw $e;
+        }
     }
 }

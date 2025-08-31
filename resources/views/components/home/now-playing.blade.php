@@ -33,7 +33,11 @@
             <div class="swiper-wrapper pb-8">
                 @foreach($now_playing as $movie)
                 <div class="swiper-slide">
-                    <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
+                    @auth
+                        <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
+                    @else
+                        <div onclick="openAuthModal('login')" class="group cursor-pointer block">
+                    @endauth
                         <!-- Movie Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700 h-full flex flex-col">
                             
@@ -107,7 +111,11 @@
                                 </div>
                             </div>
                         </div>
-                    </a>
+                    @auth
+                        </a>
+                    @else
+                        </div>
+                    @endauth
                 </div>
                 @endforeach
             </div>
