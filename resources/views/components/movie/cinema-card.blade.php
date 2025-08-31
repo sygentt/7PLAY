@@ -6,12 +6,7 @@
         <div class="flex-1">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $cinema->full_name }}</h3>
             <div class="flex items-center mt-1">
-                <button class="flex items-center text-sm text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Cinema info
-                </button>
+                <!-- Cinema info removed as requested -->
             </div>
         </div>
         <div class="text-right">
@@ -25,9 +20,15 @@
     <!-- Showtimes -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         @forelse($showtimes as $showtime)
-            <button class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+            <a 
+                @auth
+                    href="#" onclick="event.preventDefault(); openAuthModal && openAuthModal('login');"
+                @else
+                    href="#" onclick="event.preventDefault(); openAuthModal && openAuthModal('login');"
+                @endauth
+                class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm text-center">
                 {{ $showtime->getFormattedTime() }}
-            </button>
+            </a>
         @empty
             <div class="col-span-full text-center text-gray-500 py-4">
                 Tidak ada jadwal tersedia untuk tanggal ini

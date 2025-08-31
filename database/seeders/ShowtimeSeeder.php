@@ -89,6 +89,76 @@ class ShowtimeSeeder extends Seeder
             }
         }
 
+        // Ensure every active movie has at least one showtime per day for the next 7 days
+        for ($day = 0; $day < 7; $day++) {
+            $date = Carbon::now()->addDays($day);
+
+            foreach ($movies as $movie) {
+                $existsForDate = Showtime::where('movie_id', $movie->id)
+                    ->whereDate('show_date', $date->format('Y-m-d'))
+                    ->exists();
+
+                if ($existsForDate) {
+                    continue;
+                }
+
+                // Pick a random hall
+                $hall = $cinemaHalls->random();
+
+                // Choose an available time slot (avoid past times for today)
+                $candidateSlots = $timeSlots;
+                if ($date->isToday()) {
+                    $candidateSlots = array_values(array_filter($timeSlots, function ($slot) {
+                        return !Carbon::createFromFormat('H:i', $slot)->isPast();
+                    }));
+                    if (empty($candidateSlots)) {
+                        continue; // no valid slot left for today
+                    }
+                }
+                $time = $candidateSlots[array_rand($candidateSlots)];
+
+                // Avoid collision in the same hall at the same time
+                $collision = Showtime::where('cinema_hall_id', $hall->id)
+                    ->whereDate('show_date', $date->format('Y-m-d'))
+                    ->where('show_time', $time)
+                    ->exists();
+                if ($collision) {
+                    foreach ($timeSlots as $slotTry) {
+                        if ($date->isToday() && Carbon::createFromFormat('H:i', $slotTry)->isPast()) {
+                            continue;
+                        }
+                        $collision = Showtime::where('cinema_hall_id', $hall->id)
+                            ->whereDate('show_date', $date->format('Y-m-d'))
+                            ->where('show_time', $slotTry)
+                            ->exists();
+                        if (! $collision) {
+                            $time = $slotTry;
+                            break;
+                        }
+                    }
+                }
+
+                // Compute price similar to the main loop
+                $basePrice = $basePrices[$hall->type][array_rand($basePrices[$hall->type])];
+                if (in_array($date->dayOfWeek, [5, 6, 0])) {
+                    $basePrice += 10000; // weekend premium
+                }
+                if (Carbon::createFromFormat('H:i', $time)->hour >= 18) {
+                    $basePrice += 5000; // evening premium
+                }
+
+                Showtime::create([
+                    'movie_id' => $movie->id,
+                    'cinema_hall_id' => $hall->id,
+                    'show_date' => $date->format('Y-m-d'),
+                    'show_time' => $time,
+                    'price' => $basePrice,
+                    'available_seats' => $hall->total_seats,
+                    'is_active' => true,
+                ]);
+            }
+        }
+
         $totalShowtimes = Showtime::count();
         $this->command->info("✅ Showtimes seeded successfully! Added {$totalShowtimes} showtimes for the next 30 days.");
     }

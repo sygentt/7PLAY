@@ -56,18 +56,27 @@ class MovieController extends Controller
             $hasShowtimes = $movie->showtimes
                 ->where('show_date', $date->format('Y-m-d'))
                 ->isNotEmpty();
+
+            // Hanya tampilkan tanggal yang memiliki showtime
+            if (! $hasShowtimes) {
+                continue;
+            }
                 
             $availableDates->push([
                 'date' => $date->copy(),
-                'formatted_day' => $date->format('D'),
+                'formatted_day' => strtolower($date->locale('id')->translatedFormat('D')),
                 'formatted_date' => $date->format('d'),
-                'has_showtimes' => $hasShowtimes,
+                'has_showtimes' => true,
                 'is_today' => $date->isToday(),
             ]);
         }
 
         // Get selected date from request or default to today
         $selectedDate = $request->date ? Carbon::parse($request->date) : Carbon::today();
+
+        // Optional filters from request
+        $brandFilter = $request->string('brand')->trim()->toString();
+        $searchQuery = $request->string('q')->trim()->toString();
         
         // Filter showtimes by selected date
         $showtimesByDate = $movie->showtimes
@@ -78,12 +87,19 @@ class MovieController extends Controller
             return $showtime->cinemaHall->cinema->id;
         });
 
-        // Get unique cinemas that have showtimes for this movie
-        $cinemas = Cinema::whereHas('cinema_halls.showtimes', function ($query) use ($movie, $selectedDate) {
+        // Get unique cinemas that have showtimes for this movie, with optional brand/search filters
+        $cinemas = Cinema::query()
+        ->whereHas('cinema_halls.showtimes', function ($query) use ($movie, $selectedDate) {
             $query->where('movie_id', $movie->id)
                   ->whereDate('show_date', $selectedDate)
                   ->active()
                   ->upcoming();
+        })
+        ->when($brandFilter !== '', function ($q) use ($brandFilter) {
+            $q->where('brand', $brandFilter);
+        })
+        ->when($searchQuery !== '', function ($q) use ($searchQuery) {
+            $q->where('name', 'like', "%{$searchQuery}%");
         })
         ->with(['city', 'cinema_halls.showtimes' => function ($query) use ($movie, $selectedDate) {
             $query->where('movie_id', $movie->id)
