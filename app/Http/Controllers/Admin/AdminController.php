@@ -24,26 +24,35 @@ class AdminController extends Controller
         $total_cities = City::count();
         $total_cinemas = Cinema::count();
         $active_cinemas = Cinema::active()->count();
-        $total_orders = 0; // Order::count() - will be updated when Order model is created
-        $total_movies = 0; // Movie::count() - will be updated when Movie model is created
-        
-        // Recent orders (will be implemented when Order model is created)
-        $recent_orders = [];
-        
-        // Revenue stats (will be implemented when Order model is created)
-        $today_revenue = 0;
-        $monthly_revenue = 0;
-        
+
+        // Real counts from existing models
+        $total_orders = \App\Models\Order::count();
+        $total_movies = \App\Models\Movie::count();
+
+        // Recent orders
+        $recent_orders = \App\Models\Order::with(['user', 'showtime.movie'])
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        // Revenue stats
+        $today_revenue = \App\Models\Order::confirmed()
+            ->whereDate('created_at', today())
+            ->sum('total_amount');
+        $monthly_revenue = \App\Models\Order::confirmed()
+            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->sum('total_amount');
+
         // Recent cities and cinemas
         $recent_cities = City::latest()->take(5)->get();
         $recent_cinemas = Cinema::with('city')->latest()->take(5)->get();
-        
+
         return view('admin.dashboard', compact(
             'total_users',
             'total_cities',
             'total_cinemas',
             'active_cinemas',
-            'total_orders', 
+            'total_orders',
             'total_movies',
             'recent_orders',
             'recent_cities',

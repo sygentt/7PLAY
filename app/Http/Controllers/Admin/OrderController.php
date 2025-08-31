@@ -161,7 +161,6 @@ class OrderController extends Controller
             'showtime.movie',
             'showtime.cinemaHall.cinema.city',
             'orderItems.seat',
-            'voucher'
         ]);
         
         return view('admin.orders.show', compact('order'));
@@ -262,77 +261,5 @@ class OrderController extends Controller
         return response()->json($stats);
     }
 
-    /**
-     * Export orders to CSV
-     */
-    public function export(Request $request)
-    {
-        $query = Order::query()
-            ->with(['user', 'showtime.movie', 'showtime.cinemaHall.cinema.city', 'orderItems'])
-            ->withCount('orderItems');
-
-        // Apply same filters as index
-        if ($request->filled('status')) {
-            $query->byStatus($request->status);
-        }
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->get();
-
-        $filename = 'orders_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        $callback = function() use ($orders) {
-            $file = fopen('php://output', 'w');
-            
-            // CSV Headers
-            fputcsv($file, [
-                'Order Number',
-                'Customer Name',
-                'Customer Email', 
-                'Movie Title',
-                'Cinema',
-                'Show Date',
-                'Show Time',
-                'Seats',
-                'Tickets',
-                'Total Amount',
-                'Status',
-                'Payment Method',
-                'Order Date',
-            ]);
-
-            // CSV Data
-            foreach ($orders as $order) {
-                fputcsv($file, [
-                    $order->order_number,
-                    $order->user->name,
-                    $order->user->email,
-                    $order->showtime->movie->title,
-                    $order->showtime->cinemaHall->cinema->name,
-                    $order->showtime->show_date->format('d M Y'),
-                    $order->showtime->show_time->format('H:i'),
-                    $order->getSeatNumbers(),
-                    $order->getTicketCount(),
-                    $order->total_amount,
-                    Order::getStatuses()[$order->status],
-                    $order->payment_method,
-                    $order->created_at->format('d M Y H:i'),
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
+    // Export CSV dihapus
 }

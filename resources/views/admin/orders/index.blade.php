@@ -13,13 +13,7 @@
             </h1>
             <p class="mt-2 text-gray-600">Manage semua pesanan tiket dari customers</p>
         </div>
-        <div class="flex gap-2">
-            <a href="{{ route('admin.orders.export', request()->all()) }}" 
-               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:border-green-900 focus:ring ring-green-300 transition ease-in-out duration-150">
-                <x-heroicon-o-document-arrow-down class="w-4 h-4 mr-2" />
-                Export CSV
-            </a>
-        </div>
+        <div class="flex gap-2"></div>
     </div>
 
     <!-- Statistics Cards -->

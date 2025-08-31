@@ -14,11 +14,6 @@
             <p class="mt-2 text-gray-600">Manage semua pengguna sistem (admin & customer)</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('admin.users.export', request()->all()) }}" 
-               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:border-green-900 focus:ring ring-green-300 transition ease-in-out duration-150">
-                <x-heroicon-o-document-arrow-down class="w-4 h-4 mr-2" />
-                Export CSV
-            </a>
             <a href="{{ route('admin.users.create') }}" 
                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:ring ring-indigo-300 transition ease-in-out duration-150">
                 <x-heroicon-o-plus class="w-4 h-4 mr-2" />
@@ -353,8 +348,13 @@
                                         </button>
                                         @if(!$user->email_verified_at)
                                             <button onclick="verifyEmail({{ $user->id }}, '{{ $user->name }}')"
-                                                    class="text-blue-600 hover:text-blue-900 p-1 rounded">
+                                                    class="text-blue-600 hover:text-blue-900 p-1 rounded" title="Verifikasi Email">
                                                 <x-heroicon-o-check-circle class="w-4 h-4" />
+                                            </button>
+                                        @else
+                                            <button onclick="unverifyEmail({{ $user->id }}, '{{ $user->name }}')"
+                                                    class="text-orange-600 hover:text-orange-900 p-1 rounded" title="Batalkan Verifikasi Email">
+                                                <x-heroicon-o-x-circle class="w-4 h-4" />
                                             </button>
                                         @endif
                                         @if(!$user->is_admin && $user->orders()->count() == 0)
@@ -444,6 +444,30 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('Terjadi kesalahan saat verifikasi email.');
+            });
+        }
+    }
+
+    function unverifyEmail(userId, userName) {
+        if (confirm(`Batalkan verifikasi email untuk user "${userName}"?`)) {
+            fetch(`{{ url('admin/users') }}/${userId}/unverify-email`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Terjadi kesalahan: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat membatalkan verifikasi email.');
             });
         }
     }

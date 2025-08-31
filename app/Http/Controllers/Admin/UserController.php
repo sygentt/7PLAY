@@ -152,7 +152,8 @@ class UserController extends Controller
         $validated['password'] = bcrypt($validated['password']);
         $validated['is_admin'] = $request->has('is_admin');
         $validated['is_active'] = $request->has('is_active') ?: true;
-        $validated['email_verified_at'] = now(); // Auto-verify admin created users
+        // Set email verification according to checkbox in form
+        $validated['email_verified_at'] = $request->boolean('email_verified') ? now() : null;
 
         $user = User::create($validated);
 
@@ -221,6 +222,14 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        // Apply email verification toggle from checkbox
+        $should_verified = $request->boolean('email_verified');
+        if ($should_verified && !$user->email_verified_at) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        } elseif (!$should_verified && $user->email_verified_at) {
+            $user->forceFill(['email_verified_at' => null])->save();
+        }
+
         return redirect()
             ->route('admin.users.index')
             ->with('success', "User '{$user->name}' berhasil diperbarui.");
@@ -277,11 +286,32 @@ class UserController extends Controller
             ]);
         }
 
-        $user->update(['email_verified_at' => now()]);
+        // Hindari mass assignment pada email_verified_at
+        $user->forceFill(['email_verified_at' => now()])->save();
 
         return response()->json([
             'success' => true,
             'message' => "Email user '{$user->name}' berhasil diverifikasi."
+        ]);
+    }
+
+    /**
+     * Unverify user email
+     */
+    public function unverifyEmail(User $user): JsonResponse
+    {
+        if (!$user->email_verified_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email sudah dalam status belum terverifikasi.'
+            ]);
+        }
+
+        $user->forceFill(['email_verified_at' => null])->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Status verifikasi email untuk '{$user->name}' telah dihapus."
         ]);
     }
 
@@ -333,80 +363,5 @@ class UserController extends Controller
         return response()->json($stats);
     }
 
-    /**
-     * Export users to CSV
-     */
-    public function export(Request $request)
-    {
-        $query = User::query()
-            ->withCount(['orders'])
-            ->withSum(['orders as total_spent' => function ($q) {
-                $q->confirmed();
-            }], 'total_amount');
-
-        // Apply same filters as index
-        if ($request->filled('role')) {
-            if ($request->role === 'admin') {
-                $query->admins();
-            } elseif ($request->role === 'customer') {
-                $query->customers();
-            }
-        }
-        if ($request->filled('status')) {
-            if ($request->status === 'active') {
-                $query->active();
-            } elseif ($request->status === 'inactive') {
-                $query->where('is_active', false);
-            }
-        }
-
-        $users = $query->orderBy('created_at', 'desc')->get();
-
-        $filename = 'users_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        $callback = function() use ($users) {
-            $file = fopen('php://output', 'w');
-            
-            // CSV Headers
-            fputcsv($file, [
-                'Name',
-                'Email',
-                'Phone',
-                'Birth Date',
-                'Gender',
-                'Role',
-                'Status',
-                'Email Verified',
-                'Total Orders',
-                'Total Spent',
-                'Registered Date',
-            ]);
-
-            // CSV Data
-            foreach ($users as $user) {
-                fputcsv($file, [
-                    $user->name,
-                    $user->email,
-                    $user->phone ?? '-',
-                    $user->getFormattedBirthDate(),
-                    $user->gender ?? '-',
-                    $user->getRole(),
-                    $user->is_active ? 'Active' : 'Inactive',
-                    $user->email_verified_at ? 'Yes' : 'No',
-                    $user->orders_count ?? 0,
-                    $user->total_spent ?? 0,
-                    $user->created_at->format('d M Y'),
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
+    // Export CSV dihapus
 }

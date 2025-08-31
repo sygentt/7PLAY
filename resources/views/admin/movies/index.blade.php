@@ -162,9 +162,9 @@
         @if($movies->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
                 @foreach($movies as $movie)
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col min-h-[500px]">
                         <!-- Movie Poster -->
-                        <div class="aspect-w-2 aspect-h-3 bg-gray-200 rounded-t-lg overflow-hidden">
+                        <div class="relative aspect-w-2 aspect-h-3 bg-gray-200 rounded-t-lg overflow-hidden">
                             @if($movie->poster_url)
                                 <img src="{{ $movie->poster_url }}" 
                                      alt="{{ $movie->title }}"
@@ -194,52 +194,61 @@
                         </div>
 
                         <!-- Movie Info -->
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-1">{{ $movie->title }}</h3>
-                            
-                            <div class="space-y-2 text-sm text-gray-600 mb-4">
-                                <div class="flex items-center gap-2">
-                                    <x-heroicon-o-user class="w-4 h-4" />
-                                    <span>{{ $movie->director }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <x-heroicon-o-film class="w-4 h-4" />
-                                    <span>{{ $movie->genre }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <x-heroicon-o-clock class="w-4 h-4" />
-                                    <span>{{ $movie->getFormattedDuration() }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <x-heroicon-o-star class="w-4 h-4" />
-                                    <span>{{ $movie->rating }}</span>
+                        <div class="p-6 flex flex-col flex-1">
+                            <div class="flex-1 mb-6">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4 line-clamp-2 leading-tight">{{ $movie->title }}</h3>
+                                
+                                <div class="space-y-3 text-sm text-gray-600">
+                                    <div class="flex items-center gap-3">
+                                        <x-heroicon-o-user class="w-5 h-5 flex-shrink-0 text-gray-400" />
+                                        <span class="truncate">{{ $movie->director }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <x-heroicon-o-film class="w-5 h-5 flex-shrink-0 text-gray-400" />
+                                        <span class="truncate">{{ $movie->genre }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <x-heroicon-o-clock class="w-5 h-5 flex-shrink-0 text-gray-400" />
+                                        <span class="truncate">{{ $movie->getFormattedDuration() }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <x-heroicon-o-star class="w-5 h-5 flex-shrink-0 text-gray-400" />
+                                        <span class="truncate">{{ $movie->rating }}</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('admin.movies.show', $movie) }}" 
-                                   class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <x-heroicon-o-eye class="w-4 h-4 mr-1" />
-                                    Detail
-                                </a>
-                                <a href="{{ route('admin.movies.edit', $movie) }}" 
-                                   class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <x-heroicon-o-pencil-square class="w-4 h-4 mr-1" />
-                                    Edit
-                                </a>
-                                <button onclick="toggleStatus({{ $movie->id }}, '{{ $movie->title }}')"
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    @if($movie->is_active)
-                                        <x-heroicon-o-eye-slash class="w-4 h-4" />
-                                    @else
-                                        <x-heroicon-o-eye class="w-4 h-4" />
-                                    @endif
-                                </button>
-                                <button onclick="deleteMovie({{ $movie->id }}, '{{ $movie->title }}')"
-                                        class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    <x-heroicon-o-trash class="w-4 h-4" />
-                                </button>
+                            <div class="flex flex-col gap-3">
+                                <div class="flex gap-3">
+                                    <a href="{{ route('admin.movies.show', $movie) }}" 
+                                       class="flex-1 inline-flex justify-center items-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                        <x-heroicon-o-eye class="w-4 h-4 mr-2" />
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('admin.movies.edit', $movie) }}" 
+                                       class="flex-1 inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                        <x-heroicon-o-pencil-square class="w-4 h-4 mr-2" />
+                                        Edit
+                                    </a>
+                                </div>
+                                <div class="flex gap-3">
+                                    <button onclick="toggleStatus({{ $movie->id }}, '{{ $movie->title }}')"
+                                            class="flex-1 inline-flex justify-center items-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                        @if($movie->is_active)
+                                            <x-heroicon-o-eye-slash class="w-4 h-4 mr-2" />
+                                            Nonaktifkan
+                                        @else
+                                            <x-heroicon-o-eye class="w-4 h-4 mr-2" />
+                                            Aktifkan
+                                        @endif
+                                    </button>
+                                    <button onclick="deleteMovie({{ $movie->id }}, '{{ $movie->title }}')"
+                                            class="flex-1 inline-flex justify-center items-center px-4 py-3 border border-red-300 text-sm font-medium rounded-lg text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                        <x-heroicon-o-trash class="w-4 h-4 mr-2" />
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

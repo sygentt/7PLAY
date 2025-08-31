@@ -73,8 +73,8 @@ Route::resource('showtimes', ShowtimeController::class)->names([
     'destroy' => 'admin.showtimes.destroy',
 ]);
 Route::patch('showtimes/{showtime}/toggle-status', [ShowtimeController::class, 'toggleStatus'])->name('admin.showtimes.toggle-status');
-Route::get('api/cities/{city}/cinemas', [ShowtimeController::class, 'getCinemasByCity'])->name('admin.api.cities.cinemas');
-Route::get('api/cinemas/{cinema}/halls', [ShowtimeController::class, 'getHallsByCinema'])->name('admin.api.cinemas.halls');
+Route::get('api/cities/{city}/cinemas', [CityController::class, 'getCinemasByCity'])->name('admin.api.cities.cinemas');
+Route::get('api/cinemas/{cinema}/halls', [ShowtimeController::class, 'getCinemaHallsByCinema'])->name('admin.api.cinemas.halls');
 
 // Orders Management
 Route::resource('orders', OrderController::class)->except(['create', 'store', 'edit', 'update'])->names([
@@ -83,7 +83,6 @@ Route::resource('orders', OrderController::class)->except(['create', 'store', 'e
     'destroy' => 'admin.orders.destroy',
 ]);
 Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.update-status');
-Route::get('orders/export', [OrderController::class, 'export'])->name('admin.orders.export');
 
 // Users Management
 Route::resource('users', UserController::class)->names([
@@ -97,8 +96,8 @@ Route::resource('users', UserController::class)->names([
 ]);
 Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
 Route::patch('users/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('admin.users.verify-email');
+Route::patch('users/{user}/unverify-email', [UserController::class, 'unverifyEmail'])->name('admin.users.unverify-email');
 Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset-password');
-Route::get('users/export', [UserController::class, 'export'])->name('admin.users.export');
 
 // Reports & Analytics
 Route::prefix('reports')->name('admin.reports.')->group(function () {
@@ -107,5 +106,4 @@ Route::prefix('reports')->name('admin.reports.')->group(function () {
     Route::get('/movies', [ReportController::class, 'movies'])->name('movies');
     Route::get('/users', [ReportController::class, 'users'])->name('users');
     Route::get('/chart-data', [ReportController::class, 'getChartData'])->name('chart-data');
-    Route::get('/export/{type}', [ReportController::class, 'export'])->name('export');
 });

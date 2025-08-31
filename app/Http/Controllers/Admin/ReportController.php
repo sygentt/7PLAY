@@ -279,25 +279,7 @@ class ReportController extends Controller
         }
     }
 
-    /**
-     * Export reports to CSV/PDF.
-     */
-    public function export(Request $request, string $type)
-    {
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
-
-        switch ($type) {
-            case 'sales':
-                return $this->exportSalesReport($dateFrom, $dateTo);
-            case 'movies':
-                return $this->exportMoviesReport($dateFrom, $dateTo);
-            case 'users':
-                return $this->exportUsersReport($dateFrom, $dateTo);
-            default:
-                return redirect()->back()->with('error', 'Invalid export type.');
-        }
-    }
+    // Export CSV/PDF dihapus
 
     // Helper methods for calculations and data processing
     
@@ -543,51 +525,5 @@ class ReportController extends Controller
             ->avg('total_spent') ?? 0;
     }
 
-    private function exportSalesReport($dateFrom, $dateTo)
-    {
-        // Implementation for CSV export
-        $filename = 'sales_report_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        // Return CSV response with sales data
-        return response()->stream(function() use ($dateFrom, $dateTo) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Date', 'Revenue', 'Orders', 'Tickets Sold', 'Avg Order Value']);
-            
-            $data = Order::confirmed()
-                ->selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue, COUNT(*) as orders, SUM((SELECT COUNT(*) FROM order_items WHERE order_items.order_id = orders.id)) as tickets')
-                ->whereBetween('created_at', [$dateFrom, $dateTo])
-                ->groupBy('date')
-                ->orderBy('date')
-                ->get();
-            
-            foreach ($data as $row) {
-                fputcsv($handle, [
-                    $row->date,
-                    $row->revenue,
-                    $row->orders,
-                    $row->tickets,
-                    $row->orders > 0 ? round($row->revenue / $row->orders, 2) : 0
-                ]);
-            }
-            
-            fclose($handle);
-        }, 200, $headers);
-    }
-
-    private function exportMoviesReport($dateFrom, $dateTo)
-    {
-        // Similar implementation for movies report
-        return $this->exportSalesReport($dateFrom, $dateTo); // Placeholder
-    }
-
-    private function exportUsersReport($dateFrom, $dateTo)
-    {
-        // Similar implementation for users report
-        return $this->exportSalesReport($dateFrom, $dateTo); // Placeholder
-    }
+    // Helper export methods dihapus
 }

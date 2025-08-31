@@ -41,6 +41,19 @@
                     <x-heroicon-m-pencil class="mr-2 h-4 w-4"/>
                     Edit User
                 </a>
+                @if($user->email_verified_at)
+                <button type="button" onclick="unverifyEmail({{ $user->id }}, '{{ $user->name }}')"
+                        class="inline-flex items-center px-4 py-2 border border-orange-300 rounded-md shadow-sm text-sm font-medium text-orange-700 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                    <x-heroicon-m-x-circle class="mr-2 h-4 w-4"/>
+                    Unverify Email
+                </button>
+                @else
+                <button type="button" onclick="verifyEmail({{ $user->id }}, '{{ $user->name }}')"
+                        class="inline-flex items-center px-4 py-2 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <x-heroicon-m-check-circle class="mr-2 h-4 w-4"/>
+                    Verify Email
+                </button>
+                @endif
                 <a href="{{ route('admin.users.index') }}" 
                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <x-heroicon-m-arrow-left class="mr-2 h-4 w-4"/>
@@ -299,6 +312,40 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+function verifyEmail(userId, userName) {
+    if (confirm(`Verifikasi email untuk user "${userName}"?`)) {
+        fetch(`{{ url('admin/users') }}/${userId}/verify-email`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload(); else alert(data.message || 'Gagal verifikasi');
+        })
+        .catch(() => alert('Terjadi kesalahan saat verifikasi email.'));
+    }
+}
+function unverifyEmail(userId, userName) {
+    if (confirm(`Batalkan verifikasi email untuk user "${userName}"?`)) {
+        fetch(`{{ url('admin/users') }}/${userId}/unverify-email`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload(); else alert(data.message || 'Gagal unverify');
+        })
+        .catch(() => alert('Terjadi kesalahan saat unverify email.'));
+    }
+}
+</script>
+@endpush
 @endsection
-
-
