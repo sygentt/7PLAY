@@ -5,171 +5,367 @@ namespace Database\Seeders;
 use App\Models\Movie;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class MovieSeeder extends Seeder
 {
+    /**
+     * 🎛️ KONFIGURASI SEEDER - Bisa diubah sesuai kebutuhan
+     */
+    private array $config = [
+        'total_movies' => 30,
+        'now_playing_count' => 12,
+        'coming_soon_count' => 10,
+        'finished_count' => 8,
+        'use_real_posters' => true, // false untuk dummy images
+        'include_indonesian_movies' => true,
+        'min_duration' => 90, // menit
+        'max_duration' => 180, // menit
+    ];
+
+    /**
+     * Template data untuk generate random movies
+     */
+    private array $movieTemplates = [
+        'action' => [
+            'titles' => [
+                'Thunder Strike', 'Steel Vengeance', 'Fire Storm', 'Iron Fist', 'Shadow Hunter',
+                'Blade Runner', 'Night Warrior', 'Storm Force', 'Steel Legion', 'Fire Phoenix',
+                'Dark Justice', 'Crimson Blade', 'Lightning Strike', 'Metal Storm', 'War Machine'
+            ],
+            'genres' => ['Action', 'Action, Adventure', 'Action, Thriller', 'Action, Sci-Fi'],
+            'keywords' => ['explosive', 'thrilling', 'intense', 'adrenaline-pumping', 'epic', 'spectacular']
+        ],
+        'comedy' => [
+            'titles' => [
+                'Laugh Out Loud', 'Crazy Times', 'Funny Business', 'Comedy Central', 'Happy Days',
+                'Good Vibes', 'Smile More', 'Joy Ride', 'Fun House', 'Giggles Galore',
+                'Silly Times', 'Comic Relief', 'Happy Hour', 'Fun Zone', 'Chuckles'
+            ],
+            'genres' => ['Comedy', 'Comedy, Romance', 'Comedy, Family', 'Comedy, Adventure'],
+            'keywords' => ['hilarious', 'heartwarming', 'entertaining', 'feel-good', 'lighthearted', 'amusing']
+        ],
+        'drama' => [
+            'titles' => [
+                'Heart Strings', 'Life Journey', 'Emotional Depths', 'Soul Search', 'True Stories',
+                'Human Touch', 'Deep Waters', 'Life Lessons', 'Touching Hearts', 'Real Life',
+                'Broken Dreams', 'Hope Rising', 'Silent Tears', 'Inner Strength', 'Life Changes'
+            ],
+            'genres' => ['Drama', 'Drama, Romance', 'Drama, Family', 'Biography, Drama'],
+            'keywords' => ['emotional', 'touching', 'powerful', 'inspiring', 'profound', 'moving']
+        ],
+        'horror' => [
+            'titles' => [
+                'Dark Shadows', 'Night Terror', 'Haunted House', 'Evil Spirits', 'Nightmare',
+                'Ghost Town', 'Fear Factor', 'Dark Woods', 'Scary Tales', 'Horror Night',
+                'Blood Moon', 'Dead Zone', 'Silent Scream', 'Cursed Land', 'Evil Rising'
+            ],
+            'genres' => ['Horror', 'Horror, Thriller', 'Horror, Mystery', 'Supernatural, Horror'],
+            'keywords' => ['terrifying', 'spine-chilling', 'frightening', 'suspenseful', 'eerie', 'disturbing']
+        ],
+        'scifi' => [
+            'titles' => [
+                'Future World', 'Space Odyssey', 'Cyber City', 'Robot Wars', 'Time Travel',
+                'Galaxy Quest', 'Tech Revolution', 'Virtual Reality', 'Star Journey', 'AI Rising',
+                'Quantum Leap', 'Digital Dreams', 'Space Colony', 'Cyber Wars', 'Alien Contact'
+            ],
+            'genres' => ['Sci-Fi', 'Sci-Fi, Action', 'Sci-Fi, Adventure', 'Sci-Fi, Thriller'],
+            'keywords' => ['futuristic', 'innovative', 'mind-bending', 'technological', 'visionary', 'advanced']
+        ]
+    ];
+
+    private array $indonesianMovies = [
+        ['title' => 'Laskar Pelangi', 'genre' => 'Drama, Family'],
+        ['title' => 'Ada Apa Dengan Cinta', 'genre' => 'Romance, Drama'],
+        ['title' => 'Pengabdi Setan', 'genre' => 'Horror, Thriller'],
+        ['title' => 'Dilan 1990', 'genre' => 'Romance, Drama'],
+        ['title' => 'KKN di Desa Penari', 'genre' => 'Horror, Thriller'],
+        ['title' => 'Miracle in Cell No. 7', 'genre' => 'Drama, Family'],
+        ['title' => 'Habibie & Ainun', 'genre' => 'Biography, Romance'],
+        ['title' => 'Warkop DKI', 'genre' => 'Comedy, Action'],
+        ['title' => 'Surat Kecil untuk Tuhan', 'genre' => 'Drama, Family'],
+        ['title' => 'Tenggelamnya Kapal Van Der Wijck', 'genre' => 'Drama, Romance'],
+        ['title' => 'Ayat-Ayat Cinta', 'genre' => 'Romance, Drama'],
+        ['title' => 'Danur', 'genre' => 'Horror, Thriller']
+    ];
+
     /**
      * Run the database seeder.
      */
     public function run(): void
     {
-        $movies = [
-            [
-                'title' => 'Avatar: The Way of Water',
-                'synopsis' => 'Set more than a decade after the events of the first film, Avatar: The Way of Water begins to tell the story of the Sully family, the trouble that follows them, the lengths they go to keep each other safe, the battles they fight to stay alive, and the tragedies they endure.',
-                'genre' => 'Action, Adventure, Sci-Fi',
-                'duration' => 192,
-                'rating' => '13+',
-                'language' => 'English',
-                'director' => 'James Cameron',
-                'cast' => ['Sam Worthington', 'Zoe Saldana', 'Sigourney Weaver', 'Kate Winslet'],
-                'release_date' => Carbon::now()->subDays(30),
-                'status' => Movie::STATUS_NOW_PLAYING,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=a8Gx8wiNbs8',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Top Gun: Maverick',
-                'synopsis' => 'After thirty years, Maverick is still pushing the envelope as a top naval aviator, but must confront ghosts of his past when he leads TOP GUN\'s elite graduates on a mission that demands the ultimate sacrifice from those chosen to fly it.',
-                'genre' => 'Action, Drama',
-                'duration' => 131,
-                'rating' => '13+',
-                'language' => 'English',
-                'director' => 'Joseph Kosinski',
-                'cast' => ['Tom Cruise', 'Miles Teller', 'Jennifer Connelly', 'Jon Hamm'],
-                'release_date' => Carbon::now()->subDays(45),
-                'status' => Movie::STATUS_NOW_PLAYING,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=qSqVVswa420',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Spider-Man: No Way Home',
-                'synopsis' => 'Peter Parker seeks help from Doctor Strange to make everyone forget his secret identity as Spider-Man. When the spell goes wrong, it brings enemies from other dimensions.',
-                'genre' => 'Action, Adventure, Sci-Fi',
-                'duration' => 148,
-                'rating' => '13+',
-                'language' => 'English',
-                'director' => 'Jon Watts',
-                'cast' => ['Tom Holland', 'Zendaya', 'Benedict Cumberbatch', 'Willem Dafoe'],
-                'release_date' => Carbon::now()->subDays(90),
-                'status' => Movie::STATUS_FINISHED,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=JfVOs4VSpmA',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Dune',
-                'synopsis' => 'Paul Atreides leads nomadic tribes in a rebellion against the evil Harkonnen empire for control of the desert planet Arrakis.',
-                'genre' => 'Adventure, Drama, Sci-Fi',
-                'duration' => 155,
-                'rating' => '13+',
-                'language' => 'English',
-                'director' => 'Denis Villeneuve',
-                'cast' => ['Timothée Chalamet', 'Rebecca Ferguson', 'Oscar Isaac', 'Josh Brolin'],
-                'release_date' => Carbon::now()->subDays(60),
-                'status' => Movie::STATUS_FINISHED,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=8g18jFHCLXk',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Fast X',
-                'synopsis' => 'Dom Toretto and his family are targeted by the vengeful son of drug kingpin Hernan Reyes.',
-                'genre' => 'Action, Crime, Thriller',
-                'duration' => 141,
-                'rating' => '17+',
-                'language' => 'English',
-                'director' => 'Louis Leterrier',
-                'cast' => ['Vin Diesel', 'Michelle Rodriguez', 'Tyrese Gibson', 'Ludacris'],
-                'release_date' => Carbon::now()->addDays(15),
-                'status' => Movie::STATUS_COMING_SOON,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=aOb15GVFZn0',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'John Wick: Chapter 4',
-                'synopsis' => 'John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe.',
-                'genre' => 'Action, Crime, Thriller',
-                'duration' => 169,
-                'rating' => '17+',
-                'language' => 'English',
-                'director' => 'Chad Stahelski',
-                'cast' => ['Keanu Reeves', 'Laurence Fishburne', 'Ian McShane', 'Lance Reddick'],
-                'release_date' => Carbon::now()->addDays(7),
-                'status' => Movie::STATUS_COMING_SOON,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=qEVUtrk8_B4',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'KKN di Desa Penari',
-                'synopsis' => 'Lima mahasiswa melakukan program KKN di desa terpencil dan mengalami teror dari makhluk supernatural yang menghantui desa tersebut.',
-                'genre' => 'Horror, Thriller',
-                'duration' => 110,
-                'rating' => '17+',
-                'language' => 'Indonesia',
-                'director' => 'Awi Suryadi',
-                'cast' => ['Tissa Biani', 'Adinda Thomas', 'Achmad Megantara', 'Calvin Jeremy'],
-                'release_date' => Carbon::now()->subDays(20),
-                'status' => Movie::STATUS_NOW_PLAYING,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/7BkNwGpzVqVTyVKYJRfLJPwZo3N.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=yNWLvGMPiPo',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Pengabdi Setan 2: Communion',
-                'synopsis' => 'Keluarga Suwono pindah ke apartemen untuk menghindar dari teror roh jahat, namun roh tersebut tetap mengikuti mereka.',
-                'genre' => 'Horror, Mystery',
-                'duration' => 119,
-                'rating' => '17+',
-                'language' => 'Indonesia',
-                'director' => 'Joko Anwar',
-                'cast' => ['Tara Basro', 'Bront Palarae', 'Endy Arfian', 'Nasar Anuz'],
-                'release_date' => Carbon::now()->subDays(180),
-                'status' => Movie::STATUS_FINISHED,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/6yRMyWwjuhKg6IU66uiZIGhaSqM.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=eRV8yRJYB6w',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Miracle in Cell No. 7',
-                'synopsis' => 'Seorang ayah dengan keterbatasan mental dipenjara atas tuduhan pembunuhan. Di penjara, dia mendapat bantuan dari sesama tahanan untuk bertemu putrinya.',
-                'genre' => 'Drama, Family',
-                'duration' => 105,
-                'rating' => 'SU',
-                'language' => 'Indonesia',
-                'director' => 'Hanung Bramantyo',
-                'cast' => ['Vino G Bastian', 'Graciella Abigail', 'Indro', 'Tora Sudiro'],
-                'release_date' => Carbon::now()->subDays(100),
-                'status' => Movie::STATUS_FINISHED,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/bOth4QmNyEkalwahfPCfiXjNh4H.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=JIzg8TQ-f2k',
-                'is_active' => true,
-            ],
-            [
-                'title' => 'Transformer: Rise of the Beasts',
-                'synopsis' => 'The Autobots team up with the Maximals to save Earth from the Terrorcons and Predacons in this new chapter of the Transformers saga.',
-                'genre' => 'Action, Adventure, Sci-Fi',
-                'duration' => 127,
-                'rating' => '13+',
-                'language' => 'English',
-                'director' => 'Steven Caple Jr.',
-                'cast' => ['Anthony Ramos', 'Dominique Fishback', 'Luna Lauren Velez', 'Peter Cullen'],
-                'release_date' => Carbon::now()->addDays(30),
-                'status' => Movie::STATUS_COMING_SOON,
-                'poster_url' => 'https://image.tmdb.org/t/p/w500/gPbM0MK8CP8A174rmUwGsADNYKD.jpg',
-                'trailer_url' => 'https://www.youtube.com/watch?v=itnqEauWQZM',
-                'is_active' => true,
-            ],
-        ];
+        $this->command->info('🎬 Generating random movies...');
+        $this->command->info("📋 Configuration:");
+        $this->command->info("   • Total Movies: {$this->config['total_movies']}");
+        $this->command->info("   • Now Playing: {$this->config['now_playing_count']}");
+        $this->command->info("   • Coming Soon: {$this->config['coming_soon_count']}");
+        $this->command->info("   • Finished: {$this->config['finished_count']}");
+        $this->command->info("   • Indonesian Movies: " . ($this->config['include_indonesian_movies'] ? 'Yes' : 'No'));
+        $this->command->info('');
 
+        $faker = Faker::create('id_ID');
+        $movies = [];
+
+        // Generate Now Playing movies
+        $this->command->info('🎭 Generating Now Playing movies...');
+        for ($i = 0; $i < $this->config['now_playing_count']; $i++) {
+            $movies[] = $this->generateRandomMovie($faker, Movie::STATUS_NOW_PLAYING);
+        }
+
+        // Generate Coming Soon movies
+        $this->command->info('🗓️ Generating Coming Soon movies...');
+        for ($i = 0; $i < $this->config['coming_soon_count']; $i++) {
+            $movies[] = $this->generateRandomMovie($faker, Movie::STATUS_COMING_SOON);
+        }
+
+        // Generate Finished movies
+        $this->command->info('📚 Generating Finished movies...');
+        for ($i = 0; $i < $this->config['finished_count']; $i++) {
+            $movies[] = $this->generateRandomMovie($faker, Movie::STATUS_FINISHED);
+        }
+
+        // Sisanya random status
+        $remaining = $this->config['total_movies'] - count($movies);
+        if ($remaining > 0) {
+            $this->command->info("🎲 Generating {$remaining} additional movies with random status...");
+            $statuses = [Movie::STATUS_NOW_PLAYING, Movie::STATUS_COMING_SOON, Movie::STATUS_FINISHED];
+            
+            for ($i = 0; $i < $remaining; $i++) {
+                $randomStatus = $faker->randomElement($statuses);
+                $movies[] = $this->generateRandomMovie($faker, $randomStatus);
+            }
+        }
+
+        // Shuffle untuk random order
+        shuffle($movies);
+
+        // Save to database
+        $this->command->info('💾 Saving to database...');
         foreach ($movies as $movieData) {
             Movie::create($movieData);
         }
 
-        $this->command->info('✅ Movies seeded successfully! Added ' . count($movies) . ' movies.');
+        $this->command->info('✅ Movies seeded successfully! Added ' . count($movies) . ' random movies.');
+        
+        // Show statistics
+        $this->showStatistics();
+    }
+
+    /**
+     * Generate random movie data
+     */
+    private function generateRandomMovie($faker, string $status): array
+    {
+        // Pilih kategori film secara random
+        $categories = array_keys($this->movieTemplates);
+        $category = $faker->randomElement($categories);
+        $template = $this->movieTemplates[$category];
+
+        // Buat judul unik
+        $baseTitle = $faker->randomElement($template['titles']);
+        $uniqueModifier = $faker->randomElement(['', ' ' . $faker->numberBetween(2, 9), ' Returns', ' Legacy', ' Reborn', ' Rising', ' Chronicles']);
+        $title = $baseTitle . $uniqueModifier;
+
+        // Genre
+        $genre = $faker->randomElement($template['genres']);
+
+        // Synopsis dengan keyword yang sesuai kategori
+        $keyword = $faker->randomElement($template['keywords']);
+        $synopsis = $this->generateSynopsis($faker, $keyword, $title);
+
+        // Duration
+        $duration = $faker->numberBetween($this->config['min_duration'], $this->config['max_duration']);
+
+        // Release date berdasarkan status
+        $releaseDate = $this->generateReleaseDate($faker, $status);
+
+        // Rating
+        $ratings = ['SU', '13+', '17+', '21+'];
+        $rating = $faker->randomElement($ratings);
+
+        // Language (mix Indonesian dan English)
+        $language = $this->config['include_indonesian_movies'] && $faker->boolean(30) ? 'Indonesia' : 'English';
+
+        // Jika Indonesian, gunakan template Indonesian
+        if ($language === 'Indonesia' && $faker->boolean(60)) {
+            $indonesianMovie = $faker->randomElement($this->indonesianMovies);
+            $title = $indonesianMovie['title'] . ' ' . $faker->numberBetween(2, 5);
+            $genre = $indonesianMovie['genre'];
+        }
+
+        // Cast (nama-nama random)
+        $cast = $this->generateCast($faker, $language);
+
+        // Director
+        $director = $language === 'Indonesia' ? 
+            $faker->randomElement(['Joko Anwar', 'Hanung Bramantyo', 'Awi Suryadi', 'Riri Riza', 'Ernest Prakasa', 'Timo Tjahjanto', 'Angga Dwimas Sasongko']) :
+            $faker->name;
+
+        // Poster URL
+        $posterUrl = $this->generatePosterUrl($faker, $title);
+
+        // Trailer URL (dummy YouTube links)
+        $trailerUrl = 'https://www.youtube.com/watch?v=' . $faker->regexify('[A-Za-z0-9]{11}');
+
+        return [
+            'title' => $title,
+            'synopsis' => $synopsis,
+            'genre' => $genre,
+            'duration' => $duration,
+            'rating' => $rating,
+            'language' => $language,
+            'director' => $director,
+            'cast' => $cast,
+            'release_date' => $releaseDate,
+            'status' => $status,
+            'poster_url' => $posterUrl,
+            'trailer_url' => $trailerUrl,
+            'is_active' => true,
+        ];
+    }
+
+    /**
+     * Generate synopsis
+     */
+    private function generateSynopsis($faker, string $keyword, string $title): string
+    {
+        $templates = [
+            "When {character} discovers {plot_device}, they must {action} to save {stakes}. This {keyword} adventure will {outcome}.",
+            "In a world where {setting}, {character} faces {challenge}. A {keyword} story of {theme} and {emotion}.",
+            "{character} must {action} when {problem} threatens {stakes}. This {keyword} tale explores {theme}.",
+            "After {event}, {character} embarks on a {keyword} journey to {goal}. But {obstacle} stands in their way.",
+            "The story of {character} who {action} in order to {goal}. A {keyword} narrative about {theme}.",
+            "{character} finds themselves in {situation} where they must {action}. This {keyword} film follows their {theme}."
+        ];
+
+        $template = $faker->randomElement($templates);
+        
+        return str_replace([
+            '{character}', '{plot_device}', '{action}', '{stakes}', '{keyword}', '{outcome}',
+            '{setting}', '{challenge}', '{theme}', '{emotion}', '{problem}', '{event}',
+            '{goal}', '{obstacle}', '{situation}'
+        ], [
+            $faker->randomElement(['a young hero', 'a brave warrior', 'an unlikely protagonist', 'a determined fighter', 'a skilled detective', 'a troubled soul']),
+            $faker->randomElement(['a hidden secret', 'an ancient artifact', 'a mysterious power', 'a dangerous truth', 'a lost treasure', 'a forbidden knowledge']),
+            $faker->randomElement(['fight against evil', 'overcome obstacles', 'face their fears', 'unite their allies', 'confront the past', 'embrace their destiny']),
+            $faker->randomElement(['the world', 'their family', 'humanity', 'their homeland', 'innocent lives', 'everything they love']),
+            $keyword,
+            $faker->randomElement(['change everything', 'test their limits', 'reveal hidden truths', 'forge new alliances', 'transform their world', 'redefine their purpose']),
+            $faker->randomElement(['magic exists', 'technology rules', 'anything is possible', 'danger lurks', 'dreams come true', 'hope survives']),
+            $faker->randomElement(['an impossible choice', 'a deadly enemy', 'overwhelming odds', 'inner demons', 'unexpected betrayal', 'moral dilemmas']),
+            $faker->randomElement(['courage', 'friendship', 'love', 'sacrifice', 'redemption', 'survival', 'justice', 'family']),
+            $faker->randomElement(['hope', 'determination', 'loss', 'discovery', 'triumph', 'despair', 'joy']),
+            $faker->randomElement(['evil forces', 'a terrible curse', 'an ancient enemy', 'corruption', 'natural disaster', 'alien invasion']),
+            $faker->randomElement(['a tragic accident', 'a shocking revelation', 'a betrayal', 'a catastrophe', 'a mysterious disappearance', 'an unexpected encounter']),
+            $faker->randomElement(['restore peace', 'find the truth', 'save their loved ones', 'fulfill their destiny', 'uncover secrets', 'prevent disaster']),
+            $faker->randomElement(['powerful enemies', 'personal doubts', 'impossible odds', 'past mistakes', 'time running out', 'competing interests']),
+            $faker->randomElement(['a dangerous situation', 'an extraordinary circumstance', 'a life-changing moment', 'a critical juncture', 'a mysterious place'])
+        ], $template);
+    }
+
+    /**
+     * Generate release date based on status
+     */
+    private function generateReleaseDate($faker, string $status): Carbon
+    {
+        switch ($status) {
+            case Movie::STATUS_NOW_PLAYING:
+                return Carbon::now()->subDays($faker->numberBetween(1, 60));
+            case Movie::STATUS_COMING_SOON:
+                return Carbon::now()->addDays($faker->numberBetween(7, 90));
+            case Movie::STATUS_FINISHED:
+                return Carbon::now()->subDays($faker->numberBetween(90, 365));
+            default:
+                return Carbon::now();
+        }
+    }
+
+    /**
+     * Generate cast array
+     */
+    private function generateCast($faker, string $language): array
+    {
+        $castCount = $faker->numberBetween(3, 6);
+        $cast = [];
+
+        if ($language === 'Indonesia') {
+            $indonesianActors = [
+                'Iko Uwais', 'Tara Basro', 'Reza Rahadian', 'Dian Sastrowardoyo',
+                'Vino G Bastian', 'Chelsea Islan', 'Nicholas Saputra', 'Marsha Timothy',
+                'Ringgo Agus Rahman', 'Acha Septriasa', 'Chicco Jerikho', 'Pevita Pearce',
+                'Luna Maya', 'Joe Taslim', 'Putri Marino', 'Morgan Oey', 'Cinta Laura'
+            ];
+            
+            for ($i = 0; $i < $castCount; $i++) {
+                $cast[] = $faker->randomElement($indonesianActors);
+            }
+        } else {
+            for ($i = 0; $i < $castCount; $i++) {
+                $cast[] = $faker->name;
+            }
+        }
+
+        return array_unique($cast);
+    }
+
+    /**
+     * Generate poster URL
+     */
+    private function generatePosterUrl($faker, string $title): string
+    {
+        if ($this->config['use_real_posters']) {
+            // Gunakan service poster film real (placeholder TMDB style)
+            $movieId = $faker->numberBetween(100000, 999999);
+            return "https://image.tmdb.org/t/p/w500/{$movieId}.jpg";
+        } else {
+            // Gunakan dummyimage.com dengan judul film
+            $text = urlencode(substr($title, 0, 20));
+            $bgColor = str_replace('#', '', $faker->hexColor);
+            $textColor = 'ffffff';
+            return "https://dummyimage.com/500x750/{$bgColor}/{$textColor}?text={$text}";
+        }
+    }
+
+    /**
+     * Show statistics setelah seeding
+     */
+    private function showStatistics(): void
+    {
+        $nowPlaying = Movie::byStatus(Movie::STATUS_NOW_PLAYING)->count();
+        $comingSoon = Movie::byStatus(Movie::STATUS_COMING_SOON)->count();
+        $finished = Movie::byStatus(Movie::STATUS_FINISHED)->count();
+        $total = Movie::count();
+        $indonesian = Movie::where('language', 'Indonesia')->count();
+        $english = Movie::where('language', 'English')->count();
+
+        $this->command->info('');
+        $this->command->info('📊 Movie Statistics:');
+        $this->command->info("┌─────────────────┬───────┐");
+        $this->command->info("│ Status          │ Count │");
+        $this->command->info("├─────────────────┼───────┤");
+        $this->command->info(sprintf("│ Now Playing     │ %-5s │", $nowPlaying));
+        $this->command->info(sprintf("│ Coming Soon     │ %-5s │", $comingSoon));
+        $this->command->info(sprintf("│ Finished        │ %-5s │", $finished));
+        $this->command->info("├─────────────────┼───────┤");
+        $this->command->info(sprintf("│ TOTAL           │ %-5s │", $total));
+        $this->command->info("└─────────────────┴───────┘");
+        
+        $this->command->info('');
+        $this->command->info('🌍 Language Distribution:');
+        $this->command->info("┌─────────────────┬───────┐");
+        $this->command->info(sprintf("│ Indonesian      │ %-5s │", $indonesian));
+        $this->command->info(sprintf("│ English         │ %-5s │", $english));
+        $this->command->info("└─────────────────┴───────┘");
+        $this->command->info('');
+
+        // Show sample movies
+        $samples = Movie::inRandomOrder()->take(5)->get(['title', 'genre', 'status', 'language']);
+        $this->command->info('🎬 Sample Generated Movies:');
+        foreach ($samples as $movie) {
+            $flag = $movie->language === 'Indonesia' ? '🇮🇩' : '🇺🇸';
+            $this->command->info("   {$flag} {$movie->title} ({$movie->genre}) - {$movie->status}");
+        }
+        $this->command->info('');
+        $this->command->info('🎉 Random movie generation completed successfully!');
     }
 }

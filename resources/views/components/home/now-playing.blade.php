@@ -142,6 +142,14 @@
         slidesPerView: 1.2,
         spaceBetween: 16,
         grabCursor: true,
+        loop: true,
+        loopFillGroupWithBlank: true,
+        centeredSlides: false,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+        },
         navigation: {
             nextEl: '.now-playing-swiper-button-next',
             prevEl: '.now-playing-swiper-button-prev',
@@ -167,7 +175,7 @@
                 spaceBetween: 24,
             },
             1024: {
-                slidesPerView: 3,
+                slidesPerView: 4,
                 spaceBetween: 32,
             },
             1280: {
@@ -175,7 +183,7 @@
                 spaceBetween: 32,
             },
             1536: {
-                slidesPerView: 5,
+                slidesPerView: 4,
                 spaceBetween: 32,
             },
         },
