@@ -42,7 +42,7 @@
                     placeholder="Masukkan email akun Anda"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span class="i-solar-letter-bold w-5 h-5 text-gray-400"></span>
+                    <x-heroicon-o-envelope class="w-5 h-5 text-gray-400" />
                 </div>
             </div>
             <x-form.input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
@@ -59,7 +59,7 @@
         <!-- Info Box -->
         <div class="info-box bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-700/50 rounded-lg p-4">
             <div class="flex items-start space-x-3">
-                <span class="i-solar-info-circle-bold w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></span>
+                <x-heroicon-o-information-circle class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                 <div class="text-sm text-blue-800 dark:text-blue-200">
                     <p class="font-medium mb-1">Tips:</p>
                     <ul class="space-y-1 text-xs">
@@ -86,7 +86,7 @@
         <!-- Back to Login -->
         <div class="text-center">
             <a href="{{ route('login') }}" class="w-full inline-block bg-white/50 dark:bg-gray-800/50 text-cinema-700 dark:text-cinema-300 font-semibold py-3 px-6 rounded-xl border border-cinema-200 dark:border-cinema-700 hover:bg-cinema-50 dark:hover:bg-cinema-900/30 transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                <span class="i-solar-arrow-left-bold w-4 h-4 inline-block mr-2"></span>
+                <x-heroicon-o-arrow-left class="w-4 h-4 inline-block mr-2" />
                 Kembali ke Halaman Login
             </a>
         </div>

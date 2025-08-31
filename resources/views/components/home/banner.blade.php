@@ -25,7 +25,7 @@
                         <div class="max-w-2xl">
                             <!-- Badge -->
                             <div class="inline-flex items-center space-x-2 px-4 py-2 bg-cinema-600/20 backdrop-blur-sm border border-cinema-500/30 rounded-full text-cinema-300 text-sm font-medium mb-6">
-                                <span class="i-solar-star-bold w-4 h-4"></span>
+                                <x-heroicon-o-star class="w-4 h-4" />
                                 <span>Film Pilihan</span>
                             </div>
 
@@ -37,16 +37,16 @@
                             <!-- Meta Info -->
                             <div class="flex flex-wrap items-center gap-4 text-gray-300 mb-6">
                                 <span class="flex items-center space-x-1">
-                                    <span class="i-solar-calendar-bold w-4 h-4"></span>
+                                    <x-heroicon-o-calendar-days class="w-4 h-4" />
                                     <span>{{ date('Y', strtotime($movie['release_date'])) }}</span>
                                 </span>
                                 <span class="flex items-center space-x-1">
-                                    <span class="i-solar-clock-circle-bold w-4 h-4"></span>
+                                    <x-heroicon-o-clock class="w-4 h-4" />
                                     <span>{{ $movie['duration'] }}</span>
                                 </span>
                                 @if($movie['rating'])
                                 <span class="flex items-center space-x-1">
-                                    <span class="i-solar-star-bold w-4 h-4 text-yellow-400"></span>
+                                    <x-heroicon-o-star class="w-4 h-4 text-yellow-400" />
                                     <span>{{ $movie['rating'] }}/10</span>
                                 </span>
                                 @endif
@@ -63,12 +63,12 @@
                             <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <button class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                                    <span class="i-solar-ticket-bold w-5 h-5"></span>
+                                    <x-heroicon-o-ticket class="w-5 h-5" />
                                     <span>Beli Tiket</span>
                                 </button>
                                 
                                 <button class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-200">
-                                    <span class="i-solar-play-bold w-5 h-5"></span>
+                                    <x-heroicon-o-play class="w-5 h-5" />
                                     <span>Tonton Trailer</span>
                                 </button>
                             </div>
@@ -103,11 +103,11 @@
 
         <!-- Navigation -->
         <div class="banner-swiper-button-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-200 cursor-pointer">
-            <span class="i-solar-alt-arrow-left-bold w-6 h-6"></span>
+            <x-heroicon-o-arrow-left class="w-6 h-6" />
         </div>
         
         <div class="banner-swiper-button-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors duration-200 cursor-pointer">
-            <span class="i-solar-alt-arrow-right-bold w-6 h-6"></span>
+            <x-heroicon-o-arrow-right class="w-6 h-6" />
         </div>
 
         <!-- Pagination -->

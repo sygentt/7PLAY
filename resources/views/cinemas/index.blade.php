@@ -31,7 +31,7 @@
                             placeholder="Cari bioskop atau lokasi..." 
                             class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200"
                         >
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 i-solar-magnifer-bold w-5 h-5 text-gray-400"></span>
+                        <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                 </div>
 
@@ -44,16 +44,16 @@
                         <option value="surabaya">Surabaya</option>
                         <option value="medan">Medan</option>
                     </select>
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 i-solar-alt-arrow-down-line-duotone w-4 h-4 text-gray-400"></span>
+                    <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
 
                 <!-- View Toggle -->
                 <div class="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
                     <button class="px-4 py-2 rounded-lg bg-cinema-600 text-white font-medium transition-all duration-200">
-                        <span class="i-solar-widget-bold w-4 h-4"></span>
+                        <x-heroicon-o-squares-2x2 class="w-4 h-4" />
                     </button>
                     <button class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-all duration-200">
-                        <span class="i-solar-list-bold w-4 h-4"></span>
+                        <x-heroicon-o-list-bullet class="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                             </h3>
                             
                             <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
-                                <span class="i-solar-map-point-bold w-4 h-4"></span>
+                                <x-heroicon-o-map-pin class="w-4 h-4" />
                                 <span class="text-sm">{{ $cinema['location'] }}</span>
                             </div>
 
@@ -111,7 +111,7 @@
                                     Lihat Jadwal
                                 </button>
                                 <button class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
-                                    <span class="i-solar-map-point-bold w-4 h-4"></span>
+                                    <x-heroicon-o-map-pin class="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
@@ -147,7 +147,7 @@
                                 </h3>
                                 
                                 <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
-                                    <span class="i-solar-map-point-bold w-4 h-4"></span>
+                                    <x-heroicon-o-map-pin class="w-4 h-4" />
                                     <span class="text-sm">Jakarta Pusat</span>
                                 </div>
 
@@ -170,7 +170,7 @@
                                         Lihat Jadwal
                                     </button>
                                     <button class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
-                                        <span class="i-solar-map-point-bold w-4 h-4"></span>
+                                        <x-heroicon-o-map-pin class="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>

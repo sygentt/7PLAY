@@ -44,15 +44,15 @@
                     <!-- Movie Details -->
                     <div class="flex flex-wrap items-center gap-6 mb-8">
                         <div class="flex items-center space-x-2">
-                            <span class="i-solar-star-bold w-5 h-5 text-yellow-400"></span>
+                            <x-heroicon-o-star class="w-5 h-5 text-yellow-400" />
                             <span class="text-lg font-semibold">{{ $movie['rating'] }}/10</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="i-solar-clock-circle-bold w-5 h-5 text-gray-300"></span>
+                            <x-heroicon-o-clock class="w-5 h-5 text-gray-300" />
                             <span>{{ $movie['duration'] }} menit</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="i-solar-calendar-date-bold w-5 h-5 text-gray-300"></span>
+                            <x-heroicon-o-calendar-days class="w-5 h-5 text-gray-300" />
                             <span>{{ $movie['release_date'] }}</span>
                         </div>
                         <div class="px-3 py-1 bg-cinema-600 rounded-full text-sm font-medium">
@@ -68,11 +68,11 @@
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-4">
                         <button class="px-8 py-4 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-3">
-                            <span class="i-solar-ticket-bold w-6 h-6"></span>
+                            <x-heroicon-o-ticket class="w-6 h-6" />
                             <span>Beli Tiket Sekarang</span>
                         </button>
                         <button class="px-8 py-4 bg-white/10 backdrop-blur-lg border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-3">
-                            <span class="i-solar-play-circle-bold w-6 h-6"></span>
+                            <x-heroicon-o-play-circle class="w-6 h-6" />
                             <span>Tonton Trailer</span>
                         </button>
                     </div>

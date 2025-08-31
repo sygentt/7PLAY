@@ -35,8 +35,8 @@
                 class="p-3 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-sm border border-white/30 dark:border-white/10 text-cinema-700 dark:text-cinema-300 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 shadow-lg"
                 aria-label="Toggle dark mode"
             >
-                <span class="i-solar-sun-bold w-5 h-5 block dark:hidden"></span>
-                <span class="i-solar-moon-bold w-5 h-5 hidden dark:block"></span>
+                <x-heroicon-o-sun class="w-5 h-5 block dark:hidden" />
+                <x-heroicon-o-moon class="w-5 h-5 hidden dark:block" />
             </button>
         </div>
 
@@ -75,19 +75,19 @@
                     <div class="grid grid-cols-1 gap-6 max-w-sm animate-fade-in">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                                <span class="i-solar-check-circle-bold w-5 h-5"></span>
+                                <x-heroicon-o-check-circle class="w-5 h-5" />
                             </div>
                             <span class="text-cinema-100">Booking mudah & cepat</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                                <span class="i-solar-shield-check-bold w-5 h-5"></span>
+                                <x-heroicon-o-shield-check class="w-5 h-5" />
                             </div>
                             <span class="text-cinema-100">Pembayaran aman</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                                <span class="i-solar-ticket-bold w-5 h-5"></span>
+                                <x-heroicon-o-ticket class="w-5 h-5" />
                             </div>
                             <span class="text-cinema-100">E-ticket digital</span>
                         </div>

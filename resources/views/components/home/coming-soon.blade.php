@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between mb-12">
             <div class="flex items-center space-x-4">
                 <div class="w-12 h-12 bg-gradient-to-br from-gold-500 to-gold-700 rounded-xl flex items-center justify-center">
-                    <span class="i-solar-calendar-date-bold w-6 h-6 text-white"></span>
+                    <x-heroicon-o-calendar-days class="w-6 h-6 text-white" />
                 </div>
                 <div>
                     <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
@@ -20,10 +20,10 @@
             
             <div class="hidden lg:flex items-center space-x-3">
                 <div class="coming-soon-swiper-button-prev w-12 h-12 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gold-50 dark:hover:bg-gold-900/20 hover:text-gold-600 dark:hover:text-gold-400 hover:border-gold-200 dark:hover:border-gold-700 transition-all duration-200 cursor-pointer shadow-sm">
-                    <span class="i-solar-alt-arrow-left-bold w-5 h-5"></span>
+                    <x-heroicon-o-arrow-left class="w-5 h-5" />
                 </div>
                 <div class="coming-soon-swiper-button-next w-12 h-12 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gold-50 dark:hover:bg-gold-900/20 hover:text-gold-600 dark:hover:text-gold-400 hover:border-gold-200 dark:hover:border-gold-700 transition-all duration-200 cursor-pointer shadow-sm">
-                    <span class="i-solar-alt-arrow-right-bold w-5 h-5"></span>
+                    <x-heroicon-o-arrow-right class="w-5 h-5" />
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                                 <!-- Coming Soon Badge -->
                                 <div class="absolute top-4 left-4 px-3 py-1 bg-gold-600 rounded-full text-white text-sm font-medium shadow-lg">
                                     <span class="flex items-center space-x-1">
-                                        <span class="i-solar-clock-circle-bold w-4 h-4"></span>
+                                        <x-heroicon-o-clock class="w-4 h-4" />
                                         <span>Segera</span>
                                     </span>
                                 </div>
@@ -69,7 +69,7 @@
                                 
                                 <!-- Play Button -->
                                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
-                                    <span class="i-solar-play-bold w-8 h-8 text-white"></span>
+                                    <x-heroicon-o-play class="w-8 h-8 text-white" />
                                 </div>
                             </div>
 
@@ -86,7 +86,7 @@
                                         {{ explode(', ', $movie['genre'])[0] }}
                                     </span>
                                     <span class="flex items-center space-x-1">
-                                        <span class="i-solar-clock-circle-bold w-4 h-4"></span>
+                                        <x-heroicon-o-clock class="w-4 h-4" />
                                         <span>{{ $movie['duration'] }}</span>
                                     </span>
                                 </div>
@@ -101,7 +101,7 @@
                                             </div>
                                         </div>
                                         <div class="w-12 h-12 bg-gold-200 dark:bg-gold-700/50 rounded-full flex items-center justify-center">
-                                            <span class="i-solar-calendar-date-bold w-6 h-6 text-gold-600 dark:text-gold-400"></span>
+                                            <x-heroicon-o-calendar-days class="w-6 h-6 text-gold-600 dark:text-gold-400" />
                                         </div>
                                     </div>
                                 </div>
@@ -117,10 +117,10 @@
                                         Ingatkan Saya
                                     </button>
                                     <button class="p-2.5 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-600 dark:text-gray-400 rounded-xl transition-colors duration-200">
-                                        <span class="i-solar-bell-bold w-5 h-5"></span>
+                                        <x-heroicon-o-bell class="w-5 h-5" />
                                     </button>
                                     <button class="p-2.5 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-600 dark:text-gray-400 rounded-xl transition-colors duration-200">
-                                        <span class="i-solar-share-bold w-5 h-5"></span>
+                                        <x-heroicon-o-share class="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -134,11 +134,11 @@
         <!-- Mobile Navigation -->
         <div class="lg:hidden flex items-center justify-center space-x-4 mt-8">
             <div class="coming-soon-swiper-button-prev w-12 h-12 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gold-50 dark:hover:bg-gold-900/20 hover:text-gold-600 dark:hover:text-gold-400 transition-all duration-200 cursor-pointer shadow-sm">
-                <span class="i-solar-alt-arrow-left-bold w-5 h-5"></span>
+                <x-heroicon-o-arrow-left class="w-5 h-5" />
             </div>
             <div class="coming-soon-swiper-pagination flex space-x-2"></div>
             <div class="coming-soon-swiper-button-next w-12 h-12 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gold-50 dark:hover:bg-gold-900/20 hover:text-gold-600 dark:hover:text-gold-400 transition-all duration-200 cursor-pointer shadow-sm">
-                <span class="i-solar-alt-arrow-right-bold w-5 h-5"></span>
+                <x-heroicon-o-arrow-right class="w-5 h-5" />
             </div>
         </div>
 
@@ -146,7 +146,7 @@
         <div class="text-center mt-12">
             <button class="inline-flex items-center space-x-2 px-8 py-4 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm transition-all duration-200 transform hover:scale-105">
                 <span>Lihat Semua Film Mendatang</span>
-                <span class="i-solar-alt-arrow-right-bold w-5 h-5"></span>
+                <x-heroicon-o-arrow-right class="w-5 h-5" />
             </button>
         </div>
     </div>

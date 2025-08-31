@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'gender',
         'avatar',
         'is_active',
+        'is_admin',
     ];
 
     /**
@@ -52,17 +53,17 @@ class User extends Authenticatable implements MustVerifyEmail
             'birth_date' => 'date',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
     /**
      * Get all orders for the user.
-     * TODO: Uncomment when Order model is created
      */
-    // public function orders(): HasMany
-    // {
-    //     return $this->hasMany(Order::class);
-    // }
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 
     /**
      * Get the user's point account.
@@ -102,12 +103,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Get all seat reservations made by the user.
-     * TODO: Uncomment when SeatReservations model is created
      */
-    // public function seat_reservations(): HasMany
-    // {
-    //     return $this->hasMany(SeatReservations::class);
-    // }
+    public function seatReservations(): HasMany
+    {
+        return $this->hasMany(SeatReservation::class);
+    }
 
     /**
      * Scope for active users only.
@@ -115,6 +115,34 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope for admin users only.
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('is_admin', true);
+    }
+
+    /**
+     * Scope for customer users only.
+     */
+    public function scopeCustomers($query)
+    {
+        return $query->where('is_admin', false);
+    }
+
+    /**
+     * Scope for search functionality.
+     */
+    public function scopeSearch($query, string $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('phone', 'like', "%{$search}%");
+        });
     }
 
     /**
@@ -144,5 +172,99 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasSufficientPoints(int $required_points): bool
     {
         return $this->total_points >= $required_points;
+    }
+
+    /**
+     * Get user's avatar URL or default
+     */
+    public function getAvatarUrl(): string
+    {
+        return $this->avatar 
+            ? asset('storage/' . $this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
+     * Get formatted birth date
+     */
+    public function getFormattedBirthDate(): string
+    {
+        return $this->birth_date ? $this->birth_date->format('d F Y') : '-';
+    }
+
+    /**
+     * Get user age
+     */
+    public function getAge(): ?int
+    {
+        return $this->birth_date ? $this->birth_date->age : null;
+    }
+
+    /**
+     * Get user's total spent amount
+     */
+    public function getTotalSpent(): float
+    {
+        return $this->orders()
+            ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_PAID])
+            ->sum('total_amount');
+    }
+
+    /**
+     * Get user's total orders count
+     */
+    public function getTotalOrders(): int
+    {
+        return $this->orders()->count();
+    }
+
+    /**
+     * Get user's status badge
+     */
+    public function getStatusBadge(): array
+    {
+        if (!$this->is_active) {
+            return [
+                'text' => 'Inactive',
+                'class' => 'bg-red-100 text-red-800'
+            ];
+        }
+
+        if ($this->is_admin) {
+            return [
+                'text' => 'Admin',
+                'class' => 'bg-purple-100 text-purple-800'
+            ];
+        }
+
+        return [
+            'text' => 'Customer',
+            'class' => 'bg-green-100 text-green-800'
+        ];
+    }
+
+    /**
+     * Get user's role
+     */
+    public function getRole(): string
+    {
+        return $this->is_admin ? 'Admin' : 'Customer';
+    }
+
+    /**
+     * Get user's favorite movie genre based on order history
+     */
+    public function getFavoriteGenre(): ?string
+    {
+        $genres = $this->orders()
+            ->confirmed()
+            ->with('showtime.movie')
+            ->get()
+            ->pluck('showtime.movie.genre')
+            ->filter()
+            ->countBy()
+            ->sortDesc();
+
+        return $genres->keys()->first();
     }
 }

@@ -35,7 +35,7 @@
                     placeholder="nama@email.com"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span class="i-solar-letter-bold w-5 h-5 text-gray-400"></span>
+                    <x-heroicon-o-envelope class="w-5 h-5 text-gray-400" />
                 </div>
             </div>
             <x-form.input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
@@ -61,8 +61,8 @@
                     onclick="togglePassword()"
                     class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                    <span id="eye-open" class="i-solar-eye-bold w-5 h-5"></span>
-                    <span id="eye-closed" class="i-solar-eye-closed-bold w-5 h-5 hidden"></span>
+                    <x-heroicon-o-eye id="eye-open" class="w-5 h-5" />
+                    <x-heroicon-o-eye-slash id="eye-closed" class="w-5 h-5 hidden" />
                 </button>
             </div>
             <x-form.input-error :messages="$errors->get('password')" class="text-red-500 text-sm" />

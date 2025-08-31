@@ -22,25 +22,6 @@
                     Platform pemesanan tiket bioskop online terpercaya di Indonesia. 
                     Nikmati pengalaman menonton film favorit Anda dengan mudah dan aman.
                 </p>
-                
-                <!-- Social Media -->
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-400 font-medium">Ikuti Kami:</span>
-                    <div class="flex space-x-3">
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Facebook">
-                            <span class="i-solar-chat-round-bold w-5 h-5"></span>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Instagram">
-                            <span class="i-solar-camera-bold w-5 h-5"></span>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="YouTube">
-                            <span class="i-solar-videocamera-bold w-5 h-5"></span>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-cinema-600 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200" aria-label="Twitter">
-                            <span class="i-solar-mention-circle-bold w-5 h-5"></span>
-                        </a>
-                    </div>
-                </div>
             </div>
             
             <!-- Quick Links -->
@@ -51,25 +32,25 @@
                 <ul class="space-y-4">
                     <li>
                         <a href="{{ route('home') }}#now-playing" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-play-circle-bold w-4 h-4"></span>
+                            <x-heroicon-o-play-circle class="w-4 h-4" />
                             <span>Film Sedang Tayang</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('home') }}#coming-soon" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-calendar-date-bold w-4 h-4"></span>
+                            <x-heroicon-o-calendar-days class="w-4 h-4" />
                             <span>Film Akan Datang</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-buildings-bold w-4 h-4"></span>
+                            <x-heroicon-o-building-office class="w-4 h-4" />
                             <span>Daftar Bioskop</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-star-bold w-4 h-4"></span>
+                            <x-heroicon-o-star class="w-4 h-4" />
                             <span>Program Loyalitas</span>
                         </a>
                     </li>
@@ -84,55 +65,29 @@
                 <ul class="space-y-4">
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-question-circle-bold w-4 h-4"></span>
+                            <x-heroicon-o-question-mark-circle class="w-4 h-4" />
                             <span>FAQ</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-chat-dots-bold w-4 h-4"></span>
+                            <x-heroicon-o-chat-bubble-oval-left-ellipsis class="w-4 h-4" />
                             <span>Live Chat</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-phone-bold w-4 h-4"></span>
+                            <x-heroicon-o-phone class="w-4 h-4" />
                             <span>Hubungi Kami</span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <span class="i-solar-ticket-bold w-4 h-4"></span>
+                            <x-heroicon-o-ticket class="w-4 h-4" />
                             <span>Cara Pesan Tiket</span>
                         </a>
                     </li>
                 </ul>
-            </div>
-        </div>
-        
-        <!-- Newsletter Section -->
-        <div class="border-t border-gray-800 pt-8 mb-8">
-            <div class="max-w-md mx-auto text-center">
-                <h3 class="text-xl font-bold text-white mb-4">
-                    Dapatkan Info Terbaru
-                </h3>
-                <p class="text-gray-300 mb-6">
-                    Berlangganan newsletter untuk mendapatkan info film terbaru dan promo menarik
-                </p>
-                <form class="flex flex-col sm:flex-row gap-3">
-                    <input 
-                        type="email" 
-                        placeholder="Masukkan email Anda" 
-                        class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200"
-                        required
-                    >
-                    <button 
-                        type="submit" 
-                        class="px-6 py-3 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                    >
-                        Berlangganan
-                    </button>
-                </form>
             </div>
         </div>
         
@@ -143,7 +98,7 @@
                 <!-- Copyright -->
                 <div class="flex items-center space-x-6">
                     <p class="text-gray-400 text-sm flex items-center space-x-2">
-                        <span class="i-solar-copyright-bold w-4 h-4"></span>
+                        <span class="text-sm">©</span>
                         <span>{{ date('Y') }} 7PLAY. Semua hak dilindungi.</span>
                     </p>
                 </div>
@@ -172,7 +127,7 @@
         <!-- Back to Top Button -->
         <div class="flex justify-center mt-8">
             <button onclick="scrollToTop()" class="group flex items-center space-x-2 px-6 py-3 bg-gray-800 hover:bg-cinema-600 text-gray-400 hover:text-white rounded-xl transition-all duration-200 transform hover:scale-105">
-                <span class="i-solar-alt-arrow-up-bold w-5 h-5 group-hover:-translate-y-1 transition-transform duration-200"></span>
+                <x-heroicon-o-arrow-up class="w-5 h-5 group-hover:-translate-y-1 transition-transform duration-200" />
                 <span class="font-medium">Kembali ke Atas</span>
             </button>
         </div>
@@ -202,23 +157,7 @@
         }
     });
 
-    // Newsletter form submission
-    document.addEventListener('DOMContentLoaded', function() {
-        const newsletterForm = document.querySelector('footer form');
-        if (newsletterForm) {
-            newsletterForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = this.querySelector('input[type="email"]').value;
-                
-                // Here you can add AJAX call to subscribe user
-                console.log('Newsletter subscription for:', email);
-                
-                // Show success message (you can customize this)
-                alert('Terima kasih! Anda telah berlangganan newsletter kami.');
-                this.reset();
-            });
-        }
-    });
+
 </script>
 
 

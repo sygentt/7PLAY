@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Admin Dashboard') - 7PLAY</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Additional Styles -->
+    @stack('styles')
+</head>
+<body class="h-full bg-gray-50" x-data="{ sidebarOpen: false }">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
+            <div class="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
+                <!-- Logo -->
+                <div class="flex items-center flex-shrink-0 px-4">
+                    <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <x-heroicon-s-film class="h-6 w-6 text-white"/>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
+                        <p class="text-xs text-gray-500">Admin Dashboard</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="mt-8 flex-1 px-2 space-y-1">
+                    <!-- Dashboard -->
+                    <a href="{{ route('admin.dashboard') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.dashboard'))
+                            <x-heroicon-s-squares-2x2 class="mr-3 flex-shrink-0 h-5 w-5 text-blue-500"/>
+                        @else
+                            <x-heroicon-o-squares-2x2 class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Dashboard
+                    </a>
+
+                    <!-- Cities Management -->
+                    <a href="{{ route('admin.cities.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.cities.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.cities.*'))
+                            <x-heroicon-s-building-office-2 class="mr-3 flex-shrink-0 h-5 w-5 text-blue-500"/>
+                        @else
+                            <x-heroicon-o-building-office-2 class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Cities
+                    </a>
+
+                    <!-- Cinemas Management -->
+                    <a href="{{ route('admin.cinemas.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.cinemas.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.cinemas.*'))
+                            <x-heroicon-s-building-storefront class="mr-3 flex-shrink-0 h-5 w-5 text-purple-500"/>
+                        @else
+                            <x-heroicon-o-building-storefront class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Cinemas
+                    </a>
+
+                    <!-- Movies Management -->
+                    <a href="{{ route('admin.movies.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.movies.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.movies.*'))
+                            <x-heroicon-s-film class="mr-3 flex-shrink-0 h-5 w-5 text-indigo-500"/>
+                        @else
+                            <x-heroicon-o-film class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Movies
+                    </a>
+
+                    <!-- Showtimes Management -->
+                    <a href="{{ route('admin.showtimes.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.showtimes.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.showtimes.*'))
+                            <x-heroicon-s-calendar-days class="mr-3 flex-shrink-0 h-5 w-5 text-purple-500"/>
+                        @else
+                            <x-heroicon-o-calendar-days class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Showtimes
+                    </a>
+
+                    <!-- Orders Management -->
+                    <a href="{{ route('admin.orders.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.orders.*') ? 'bg-green-100 text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.orders.*'))
+                            <x-heroicon-s-shopping-bag class="mr-3 flex-shrink-0 h-5 w-5 text-green-500"/>
+                        @else
+                            <x-heroicon-o-shopping-bag class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Orders
+                    </a>
+
+                    <!-- Users Management -->
+                    <a href="{{ route('admin.users.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.users.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.users.*'))
+                            <x-heroicon-s-users class="mr-3 flex-shrink-0 h-5 w-5 text-blue-500"/>
+                        @else
+                            <x-heroicon-o-users class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Users
+                    </a>
+
+                    <!-- Vouchers Management -->
+                    <a href="#" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-400 cursor-not-allowed">
+                        <x-heroicon-o-ticket class="mr-3 flex-shrink-0 h-5 w-5"/>
+                        Vouchers
+                        <span class="ml-auto inline-block py-0.5 px-2 text-xs font-medium bg-gray-100 text-gray-500 rounded-full">Soon</span>
+                    </a>
+
+                    <!-- Reports & Analytics -->
+                    <a href="{{ route('admin.reports.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md 
+                       {{ request()->routeIs('admin.reports.*') 
+                          ? 'bg-orange-100 text-orange-700' 
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.reports.*'))
+                            <x-heroicon-s-chart-bar class="mr-3 flex-shrink-0 h-5 w-5"/>
+                        @else
+                            <x-heroicon-o-chart-bar class="mr-3 flex-shrink-0 h-5 w-5"/>
+                        @endif
+                        Reports
+                    </a>
+                </nav>
+
+                <!-- User Info at Bottom -->
+                <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-700 truncate">{{ Auth::user()->name }}</p>
+                            <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar -->
+        <div class="lg:hidden" x-show="sidebarOpen" style="display: none;">
+            <div class="fixed inset-0 flex z-40">
+                <!-- Overlay -->
+                <div class="fixed inset-0 bg-gray-600 bg-opacity-75" x-on:click="sidebarOpen = false"></div>
+                
+                <!-- Sidebar Panel -->
+                <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+                    <div class="absolute top-0 right-0 -mr-12 pt-2">
+                        <button type="button" 
+                                class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                                x-on:click="sidebarOpen = false">
+                            <x-heroicon-o-x-mark class="h-6 w-6 text-white"/>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Navigation Content (Same as desktop but responsive) -->
+                    <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                        <!-- Logo -->
+                        <div class="flex-shrink-0 flex items-center px-4">
+                            <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <x-heroicon-s-film class="h-6 w-6 text-white"/>
+                            </div>
+                            <div class="ml-3">
+                                <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
+                                <p class="text-xs text-gray-500">Admin Dashboard</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile Navigation -->
+                        <nav class="mt-8 flex-1 px-2 space-y-1">
+                            <a href="{{ route('admin.dashboard') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.dashboard'))
+                                    <x-heroicon-s-squares-2x2 class="mr-4 flex-shrink-0 h-6 w-6 text-blue-500"/>
+                                @else
+                                    <x-heroicon-o-squares-2x2 class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Dashboard
+                            </a>
+                            
+                            <!-- Cities Management -->
+                            <a href="{{ route('admin.cities.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.cities.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.cities.*'))
+                                    <x-heroicon-s-building-office-2 class="mr-4 flex-shrink-0 h-6 w-6 text-blue-500"/>
+                                @else
+                                    <x-heroicon-o-building-office-2 class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Cities
+                            </a>
+
+                            <!-- Cinemas Management -->
+                            <a href="{{ route('admin.cinemas.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.cinemas.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.cinemas.*'))
+                                    <x-heroicon-s-building-storefront class="mr-4 flex-shrink-0 h-6 w-6 text-purple-500"/>
+                                @else
+                                    <x-heroicon-o-building-storefront class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Cinemas
+                            </a>
+
+                            <!-- Movies Management -->
+                            <a href="{{ route('admin.movies.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.movies.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.movies.*'))
+                                    <x-heroicon-s-film class="mr-4 flex-shrink-0 h-6 w-6 text-indigo-500"/>
+                                @else
+                                    <x-heroicon-o-film class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Movies
+                            </a>
+
+                            <!-- Showtimes Management -->
+                            <a href="{{ route('admin.showtimes.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.showtimes.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.showtimes.*'))
+                                    <x-heroicon-s-calendar-days class="mr-4 flex-shrink-0 h-6 w-6 text-purple-500"/>
+                                @else
+                                    <x-heroicon-o-calendar-days class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Showtimes
+                            </a>
+
+                            <!-- Orders Management -->
+                            <a href="{{ route('admin.orders.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.orders.*') ? 'bg-green-100 text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.orders.*'))
+                                    <x-heroicon-s-shopping-bag class="mr-4 flex-shrink-0 h-6 w-6 text-green-500"/>
+                                @else
+                                    <x-heroicon-o-shopping-bag class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Orders
+                            </a>
+
+                            <!-- Users Management -->
+                            <a href="{{ route('admin.users.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.users.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.users.*'))
+                                    <x-heroicon-s-users class="mr-4 flex-shrink-0 h-6 w-6 text-blue-500"/>
+                                @else
+                                    <x-heroicon-o-users class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Users
+                            </a>
+
+                            <!-- Reports & Analytics -->
+                            <a href="{{ route('admin.reports.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.reports.*') ? 'bg-orange-100 text-orange-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.reports.*'))
+                                    <x-heroicon-s-chart-bar class="mr-4 flex-shrink-0 h-6 w-6 text-orange-500"/>
+                                @else
+                                    <x-heroicon-o-chart-bar class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Reports
+                            </a>
+                        </nav>
+                    </div>
+                    
+                    <!-- Mobile User Info -->
+                    <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</p>
+                                <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:pl-64 flex flex-col flex-1">
+            <!-- Top Header -->
+            <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm border-b border-gray-200">
+                <!-- Mobile Menu Button -->
+                <button type="button"
+                        class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+                        x-on:click="sidebarOpen = true">
+                    <x-heroicon-o-bars-3 class="h-6 w-6"/>
+                </button>
+                
+                <div class="flex-1 px-4 flex justify-between items-center">
+                    <!-- Page Title -->
+                    <div class="flex-1">
+                        <h1 class="text-xl font-semibold text-gray-900">
+                            @yield('page-title', 'Dashboard')
+                        </h1>
+                        <p class="text-sm text-gray-600">
+                            @yield('page-description', 'Kelola sistem 7PLAY cinema booking')
+                        </p>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="ml-4 flex items-center space-x-4">
+
+                        
+                        <!-- User Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button type="button" 
+                                    class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    x-on:click="open = !open">
+                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                </div>
+                            </button>
+                            
+                            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                 x-show="open" 
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 x-on:click.outside="open = false"
+                                 style="display: none;">
+                                <!-- Profile Link -->
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <x-heroicon-o-user class="h-4 w-4 inline mr-2"/>
+                                    Profile
+                                </a>
+                                
+                                <!-- Settings Link -->
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <x-heroicon-o-cog-6-tooth class="h-4 w-4 inline mr-2"/>
+                                    Settings
+                                </a>
+                                
+                                <!-- Logout -->
+                                <form method="POST" action="{{ route('admin.logout') }}" class="block">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <x-heroicon-o-arrow-right-on-rectangle class="h-4 w-4 inline mr-2"/>
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto">
+                <div class="py-6">
+                    @yield('content')
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    @if (session('success'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-transition 
+             x-init="setTimeout(() => show = false, 5000)"
+             class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <x-heroicon-s-check-circle class="h-5 w-5 mr-2"/>
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-transition 
+             x-init="setTimeout(() => show = false, 5000)"
+             class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <x-heroicon-s-x-circle class="h-5 w-5 mr-2"/>
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
+    <!-- Additional Scripts -->
+    @stack('scripts')
+</body>
+</html>

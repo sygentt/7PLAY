@@ -32,7 +32,7 @@
                     placeholder="Masukkan nama lengkap Anda"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span class="i-solar-user-bold w-5 h-5 text-gray-400"></span>
+                    <x-heroicon-o-user class="w-5 h-5 text-gray-400" />
                 </div>
             </div>
             <x-form.input-error :messages="$errors->get('name')" class="text-red-500 text-sm" />
@@ -55,7 +55,7 @@
                     placeholder="nama@email.com"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span class="i-solar-letter-bold w-5 h-5 text-gray-400"></span>
+                    <x-heroicon-o-envelope class="w-5 h-5 text-gray-400" />
                 </div>
             </div>
             <x-form.input-error :messages="$errors->get('email')" class="text-red-500 text-sm" />
@@ -81,8 +81,8 @@
                     onclick="togglePasswordRegister('password')"
                     class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                    <span id="eye-open-password" class="i-solar-eye-bold w-5 h-5"></span>
-                    <span id="eye-closed-password" class="i-solar-eye-closed-bold w-5 h-5 hidden"></span>
+                    <x-heroicon-o-eye id="eye-open-password" class="w-5 h-5" />
+                    <x-heroicon-o-eye-slash id="eye-closed-password" class="w-5 h-5 hidden" />
                 </button>
             </div>
             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -111,8 +111,8 @@
                     onclick="togglePasswordRegister('password_confirmation')"
                     class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
-                    <span id="eye-open-confirmation" class="i-solar-eye-bold w-5 h-5"></span>
-                    <span id="eye-closed-confirmation" class="i-solar-eye-closed-bold w-5 h-5 hidden"></span>
+                    <x-heroicon-o-eye id="eye-open-confirmation" class="w-5 h-5" />
+                    <x-heroicon-o-eye-slash id="eye-closed-confirmation" class="w-5 h-5 hidden" />
                 </button>
             </div>
             <x-form.input-error :messages="$errors->get('password_confirmation')" class="text-red-500 text-sm" />

@@ -57,22 +57,24 @@ Komponen-komponen yang berkaitan dengan layout dan struktur halaman.
 
 ### Include Komponen UI
 ```php
-@include('components.ui.application-logo')
-@include('components.ui.modal')
-@include('components.ui.dark-mode-toggle')
+<x-ui.application-logo />
+<x-ui.modal />
+<x-ui.dark-mode-toggle />
 ```
 
 ### Include Komponen Form
 ```php
-@include('components.form.primary-button')
-@include('components.form.text-input')
-@include('components.form.input-label')
+<x-form.primary-button>Save</x-form.primary-button>
+<x-form.text-input name="email" type="email" />
+<x-form.input-label for="email">Email</x-form.input-label>
 ```
 
 ### Include Komponen Navigation
 ```php
-@include('components.navigation.nav-link')
-@include('components.navigation.dropdown')
+<x-navigation.nav-link href="/dashboard">Dashboard</x-navigation.nav-link>
+<x-navigation.dropdown>
+    <x-navigation.dropdown-link href="/profile">Profile</x-navigation.dropdown-link>
+</x-navigation.dropdown>
 ```
 
 ## 📋 Best Practices
