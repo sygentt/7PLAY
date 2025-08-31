@@ -34,11 +34,11 @@ class AuthenticatedSessionController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Login berhasil!',
-                    'redirect' => route('dashboard', absolute: false)
+                    'redirect' => route('home', absolute: false)
                 ]);
             }
 
-            return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->route('home');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {

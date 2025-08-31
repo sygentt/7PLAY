@@ -96,7 +96,7 @@
                             </span>
                         </button>
                         
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ route('home') }}" 
                            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg text-center transition-colors duration-200">
                             Batal
                         </a>

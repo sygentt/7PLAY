@@ -113,8 +113,8 @@
                 <!-- Auth Buttons -->
                 @auth
                     <div class="hidden lg:flex items-center space-x-3">
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2.5 text-cinema-600 dark:text-cinema-400 hover:text-cinema-700 dark:hover:text-cinema-300 font-medium transition-colors duration-200 text-sm">
-                            Dashboard
+                        <a href="{{ route('home') }}" class="px-4 py-2.5 text-cinema-600 dark:text-cinema-400 hover:text-cinema-700 dark:hover:text-cinema-300 font-medium transition-colors duration-200 text-sm">
+                            Beranda
                         </a>
                     </div>
                 @else

@@ -32,7 +32,7 @@ class PaymentController extends Controller
 
         // Pastikan order belum dibayar
         if ($order->status === 'paid') {
-            return redirect()->route('dashboard')
+            return redirect()->route('home')
                 ->with('info', 'Order ini sudah dibayar.');
         }
 
@@ -245,7 +245,7 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Payment berhasil dibatalkan.',
-                'redirect_url' => route('dashboard')
+                'redirect_url' => route('home')
             ]);
 
         } catch (Exception $e) {

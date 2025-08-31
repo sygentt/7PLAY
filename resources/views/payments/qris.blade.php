@@ -167,9 +167,9 @@
                                     Batalkan Pembayaran
                                 </button>
                                 
-                                <a href="{{ route('dashboard') }}" 
+                                <a href="{{ route('home') }}" 
                                    class="block w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg text-center transition-colors">
-                                    Kembali ke Dashboard
+                                    Kembali ke Beranda
                                 </a>
                             </div>
                         </div>

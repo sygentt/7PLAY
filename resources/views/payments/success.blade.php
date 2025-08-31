@@ -123,9 +123,9 @@
 
                     <!-- Action Buttons -->
                     <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ route('home') }}" 
                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-colors duration-200">
-                            Kembali ke Dashboard
+                            Kembali ke Beranda
                         </a>
                         
                         <!-- Download Ticket Button (untuk implementasi masa depan) -->

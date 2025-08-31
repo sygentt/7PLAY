@@ -139,9 +139,9 @@
                             Pilih Film Lagi
                         </a>
                         
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ route('home') }}" 
                            class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-colors duration-200">
-                            Kembali ke Dashboard
+                            Kembali ke Beranda
                         </a>
                         
                         <!-- Contact Support -->

@@ -44,10 +44,10 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-// Dashboard - User's personal area
+// Redirect legacy dashboard URL to home for backward compatibility
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return redirect()->route('home');
+})->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------

@@ -29,8 +29,11 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
+
+        <!-- Auth Modal -->
+        <x-auth.modal-container />
     </body>
 </html>

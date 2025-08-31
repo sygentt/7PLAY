@@ -58,11 +58,11 @@ class RegisteredUserController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Registrasi berhasil! Selamat datang di 7PLAY.',
-                    'redirect' => route('dashboard', absolute: false)
+                    'redirect' => route('home', absolute: false)
                 ]);
             }
 
-            return redirect(route('dashboard', absolute: false));
+            return redirect()->route('home');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {
