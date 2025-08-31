@@ -17,7 +17,7 @@ class MovieSeeder extends Seeder
         'now_playing_count' => 12,
         'coming_soon_count' => 10,
         'finished_count' => 8,
-        'use_real_posters' => true, // false untuk dummy images
+        'use_real_posters' => false, // false untuk dummy images
         'include_indonesian_movies' => true,
         'min_duration' => 90, // menit
         'max_duration' => 180, // menit
