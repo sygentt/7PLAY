@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\PointTransaction;
+use App\Models\UserPoint;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -252,6 +254,12 @@ class MidtransService
                 if ($fraud_status === 'accept') {
                     $order->update(['status' => 'paid']);
                     Log::info("Order {$order->id} marked as paid");
+                    // Award points on settlement
+                    try {
+                        $this->awardPointsForOrder($order->user_id, (int) round($order->total_amount), (string) $order->id);
+                    } catch (Exception $e) {
+                        Log::error('Award points failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
                 }
                 break;
                 
@@ -306,8 +314,17 @@ class MidtransService
             }
             $order = $payment->order;
             if ($order) {
-                if ($status === 'settlement') $order->update(['status' => 'paid']);
-                elseif (in_array($status, ['deny','cancel','expire','failure'])) $order->update(['status' => 'cancelled']);
+                if ($status === 'settlement') {
+                    $order->update(['status' => 'paid']);
+                    // Award points here as well (polling path), idempotent inside awardPointsForOrder
+                    try {
+                        $this->awardPointsForOrder((int) $order->user_id, (int) round($order->total_amount), (string) $order->id);
+                    } catch (Exception $e) {
+                        Log::error('Award points (polling) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
+                } elseif (in_array($status, ['deny','cancel','expire','failure'])) {
+                    $order->update(['status' => 'cancelled']);
+                }
             }
             return ['status' => 'success', 'payment_status' => $status, 'data' => $resp];
 
@@ -359,5 +376,60 @@ class MidtransService
                 $order->update(['status' => 'cancelled']);
             }
         }
+    }
+
+    /**
+     * Award points to a user based on order amount and membership level.
+     */
+    private function awardPointsForOrder(int $user_id, int $amount_idr, string $order_id): void
+    {
+        $earn_per_rupiah = (int) config('points.earn_per_rupiah', 10000);
+        $min_per_order = (int) config('points.min_per_order', 1);
+
+        $user_points = UserPoint::firstOrCreate(['user_id' => $user_id], [
+            'total_points' => 0,
+            'total_orders' => 0,
+            'membership_level' => 'bronze',
+        ]);
+
+        // Idempotency: if there is already a transaction for this order, skip
+        $already = PointTransaction::where('user_id', $user_id)
+            ->where('order_id', $order_id)
+            ->where('type', 'earned')
+            ->exists();
+        if ($already) {
+            return;
+        }
+
+        $base_points = max((int) floor($amount_idr / max($earn_per_rupiah, 1)), $min_per_order);
+        $mult = (float) (config('points.multipliers.' . $user_points->membership_level, 1.0));
+        $earned = (int) max(1, round($base_points * $mult));
+
+        // Update totals
+        $user_points->increment('total_points', $earned);
+        $user_points->increment('total_orders');
+        $user_points->update(['last_order_date' => now()]);
+
+        // Upgrade membership level based on thresholds
+        $thresholds = config('points.thresholds', []);
+        $total = $user_points->fresh()->total_points;
+        $new_level = $user_points->membership_level;
+        if (isset($thresholds['diamond']) && $total >= (int) $thresholds['diamond']) {
+            $new_level = 'diamond';
+        } elseif (isset($thresholds['silver']) && $total >= (int) $thresholds['silver']) {
+            $new_level = 'silver';
+        }
+        if ($new_level !== $user_points->membership_level) {
+            $user_points->update(['membership_level' => $new_level]);
+        }
+
+        // Record transaction
+        PointTransaction::create([
+            'user_id' => $user_id,
+            'type' => 'earned',
+            'points' => $earned,
+            'description' => 'Poin dari order #' . $order_id,
+            'order_id' => $order_id,
+        ]);
     }
 }

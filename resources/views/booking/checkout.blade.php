@@ -106,6 +106,27 @@
 
         <!-- Payment Options -->
         <div class="space-y-4">
+            <!-- Voucher Selector -->
+            <div class="bg-gray-800/50 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 7a4 4 0 104 4 4 4 0 00-4-4zm0 6a6 6 0 116-6 6 6 0 01-6 6zM21 13a3 3 0 11-3 3 3 3 0 013-3zm0-2a5 5 0 105 5 5 5 0 00-5-5z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">Voucher</h3>
+                            <p class="text-sm text-gray-400">Pilih voucher untuk mendapatkan diskon</p>
+                        </div>
+                    </div>
+                    <button id="btn-load-vouchers" onclick="openVoucherSelector()" class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium hover:bg-gray-600 transition-colors">
+                        Pilih Voucher
+                    </button>
+                </div>
+
+                <div id="voucher-selected" class="hidden mt-2 text-sm text-green-400"></div>
+            </div>
             <!-- QRIS Payment -->
             <div class="bg-gray-800/50 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
@@ -204,6 +225,19 @@
     </div>
 </div>
 
+<!-- Voucher Modal -->
+<div id="voucher-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
+    <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold">Pilih Voucher</h3>
+            <button onclick="closeVoucherModal()" class="text-gray-500 hover:text-gray-700">Tutup</button>
+        </div>
+        <div id="voucher-list" class="space-y-3">
+            <div class="text-gray-500">Memuat voucher...</div>
+        </div>
+    </div>
+    
+</div>
 @endsection
 
 @push('scripts')
@@ -388,5 +422,73 @@ window.addEventListener('beforeunload', function() {
     if (countdownInterval) clearInterval(countdownInterval);
     if (paymentCheckInterval) clearInterval(paymentCheckInterval);
 });
+
+// VOUCHER SELECTOR
+async function openVoucherSelector() {
+    try {
+        const resp = await fetch(`{{ route('booking.checkout.vouchers', $order) }}`);
+        const data = await resp.json();
+        const container = document.getElementById('voucher-list');
+        container.innerHTML = '';
+        if (!data.success || !Array.isArray(data.vouchers) || data.vouchers.length === 0) {
+            container.innerHTML = '<div class="text-gray-500">Tidak ada voucher tersedia.</div>';
+        } else {
+            data.vouchers.forEach(uv => {
+                const v = uv.voucher;
+                const badge = v.type === 'percentage' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`;
+                const el = document.createElement('div');
+                el.className = 'border rounded-xl p-4 flex items-center justify-between hover:bg-gray-50';
+                el.innerHTML = `
+                    <div>
+                        <div class="font-semibold">${v.name}</div>
+                        <div class="text-xs text-gray-500">Kode: ${v.code} &middot; ${badge} OFF</div>
+                    </div>
+                    <button class="px-4 py-2 bg-cinema-600 text-white rounded-lg text-sm">Pakai</button>
+                `;
+                el.querySelector('button').addEventListener('click', () => applyVoucher(uv.id, v));
+                container.appendChild(el);
+            });
+        }
+        const modal = document.getElementById('voucher-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    } catch (e) {
+        alert('Gagal memuat voucher');
+    }
+}
+
+function closeVoucherModal() {
+    const modal = document.getElementById('voucher-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+async function applyVoucher(userVoucherId, voucher) {
+    try {
+        const resp = await fetch(`{{ route('booking.checkout.apply-voucher', $order) }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ user_voucher_id: userVoucherId })
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) {
+            alert(data.message || 'Gagal menerapkan voucher');
+            return;
+        }
+        document.getElementById('voucher-selected').classList.remove('hidden');
+        document.getElementById('voucher-selected').textContent = `Voucher diterapkan: ${voucher.name} - Diskon ${voucher.type === 'percentage' ? voucher.value + '%' : 'Rp ' + Number(voucher.value).toLocaleString('id-ID')} | Total baru: Rp ${Number(data.total).toLocaleString('id-ID')}`;
+        // Optionally update total display in the summary section if present
+        const totalEl = document.querySelector('[data-total-amount]');
+        if (totalEl) totalEl.textContent = 'Rp' + Number(data.total).toLocaleString('id-ID');
+        closeVoucherModal();
+    } catch (e) {
+        alert('Gagal menerapkan voucher');
+    }
+}
 </script>
 @endpush
