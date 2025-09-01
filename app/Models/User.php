@@ -110,6 +110,38 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get all favorite movies for the user.
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    /**
+     * Get all favorite movies directly.
+     */
+    public function favoriteMovies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'user_favorites');
+    }
+
+    /**
+     * Check if user has favorited a movie.
+     */
+    public function hasFavorited(int $movieId): bool
+    {
+        return $this->favorites()->where('movie_id', $movieId)->exists();
+    }
+
+    /**
+     * Get all notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    /**
      * Scope for active users only.
      */
     public function scopeActive($query)

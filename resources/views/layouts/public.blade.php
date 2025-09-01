@@ -56,6 +56,9 @@
     <!-- Auth Modal -->
     <x-auth.modal-container />
     
+    <!-- Toast Component -->
+    <x-ui.toast />
+
     <!-- Seat Count Modal -->
     <x-booking.seat-count-modal />
     

@@ -35,5 +35,8 @@
 
         <!-- Auth Modal -->
         <x-auth.modal-container />
+
+        <!-- Toast Component -->
+        <x-ui.toast />
     </body>
 </html>

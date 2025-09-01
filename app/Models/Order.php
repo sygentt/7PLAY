@@ -116,6 +116,14 @@ class Order extends Model
     }
 
     /**
+     * Get order's payment (singular - for backward compatibility)
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class)->latest();
+    }
+
+    /**
      * Scope to filter by status
      */
     public function scopeByStatus($query, string $status)
