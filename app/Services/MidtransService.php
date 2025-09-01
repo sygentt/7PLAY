@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Midtrans\Config;
 use Midtrans\Notification;
-use SnapBi\Config as SnapBiConfig;
-use SnapBi\SnapBi;
+use Midtrans\CoreApi;
+use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -24,20 +24,11 @@ class MidtransService
      */
     private function configureMidtrans(): void
     {
-        // Set konfigurasi dasar Midtrans
+        // Set konfigurasi dasar Midtrans (Core API)
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
-
-        // Set konfigurasi SnapBi untuk QRIS
-        SnapBiConfig::$isProduction = config('midtrans.is_production');
-        SnapBiConfig::$snapBiClientId = config('midtrans.client_key');
-        SnapBiConfig::$snapBiPrivateKey = ""; // Tidak diperlukan untuk basic implementation
-        SnapBiConfig::$snapBiClientSecret = ""; // Tidak diperlukan untuk basic implementation
-        SnapBiConfig::$snapBiPartnerId = config('midtrans.merchant_id');
-        SnapBiConfig::$snapBiChannelId = "7PLAY";
-        SnapBiConfig::$enableLogging = !config('app.env') === 'production';
     }
 
     /**
@@ -46,59 +37,89 @@ class MidtransService
     public function createQrisPayment(Order $order): Payment
     {
         try {
-            $external_id = "7play-" . $order->id . "-" . time();
-            $valid_until = now()->addMinutes(config('midtrans.qris.validity_period_minutes'))->format('c');
+            $externalId = '7play-' . $order->id . '-' . time();
+            $grossAmount = (int) round($order->total_amount);
 
-            $qris_body = [
-                "partnerReferenceNo" => $external_id,
-                "amount" => [
-                    "value" => number_format($order->total_amount, 2, '.', ''),
-                    "currency" => config('midtrans.qris.currency', 'IDR')
+            $payload = [
+                'payment_type' => 'qris',
+                'transaction_details' => [
+                    'order_id' => $externalId,
+                    'gross_amount' => $grossAmount,
                 ],
-                "merchantId" => config('midtrans.merchant_id'),
-                "validityPeriod" => $valid_until,
-                "additionalInfo" => [
-                    "acquirer" => "gopay",
-                    "items" => $this->formatOrderItems($order),
-                    "customerDetails" => $this->formatCustomerDetails($order),
-                    "countryCode" => "ID",
-                    "locale" => "id_ID"
-                ]
+                'qris' => ['acquirer' => 'gopay'],
+                'item_details' => array_map(function ($item) use ($order) {
+                    return [
+                        'id' => 'ticket-' . $item->id,
+                        'price' => (int) round($item->price),
+                        'quantity' => 1,
+                        'name' => $order->showtime?->movie?->title ?? 'Tiket',
+                    ];
+                }, $order->orderItems->all()),
+                'customer_details' => [
+                    'first_name' => $order->user->name ?? 'Customer',
+                    'email' => $order->user->email,
+                    'phone' => $order->user->phone ?? '+62' . rand(10000000,99999999),
+                ],
             ];
 
-            // Buat payment record di database
-            $payment = Payment::create([
+            $resp = CoreApi::charge($payload);
+            $respArray = json_decode(json_encode($resp), true);
+            
+            // Debug log untuk melihat response dari Midtrans
+            Log::info('Midtrans QRIS Charge Response', [
                 'order_id' => $order->id,
-                'external_id' => $external_id,
+                'external_id' => $externalId,
+                'response' => json_encode($resp, JSON_PRETTY_PRINT),
+                'qr_url' => $resp->qr_url ?? 'NULL',
+                'actions' => isset($resp->actions) ? json_encode($resp->actions) : 'NULL',
+                'qr_string' => $resp->qr_string ?? 'NULL'
+            ]);
+
+            $payment = Payment::create([
+                'order_id' => (string) $order->id,
+                'external_id' => $externalId,
                 'merchant_id' => config('midtrans.merchant_id'),
                 'amount' => $order->total_amount,
-                'currency' => config('midtrans.qris.currency', 'IDR'),
+                'currency' => 'IDR',
                 'payment_method' => 'qris',
                 'payment_type' => 'qris',
-                'status' => 'pending',
-                'expiry_time' => $valid_until,
-                'customer_details' => $this->formatCustomerDetails($order),
-                'item_details' => $this->formatOrderItems($order),
-                'metadata' => [
-                    'order_id' => $order->id,
-                    'cinema_name' => $order->orderItems->first()?->showtime?->cinemaHall?->cinema?->name,
-                    'movie_title' => $order->orderItems->first()?->showtime?->movie?->title,
-                    'showtime' => $order->orderItems->first()?->showtime?->start_time,
-                ]
+                'status' => $respArray['transaction_status'] ?? 'pending',
+                'reference_no' => $respArray['transaction_id'] ?? null,
+                'expiry_time' => now()->addMinutes((int) config('midtrans.qris.validity_period_minutes')),
+                'customer_details' => $payload['customer_details'],
+                'item_details' => array_map(function ($i) {
+                    return ['id' => $i['id'], 'price' => $i['price'], 'quantity' => 1, 'name' => $i['name']];
+                }, $payload['item_details']),
+                'raw_response' => $respArray,
             ]);
 
-            // Panggil Midtrans API untuk membuat QRIS
-            $snapbi_response = SnapBi::qris()
-                ->withBody($qris_body)
-                ->createPayment($external_id);
+            $qrUrl = $respArray['qr_url'] ?? null;
+            if (!$qrUrl && !empty($respArray['actions']) && is_array($respArray['actions'])) {
+                foreach ($respArray['actions'] as $a) {
+                    $name = $a['name'] ?? '';
+                    $url = $a['url'] ?? null;
+                    if ($name === 'generate-qr-code' && !empty($url)) { $qrUrl = (string) $url; break; }
+                }
+            }
+            if (!$qrUrl && isset($respArray['qr_string'])) {
+                // Fallback: render QR locally via public QR service
+                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode((string) $respArray['qr_string']);
+            }
 
-            // Update payment dengan response dari Midtrans
-            $payment->update([
-                'reference_no' => $snapbi_response->originalReferenceNo ?? null,
-                'qr_code_url' => $snapbi_response->qrCodeUrl ?? null,
-                'deep_link_url' => $snapbi_response->deepLinkUrl ?? null,
-                'raw_response' => $snapbi_response
+            // Log hasil QR URL yang didapat
+            Log::info('QR URL Processing Result', [
+                'order_id' => $order->id,
+                'qr_url_from_resp' => $respArray['qr_url'] ?? 'NULL',
+                'actions_count' => isset($respArray['actions']) && is_array($respArray['actions']) ? count($respArray['actions']) : 0,
+                'qr_string_exists' => isset($respArray['qr_string']),
+                'final_qr_url' => $qrUrl,
+                'payment_id' => $payment->id
             ]);
+
+            if ($qrUrl) {
+                $payment->update(['qr_code_url' => $qrUrl]);
+                Log::info('Payment QR URL Updated', ['payment_id' => $payment->id, 'qr_url' => $qrUrl]);
+            }
 
             return $payment;
 
@@ -120,10 +141,11 @@ class MidtransService
     {
         $items = [];
         
+        $showtime = $order->showtime;
+        $movie = $showtime?->movie;
+        $cinema = $showtime?->cinemaHall?->cinema;
+
         foreach ($order->orderItems as $item) {
-            $showtime = $item->showtime;
-            $movie = $showtime->movie;
-            $cinema = $showtime->cinemaHall->cinema;
 
             $items[] = [
                 "id" => "ticket-{$item->id}",
@@ -131,8 +153,8 @@ class MidtransService
                     "value" => number_format($item->price, 2, '.', ''),
                     "currency" => config('midtrans.qris.currency', 'IDR')
                 ],
-                "quantity" => $item->quantity,
-                "name" => "{$movie->title} - {$cinema->name}",
+                "quantity" => 1,
+                "name" => trim(($movie->title ?? 'Tiket') . ' - ' . ($cinema->name ?? 'Cinema')),
                 "brand" => "7PLAY Cinema",
                 "category" => "Entertainment",
                 "merchantName" => "7PLAY"
@@ -253,25 +275,41 @@ class MidtransService
     public function checkPaymentStatus(Payment $payment): array
     {
         try {
-            $status_body = [
-                "originalReferenceNo" => $payment->reference_no,
-                "originalPartnerReferenceNo" => $payment->external_id,
-                "merchantId" => $payment->merchant_id,
-                "serviceCode" => "54"
-            ];
+            $resp = Transaction::status($payment->external_id);
+            $respArray = json_decode(json_encode($resp), true);
+            $status = $resp->transaction_status ?? 'pending';
+            // Merge raw response safely without casting non-arrays directly
+            $existing_raw = is_array($payment->raw_response) ? $payment->raw_response : [];
+            $resp_array = is_array($respArray) ? $respArray : [];
 
-            $response = SnapBi::qris()
-                ->withBody($status_body)
-                ->getStatus($payment->external_id);
-
-            // Update payment dengan status terbaru
-            $this->updatePaymentFromStatusCheck($payment, $response);
-
-            return [
-                'status' => 'success',
-                'payment_status' => $response->latestTransactionStatus ?? 'unknown',
-                'data' => $response
-            ];
+            $payment->update([
+                'status' => $status,
+                'settlement_time' => $status === 'settlement' ? now() : null,
+                'raw_response' => array_merge($existing_raw, ['status_check_' . time() => $resp_array]),
+            ]);
+            // Update/derive QR URL when available in status response
+            if (empty($payment->qr_code_url)) {
+                $qrUrl = $respArray['qr_url'] ?? null;
+                if (!$qrUrl && !empty($respArray['actions']) && is_array($respArray['actions'])) {
+                    foreach ($respArray['actions'] as $a) {
+                        $name = $a['name'] ?? '';
+                        $url = $a['url'] ?? null;
+                        if ($name === 'generate-qr-code' && !empty($url)) { $qrUrl = (string) $url; break; }
+                    }
+                }
+                if (!$qrUrl && isset($respArray['qr_string'])) {
+                    $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode((string) $respArray['qr_string']);
+                }
+                if ($qrUrl) {
+                    $payment->update(['qr_code_url' => $qrUrl]);
+                }
+            }
+            $order = $payment->order;
+            if ($order) {
+                if ($status === 'settlement') $order->update(['status' => 'paid']);
+                elseif (in_array($status, ['deny','cancel','expire','failure'])) $order->update(['status' => 'cancelled']);
+            }
+            return ['status' => 'success', 'payment_status' => $status, 'data' => $resp];
 
         } catch (Exception $e) {
             Log::error('Error checking payment status', [

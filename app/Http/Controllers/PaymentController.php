@@ -67,11 +67,12 @@ class PaymentController extends Controller
                 ->first();
 
             if ($existing_payment) {
+                $existing_payment->load('order.showtime.movie', 'order.showtime.cinemaHall.cinema');
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment QRIS sudah dibuat sebelumnya.',
                     'payment_id' => $existing_payment->id,
-                    'redirect_url' => route('payment.qris.show', $existing_payment)
+                    'payment' => $existing_payment,
                 ]);
             }
 
@@ -82,11 +83,13 @@ class PaymentController extends Controller
 
             DB::commit();
 
+            $payment->load('order.showtime.movie', 'order.showtime.cinemaHall.cinema');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Payment QRIS berhasil dibuat.',
                 'payment_id' => $payment->id,
-                'redirect_url' => route('payment.qris.show', $payment)
+                'payment' => $payment,
             ]);
 
         } catch (Exception $e) {
@@ -149,12 +152,44 @@ class PaymentController extends Controller
             // Refresh payment data
             $payment->refresh();
 
+            // Derive QR URL for frontend update
+            $qrUrl = $payment->qr_code_url;
+            if (!$qrUrl) {
+                $data = $result['data'] ?? null;
+                if (is_array($data)) {
+                    $qrUrl = $data['qr_url'] ?? null;
+                    if (!$qrUrl && !empty($data['actions']) && is_array($data['actions'])) {
+                        foreach ($data['actions'] as $a) {
+                            $name = $a['name'] ?? null;
+                            $url = $a['url'] ?? null;
+                            if ($name === 'generate-qr-code' && !empty($url)) { $qrUrl = $url; break; }
+                        }
+                    }
+                    if (!$qrUrl && !empty($data['qr_string'])) {
+                        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($data['qr_string']);
+                    }
+                } elseif (is_object($data)) {
+                    $qrUrl = $data->qr_url ?? null;
+                    if (!$qrUrl && isset($data->actions)) {
+                        foreach ((array) $data->actions as $a) {
+                            $name = is_array($a) ? ($a['name'] ?? '') : ($a->name ?? '');
+                            $url = is_array($a) ? ($a['url'] ?? null) : ($a->url ?? null);
+                            if ($name === 'generate-qr-code' && !empty($url)) { $qrUrl = $url; break; }
+                        }
+                    }
+                    if (!$qrUrl && isset($data->qr_string)) {
+                        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($data->qr_string);
+                    }
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'status' => $payment->status,
                 'is_paid' => $payment->isPaid(),
                 'is_expired' => $payment->expiry_time < now(),
                 'message' => $this->getStatusMessage($payment->status),
+                'qr_code_url' => $qrUrl,
                 'midtrans_result' => $result
             ]);
 
