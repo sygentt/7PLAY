@@ -40,28 +40,34 @@ class AuthModal {
             passwordConfirmation.addEventListener('input', () => this.validatePasswordConfirmation());
         }
 
+        // Prevent form buttons from accidentally closing modal
+        const formButtons = document.querySelectorAll('#modal-login-form button, #modal-register-form button');
+        formButtons.forEach(btn => {
+            if (btn.type === 'submit') return; // Skip submit buttons
+            if (btn.onclick && btn.onclick.toString().includes('switch')) return; // Skip switch buttons
+            if (btn.onclick && btn.onclick.toString().includes('toggleModalPassword')) return; // Skip password toggle
+            if (btn.onclick && btn.onclick.toString().includes('showForgotPassword')) return; // Skip forgot password
+        });
+
         // ESC key to close modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) {
                 this.close();
             }
         });
+
+
     }
 
     open(formType = 'login') {
-        console.log('AuthModal.open called with formType:', formType);
-        
         if (!this.modal) {
             this.modal = document.getElementById('auth-modal');
-            console.log('Modal element found:', !!this.modal);
             if (!this.modal) {
-                console.error('Auth modal element not found!');
                 return;
             }
         }
 
         this.currentForm = formType;
-        console.log('Removing hidden class and adding show class');
         
         // Immediately show modal
         this.modal.classList.remove('hidden');
@@ -78,7 +84,11 @@ class AuthModal {
         // Trigger fade-in after a brief delay
         setTimeout(() => {
             this.modal.classList.add('show');
-            console.log('Show class added, modal should be visible now');
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+            
+            // Bind close events after modal is fully shown
+            this.bindCloseEvents();
         }, 10);
 
         this.isOpen = true;
@@ -91,14 +101,37 @@ class AuthModal {
         }, 100);
     }
 
+    bindCloseEvents() {
+        if (!this.modal) return;
+        
+        // Remove any existing event listeners to prevent duplicates
+        this.modal.replaceWith(this.modal.cloneNode(true));
+        this.modal = document.getElementById('auth-modal');
+        
+        // Single event handler on the main modal container
+        this.modal.addEventListener('click', (e) => {
+            // Check if clicked element is part of the modal content
+            const modalContent = e.target.closest('.modal-content');
+            const isFormElement = e.target.closest('form, input, button, select, textarea, label');
+            
+            // Only close if NOT clicking on modal content or form elements
+            if (!modalContent && !isFormElement) {
+                this.close();
+            }
+        }, true); // Use capture phase to catch all clicks
+    }
+
     close() {
-        if (!this.modal || !this.isOpen) return;
+        if (!this.modal || !this.isOpen) {
+            return;
+        }
 
         // Trigger CSS-based fade-out
         this.modal.classList.remove('show');
 
         setTimeout(() => {
             this.modal.classList.add('hidden');
+            this.modal.style.display = 'none'; // Force hide
             this.isOpen = false;
             document.body.style.overflow = '';
             this.clearErrors();
@@ -179,7 +212,6 @@ class AuthModal {
                 }
             }
         } catch (error) {
-            console.error('Login error:', error);
             this.showErrorMessage('Terjadi kesalahan. Silakan coba lagi.', 'login');
         } finally {
             // Reset button state
@@ -234,7 +266,6 @@ class AuthModal {
                 }
             }
         } catch (error) {
-            console.error('Register error:', error);
             this.showErrorMessage('Terjadi kesalahan. Silakan coba lagi.', 'register');
         } finally {
             // Reset button state
@@ -344,13 +375,9 @@ function toggleModalPassword(fieldId) {
 
 // Global functions
 function openAuthModal(formType = 'login') {
-    console.log('Global openAuthModal called with:', formType);
-    console.log('window.authModal exists:', !!window.authModal);
-    
     if (window.authModal) {
         window.authModal.open(formType);
     } else {
-        console.error('AuthModal not initialized!');
         // Fallback initialization
         window.authModal = new AuthModal();
         setTimeout(() => {
@@ -359,16 +386,34 @@ function openAuthModal(formType = 'login') {
     }
 }
 
+// closeAuthModal function - kept for compatibility
 function closeAuthModal() {
-    window.authModal?.close();
+    if (window.authModal && typeof window.authModal.close === 'function') {
+        window.authModal.close();
+    } else {
+        // Fallback direct closure
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
 }
 
 function switchToLogin() {
-    window.authModal?.switchToLogin();
+    if (window.authModal && typeof window.authModal.switchToLogin === 'function') {
+        window.authModal.switchToLogin();
+    }
 }
 
 function switchToRegister() {
-    window.authModal?.switchToRegister();
+    if (window.authModal && typeof window.authModal.switchToRegister === 'function') {
+        window.authModal.switchToRegister();
+    }
 }
 
 function showForgotPassword() {
