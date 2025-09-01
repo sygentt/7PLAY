@@ -7,6 +7,8 @@ use App\Models\Seat;
 use App\Models\SeatReservation;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\UserVoucher;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -187,6 +189,81 @@ class BookingController extends Controller
         $current_page = 'checkout';
 
         return view('booking.checkout', compact('order', 'current_page'));
+    }
+
+    /**
+     * List user vouchers for this order (only unused and valid)
+     */
+    public function listVouchers(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) abort(403);
+
+        $user_vouchers = UserVoucher::with('voucher')
+            ->where('user_id', Auth::id())
+            ->where('is_used', false)
+            ->get()
+            ->filter(function ($uv) {
+                return $uv->voucher && $uv->voucher->isAvailable();
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'vouchers' => $user_vouchers,
+        ]);
+    }
+
+    /**
+     * Apply selected voucher to the order.
+     */
+    public function applyVoucher(Order $order, Request $request)
+    {
+        if ($order->user_id !== Auth::id()) abort(403);
+        if ($order->status !== Order::STATUS_PENDING) return response()->json(['success' => false, 'message' => 'Order tidak dapat diubah'], 400);
+
+        $request->validate([
+            'user_voucher_id' => 'required|exists:user_vouchers,id',
+        ]);
+
+        $user_voucher = UserVoucher::with('voucher')->where('id', $request->user_voucher_id)->where('user_id', Auth::id())->firstOrFail();
+        $voucher = $user_voucher->voucher;
+        if (!$voucher || !$voucher->isAvailable()) {
+            return response()->json(['success' => false, 'message' => 'Voucher tidak valid'], 400);
+        }
+
+        // Check min purchase
+        if ($voucher->min_purchase && $order->subtotal < $voucher->min_purchase) {
+            return response()->json(['success' => false, 'message' => 'Subtotal belum memenuhi minimal pembelian'], 400);
+        }
+
+        // Calculate discount
+        $discount = 0;
+        if ($voucher->type === 'percentage') {
+            $discount = (float) $order->subtotal * ((float) $voucher->value / 100.0);
+            if (!is_null($voucher->max_discount)) {
+                $discount = min($discount, (float) $voucher->max_discount);
+            }
+        } else {
+            $discount = (float) $voucher->value;
+        }
+
+        $discount = max(0, min($discount, (float) $order->subtotal));
+        $new_total = (float) $order->subtotal - $discount;
+
+        // Update order
+        $order->update([
+            'voucher_id' => $voucher->id,
+            'discount_amount' => $discount,
+            'total_amount' => $new_total,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voucher diterapkan',
+            'order' => $order->fresh(),
+            'discount' => $discount,
+            'total' => $new_total,
+        ]);
     }
 
     /**

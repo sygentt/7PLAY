@@ -55,7 +55,7 @@
                 </a>
 
                 <!-- Points Link -->
-                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'points' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
+                <a href="{{ route('points.index') }}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'points' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
                     <x-heroicon-o-star class="w-4 h-4" />
                     <span class="text-sm">Poin</span>
                 </a>
@@ -177,7 +177,7 @@
                     </div>
                     <span class="font-medium">Bioskop</span>
                 </a>
-                <a href="#" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
+                <a href="{{ route('points.index') }}" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                         <x-heroicon-o-star class="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>

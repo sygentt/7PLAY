@@ -73,6 +73,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/select-seats/{showtime}', [BookingController::class, 'selectSeats'])->name('select-seats');
         Route::post('/reserve-seats', [BookingController::class, 'reserveSeats'])->name('reserve-seats');
         Route::get('/checkout/{order}', [BookingController::class, 'checkout'])->name('checkout');
+        Route::get('/checkout/{order}/vouchers', [BookingController::class, 'listVouchers'])->name('checkout.vouchers');
+        Route::post('/checkout/{order}/apply-voucher', [BookingController::class, 'applyVoucher'])->name('checkout.apply-voucher');
     });
     
     // Order Management
@@ -95,6 +97,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //     Route::get('/', [VoucherController::class, 'index'])->name('index');
     //     Route::post('/claim/{voucher}', [VoucherController::class, 'claim'])->name('claim');
     // });
+
+    // Points & Vouchers
+    Route::prefix('points')->name('points.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PointsController::class, 'index'])->name('index');
+        Route::post('/redeem/{voucher}', [\App\Http\Controllers\PointsController::class, 'redeem'])->name('redeem');
+    });
 });
 
 /*
