@@ -21,9 +21,24 @@
                         <div class="text-center">
                             <h3 class="text-lg font-semibold mb-4">Scan QR Code untuk Bayar</h3>
                             
-                            @if($payment->qr_code_url)
+                            @php
+                                $qrUrl = $payment->qr_code_url
+                                    ?? data_get($payment->raw_response, 'qr_url')
+                                    ?? (function($actions){
+                                            if (!is_array($actions)) return null;
+                                            foreach ($actions as $a) {
+                                                if (($a['name'] ?? null) === 'generate-qr-code' && !empty($a['url'])) {
+                                                    return $a['url'];
+                                                }
+                                            }
+                                            return null;
+                                        })(data_get($payment->raw_response, 'actions', []));
+                            @endphp
+                            
+
+                            @if($qrUrl)
                                 <div class="bg-white border-2 border-gray-200 rounded-lg p-6 inline-block">
-                                    <img src="{{ $payment->qr_code_url }}" 
+                                    <img src="{{ $qrUrl }}" 
                                          alt="QR Code QRIS" 
                                          class="w-64 h-64 mx-auto"
                                          id="qr-code">
@@ -36,6 +51,9 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
                                             </svg>
                                             <p class="text-gray-500">QR Code sedang dimuat...</p>
+                                            @if(app()->environment('local'))
+                                                <p class="text-xs text-gray-400 mt-1">Jika lama, klik "Cek Status Pembayaran" di kanan.</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -125,15 +143,15 @@
                                 <div class="space-y-3">
                                     @foreach($payment->order->orderItems as $item)
                                         <div class="border border-gray-200 rounded-lg p-3">
-                                            <div class="font-medium">{{ $item->showtime->movie->title }}</div>
+                                            <div class="font-medium">{{ $payment->order->showtime?->movie?->title ?? 'Tiket' }}</div>
                                             <div class="text-sm text-gray-600">
-                                                {{ $item->showtime->cinemaHall->cinema->name }} - {{ $item->showtime->cinemaHall->name }}
+                                                {{ $payment->order->showtime?->cinemaHall?->cinema?->name }} - {{ $payment->order->showtime?->cinemaHall?->name }}
                                             </div>
                                             <div class="text-sm text-gray-600">
-                                                {{ $item->showtime->start_time->format('d M Y, H:i') }}
+                                                {{ $payment->order->showtime ? $payment->order->showtime->getFormattedDateTime() : '-' }}
                                             </div>
                                             <div class="text-sm font-medium mt-1">
-                                                {{ $item->quantity }} tiket × Rp {{ number_format($item->price, 0, ',', '.') }}
+                                                {{ 1 }} tiket × Rp {{ number_format($item->price, 0, ',', '.') }}
                                             </div>
                                         </div>
                                     @endforeach
@@ -155,7 +173,7 @@
 
                             <!-- Action Buttons -->
                             <div class="space-y-3">
-                                <button onclick="checkPaymentStatus()" 
+                                <button onclick="checkPaymentStatus(true)" 
                                         id="check-status-btn"
                                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                                     Cek Status Pembayaran
@@ -195,12 +213,26 @@
             paymentStatusInterval = setInterval(checkPaymentStatus, 5000);
         }
 
-        function checkPaymentStatus() {
+        function checkPaymentStatus(showAlert = false) {
             fetch(`{{ route('payment.qris.status', $payment) }}`)
                 .then(response => response.json())
                 .then(data => {
+                    if (showAlert) {
+                        try {
+                            alert(JSON.stringify(data, null, 2));
+                        } catch (e) {
+                            alert('Tidak bisa stringify JSON.');
+                        }
+                    }
                     if (data.success) {
                         updatePaymentStatus(data.status);
+                        if (data.qr_code_url) {
+                            const img = document.getElementById('qr-code');
+                            if (img) {
+                                img.src = data.qr_code_url;
+                                img.style.opacity = '1';
+                            }
+                        }
                         
                         if (data.is_paid) {
                             clearInterval(paymentStatusInterval);
@@ -219,6 +251,7 @@
                 })
                 .catch(error => {
                     console.error('Error checking payment status:', error);
+                    alert('Error checking payment status: ' + (error && error.message ? error.message : error));
                 });
         }
 

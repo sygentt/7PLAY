@@ -76,15 +76,17 @@
                                         <!-- Movie Header -->
                                         <div class="flex items-start justify-between mb-3">
                                             <div>
-                                                <h4 class="font-bold text-lg text-gray-700">{{ $item->showtime->movie->title }}</h4>
+                                                <h4 class="font-bold text-lg text-gray-700">{{ $payment->order->showtime?->movie?->title ?? 'Tiket' }}</h4>
                                                 <div class="flex items-center space-x-2 mt-1">
-                                                    <span class="bg-gray-200 text-gray-600 text-xs font-medium px-2 py-1 rounded">{{ $item->showtime->movie->rating }}</span>
-                                                    <span class="text-sm text-gray-500">{{ $item->showtime->movie->duration }} menit</span>
+                                                    @if($payment->order->showtime?->movie)
+                                                        <span class="bg-gray-200 text-gray-600 text-xs font-medium px-2 py-1 rounded">{{ $payment->order->showtime->movie->rating }}</span>
+                                                        <span class="text-sm text-gray-500">{{ $payment->order->showtime->movie->duration }} menit</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="text-sm text-gray-500">{{ $item->quantity }} Tiket</div>
-                                                <div class="font-bold text-gray-600">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</div>
+                                                <div class="text-sm text-gray-500">1 Tiket</div>
+                                                <div class="font-bold text-gray-600">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
                                             </div>
                                         </div>
 
@@ -92,18 +94,22 @@
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                             <div>
                                                 <div class="text-gray-500 mb-1">Bioskop:</div>
-                                                <div class="font-medium text-gray-600">{{ $item->showtime->cinemaHall->cinema->name }}</div>
-                                                <div class="text-gray-500">{{ $item->showtime->cinemaHall->name }}</div>
+                                                <div class="font-medium text-gray-600">{{ $payment->order->showtime?->cinemaHall?->cinema?->name ?? '-' }}</div>
+                                                <div class="text-gray-500">{{ $payment->order->showtime?->cinemaHall?->name ?? '-' }}</div>
                                             </div>
                                             <div>
                                                 <div class="text-gray-500 mb-1">Jadwal:</div>
-                                                <div class="font-medium text-gray-600">{{ $item->showtime->start_time->format('d M Y') }}</div>
-                                                <div class="text-gray-500">{{ $item->showtime->start_time->format('H:i') }} WIB</div>
+                                                @if($payment->order->showtime)
+                                                    <div class="font-medium text-gray-600">{{ $payment->order->showtime->getFormattedDate() }}</div>
+                                                    <div class="text-gray-500">{{ $payment->order->showtime->getFormattedTime() }} WIB</div>
+                                                @else
+                                                    <div class="font-medium text-gray-600">-</div>
+                                                @endif
                                             </div>
                                         </div>
 
                                         <!-- Seat Information (jika ada) -->
-                                        @if($item->seatReservations->count() > 0)
+                                        @if(method_exists($item, 'seatReservations') && $item->seatReservations->count() > 0)
                                             <div class="mt-3 pt-3 border-t border-gray-200">
                                                 <div class="text-gray-500 text-sm mb-1">Kursi yang dipilih:</div>
                                                 <div class="flex flex-wrap gap-1">

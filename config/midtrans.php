@@ -41,6 +41,17 @@ return [
         'currency' => 'IDR',
     ],
 
+    // SnapBI specific config (required for QRIS via SnapBI)
+    'snapbi' => [
+        'client_id' => env('MIDTRANS_SNAPBI_CLIENT_ID'),
+        // Private key PEM content. On .env, store with literal \n or base64 and decode in service if needed
+        'private_key' => env('MIDTRANS_SNAPBI_PRIVATE_KEY'),
+        'client_secret' => env('MIDTRANS_SNAPBI_CLIENT_SECRET'),
+        'partner_id' => env('MIDTRANS_SNAPBI_PARTNER_ID'),
+        'channel_id' => env('MIDTRANS_SNAPBI_CHANNEL_ID', '7PLAY'),
+        'enable_logging' => env('MIDTRANS_SNAPBI_ENABLE_LOGGING', true),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Webhook Configuration

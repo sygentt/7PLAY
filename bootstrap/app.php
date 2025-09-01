@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\Route;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
+            // Payment routes
+            Route::middleware(['web'])
+                ->group(base_path('routes/payment.php'));
+            
             // Admin authentication routes (no auth required)
             Route::prefix('admin')
                 ->middleware(['web'])

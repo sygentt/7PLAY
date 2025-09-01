@@ -20,15 +20,15 @@
     <!-- Showtimes -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         @forelse($showtimes as $showtime)
-            <a 
+            <button
                 @auth
-                    href="#" onclick="event.preventDefault(); openAuthModal && openAuthModal('login');"
+                    onclick="openSeatCountModal({{ $showtime->id }})"
                 @else
-                    href="#" onclick="event.preventDefault(); openAuthModal && openAuthModal('login');"
+                    onclick="requireAuth(() => openSeatCountModal({{ $showtime->id }}))"
                 @endauth
-                class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm text-center">
+                class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
                 {{ $showtime->getFormattedTime() }}
-            </a>
+            </button>
         @empty
             <div class="col-span-full text-center text-gray-500 py-4">
                 Tidak ada jadwal tersedia untuk tanggal ini

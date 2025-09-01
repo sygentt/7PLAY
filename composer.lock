@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0abd90b913ebd2b2c03ddf0a8e01dfe8",
+    "content-hash": "eb3a34300dd37ba72adf377bc916ceda",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -2159,16 +2159,16 @@
         },
         {
             "name": "midtrans/midtrans-php",
-            "version": "2.6.2",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Midtrans/midtrans-php.git",
-                "reference": "8ed7fc58ff1ababe675da17acf8233f4028eb3be"
+                "reference": "ebbe9127f925d9588bb4ab6b1d48bf27ce14a1ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Midtrans/midtrans-php/zipball/8ed7fc58ff1ababe675da17acf8233f4028eb3be",
-                "reference": "8ed7fc58ff1ababe675da17acf8233f4028eb3be",
+                "url": "https://api.github.com/repos/Midtrans/midtrans-php/zipball/ebbe9127f925d9588bb4ab6b1d48bf27ce14a1ad",
+                "reference": "ebbe9127f925d9588bb4ab6b1d48bf27ce14a1ad",
                 "shasum": ""
             },
             "require": {
@@ -2184,7 +2184,6 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "SnapBi\\": "SnapBi/",
                     "Midtrans\\": "Midtrans/"
                 }
             },
@@ -2204,19 +2203,15 @@
                 {
                     "name": "Ismail Faruqi",
                     "email": "ismail.faruqi@veritrans.co.id"
-                },
-                {
-                    "name": "Muhammad Fauzi Masykur",
-                    "email": "muhammad.masykur@gojek.com"
                 }
             ],
             "description": "PHP Wrapper for Midtrans Payment API.",
             "homepage": "https://midtrans.com",
             "support": {
                 "issues": "https://github.com/Midtrans/midtrans-php/issues",
-                "source": "https://github.com/Midtrans/midtrans-php/tree/v2.6.2"
+                "source": "https://github.com/Midtrans/midtrans-php/tree/v2.6.0"
             },
-            "time": "2025-03-18T06:30:17+00:00"
+            "time": "2024-09-24T12:46:40+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -31,9 +31,9 @@
                                 <h4 class="text-sm font-semibold mb-2">Detail Tiket:</h4>
                                 @foreach($order->orderItems as $item)
                                     <div class="text-sm text-gray-600 mb-1">
-                                        {{ $item->showtime->movie->title }} - {{ $item->showtime->cinemaHall->cinema->name }}
+                                        {{ $order->showtime?->movie?->title ?? 'Tiket' }} - {{ $order->showtime?->cinemaHall?->cinema?->name ?? '-' }}
                                         <br>
-                                        <span class="text-xs">{{ $item->showtime->start_time->format('d M Y H:i') }} | {{ $item->quantity }} tiket | Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
+                                        <span class="text-xs">{{ $order->showtime ? $order->showtime->getFormattedDateTime() : '-' }} | 1 tiket | Rp {{ number_format($item->price, 0, ',', '.') }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -83,7 +83,7 @@
                     <!-- Action Buttons -->
                     <div class="flex space-x-4">
                         <button type="button" 
-                                onclick="createQrisPayment()"
+                                onclick="event.preventDefault(); event.stopPropagation(); createQrisPayment(); return false;"
                                 id="pay-button"
                                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span id="pay-text">Bayar dengan QRIS</span>
@@ -106,8 +106,102 @@
         </div>
     </div>
 
+    <!-- QR Code Modal -->
+    <div id="qr-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Pembayaran QRIS</h3>
+                    <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Order Info -->
+                <div id="modal-order-info" class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <!-- Order details will be inserted here -->
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="text-center mb-6">
+                    <h4 class="text-lg font-semibold mb-4">Scan QR Code untuk Bayar</h4>
+                    
+                    <div id="qr-loading" class="text-center py-8">
+                        <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="text-gray-600">Memuat QR Code...</p>
+                    </div>
+
+                    <div id="qr-code-container" class="hidden">
+                        <div class="bg-white border-2 border-gray-200 rounded-lg p-6 inline-block">
+                            <img id="qr-code-image" 
+                                 alt="QR Code QRIS" 
+                                 class="w-64 h-64 mx-auto"
+                                 style="opacity: 0; transition: opacity 0.3s;">
+                        </div>
+                        <p class="text-sm text-gray-600 mt-4">
+                            Scan QR code di atas menggunakan aplikasi mobile banking atau e-wallet Anda
+                        </p>
+                    </div>
+
+                    <div id="qr-error" class="hidden text-center py-8">
+                        <div class="text-red-600 mb-2">
+                            <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-600">Gagal memuat QR Code. Silakan coba lagi.</p>
+                        <button onclick="retryQrCode()" class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                            Coba Lagi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Status -->
+                <div id="payment-status" class="text-center mb-6">
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center justify-center">
+                            <div class="animate-pulse w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                            <span class="text-yellow-800 font-medium">Menunggu Pembayaran</span>
+                        </div>
+                        <p class="text-sm text-yellow-700 mt-2">
+                            Pembayaran akan dikonfirmasi secara otomatis setelah Anda menyelesaikan transaksi.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timer -->
+                <div id="payment-timer" class="text-center mb-6">
+                    <p class="text-sm text-gray-600">
+                        Pembayaran berakhir dalam: <span id="countdown" class="font-mono font-bold text-red-600">29:59</span>
+                    </p>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex space-x-4">
+                    <button onclick="checkPaymentStatus()" 
+                            id="check-status-btn"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Cek Status Pembayaran
+                    </button>
+                    <button onclick="closeQrModal()" 
+                            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function createQrisPayment() {
+            console.log('createQrisPayment() called');
+            alert('createQrisPayment function started!');
             const payButton = document.getElementById('pay-button');
             const payText = document.getElementById('pay-text');
             const loadingText = document.getElementById('loading-text');
@@ -126,14 +220,20 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('PAYMENT RESPONSE:', data);
+                
+                // Reset button
+                payButton.disabled = false;
+                payText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
+                
                 if (data.success) {
-                    window.location.href = data.redirect_url;
+                    console.log('SUCCESS - showing modal with payment:', data.payment);
+                    // Show modal instead of redirect
+                    currentPayment = data.payment;
+                    showQrModal(data.payment);
                 } else {
-                    alert('Error: ' + data.message);
-                    // Reset button
-                    payButton.disabled = false;
-                    payText.classList.remove('hidden');
-                    loadingText.classList.add('hidden');
+                    alert('Error: ' + data.message + '\n\nFull response:\n' + JSON.stringify(data, null, 2));
                 }
             })
             .catch(error => {
@@ -145,5 +245,219 @@
                 loadingText.classList.add('hidden');
             });
         }
+
+        let currentPayment = null;
+        let paymentStatusInterval = null;
+        let countdownInterval = null;
+
+        function showQrModal(payment) {
+            console.log('showQrModal called with payment:', payment);
+            // Show modal
+            document.getElementById('qr-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Populate order info
+            const orderInfo = `
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-900">${payment.order?.showtime?.movie?.title || 'Tiket'}</h4>
+                        <div class="text-sm text-gray-600 mt-1">
+                            <p>${payment.order?.showtime?.cinema_hall?.cinema?.name || 'Cinema'} - ${payment.order?.showtime?.cinema_hall?.name || 'Hall'}</p>
+                            <p>${payment.order?.showtime?.start_time ? new Date(payment.order.showtime.start_time).toLocaleDateString('id-ID', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) : ''}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-bold text-gray-900">Rp ${new Intl.NumberFormat('id-ID').format(payment.amount)}</div>
+                        <div class="text-sm text-gray-600">Order #${payment.external_id}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-order-info').innerHTML = orderInfo;
+
+            // Load QR code
+            loadQrCode(payment);
+
+            // Start countdown timer
+            startCountdown(payment.expiry_time);
+
+            // Start status polling
+            startStatusPolling(payment.id);
+        }
+
+        function loadQrCode(payment) {
+            const qrLoading = document.getElementById('qr-loading');
+            const qrContainer = document.getElementById('qr-code-container');
+            const qrError = document.getElementById('qr-error');
+            const qrImage = document.getElementById('qr-code-image');
+
+            // Show loading
+            qrLoading.classList.remove('hidden');
+            qrContainer.classList.add('hidden');
+            qrError.classList.add('hidden');
+
+            // Determine QR URL
+            let qrUrl = payment.qr_code_url;
+            if (!qrUrl && payment.raw_response?.actions) {
+                const action = payment.raw_response.actions.find(a => a.name === 'generate-qr-code');
+                if (action) qrUrl = action.url;
+            }
+            if (!qrUrl && payment.raw_response?.qr_string) {
+                qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(payment.raw_response.qr_string)}`;
+            }
+
+            if (qrUrl) {
+                qrImage.onload = function() {
+                    qrLoading.classList.add('hidden');
+                    qrContainer.classList.remove('hidden');
+                    qrImage.style.opacity = '1';
+                };
+                qrImage.onerror = function() {
+                    qrLoading.classList.add('hidden');
+                    qrError.classList.remove('hidden');
+                };
+                qrImage.src = qrUrl;
+            } else {
+                qrLoading.classList.add('hidden');
+                qrError.classList.remove('hidden');
+            }
+        }
+
+        function retryQrCode() {
+            if (currentPayment) {
+                loadQrCode(currentPayment);
+            }
+        }
+
+        function closeQrModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            // Clear intervals
+            if (paymentStatusInterval) {
+                clearInterval(paymentStatusInterval);
+                paymentStatusInterval = null;
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            
+            currentPayment = null;
+        }
+
+        function startCountdown(expiryTime) {
+            const countdownElement = document.getElementById('countdown');
+            const expiryDate = new Date(expiryTime);
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const timeLeft = expiryDate - now;
+
+                if (timeLeft <= 0) {
+                    countdownElement.textContent = '00:00';
+                    clearInterval(countdownInterval);
+                    updatePaymentStatus('expired');
+                    return;
+                }
+
+                const minutes = Math.floor(timeLeft / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function startStatusPolling(paymentId) {
+            paymentStatusInterval = setInterval(() => {
+                checkPaymentStatusById(paymentId);
+            }, 5000); // Check every 5 seconds
+        }
+
+        function checkPaymentStatus() {
+            if (currentPayment) {
+                checkPaymentStatusById(currentPayment.id, true);
+            }
+        }
+
+        function checkPaymentStatusById(paymentId, showAlert = false) {
+            fetch(`/payment/qris/${paymentId}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    if (showAlert) {
+                        alert(JSON.stringify(data, null, 2));
+                    }
+                    
+                    if (data.success) {
+                        updatePaymentStatus(data.status);
+                        
+                        if (data.is_paid) {
+                            clearInterval(paymentStatusInterval);
+                            clearInterval(countdownInterval);
+                            window.location.href = `/payment/success/${paymentId}`;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking payment status:', error);
+                });
+        }
+
+        function updatePaymentStatus(status) {
+            const statusElement = document.getElementById('payment-status');
+            let statusHTML = '';
+
+            switch (status) {
+                case 'settlement':
+                case 'capture':
+                    statusHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-green-800 font-medium">Pembayaran Berhasil</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'expired':
+                    statusHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-red-800 font-medium">Pembayaran Kedaluwarsa</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                default:
+                    statusHTML = `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center justify-center">
+                                <div class="animate-pulse w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                                <span class="text-yellow-800 font-medium">Menunggu Pembayaran</span>
+                            </div>
+                        </div>
+                    `;
+            }
+
+            statusElement.innerHTML = statusHTML;
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('qr-modal');
+            if (event.target === modal) {
+                closeQrModal();
+            }
+        });
     </script>
 </x-app-layout>

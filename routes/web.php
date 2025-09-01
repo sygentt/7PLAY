@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MovieController;
-// use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BookingController;
 // use App\Http\Controllers\OrderController;
 // use App\Http\Controllers\PointController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +20,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Movie browsing (public)
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 Route::get('/movies/{movie}', [MovieController::class, 'show'])->name('movies.show');
+
+// Debug/Test routes (remove in production)
+Route::get('/test-modal', function () {
+    $current_page = 'test';
+    return view('test-modal', compact('current_page'));
+})->name('test.modal');
 
 // Cinema and showtime info (public)
 // Route::get('/cinemas', [CinemaController::class, 'index'])->name('cinemas.index');
@@ -63,12 +69,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Booking System
-    // Route::prefix('booking')->name('booking.')->group(function () {
-    //     Route::get('/select-seats/{showtime}', [BookingController::class, 'selectSeats'])->name('select-seats');
-    //     Route::post('/reserve-seats', [BookingController::class, 'reserveSeats'])->name('reserve-seats');
-    //     Route::get('/checkout/{reservation}', [BookingController::class, 'checkout'])->name('checkout');
-    //     Route::post('/confirm', [BookingController::class, 'confirm'])->name('confirm');
-    // });
+    Route::prefix('booking')->name('booking.')->group(function () {
+        Route::get('/select-seats/{showtime}', [BookingController::class, 'selectSeats'])->name('select-seats');
+        Route::post('/reserve-seats', [BookingController::class, 'reserveSeats'])->name('reserve-seats');
+        Route::get('/checkout/{order}', [BookingController::class, 'checkout'])->name('checkout');
+    });
     
     // Order Management
     // Route::prefix('orders')->name('orders.')->group(function () {
@@ -114,4 +119,3 @@ Route::middleware(['auth', 'verified', 'active_user'])->group(function () {
 // });
 
 require __DIR__.'/auth.php';
-require __DIR__.'/payment.php';
