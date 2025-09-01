@@ -251,19 +251,12 @@ class AuthModal {
             const result = await response.json();
 
             if (response.ok && result.success !== false) {
-                // Success - show toast and close modal without redirect
-                if (result.verification_sent) {
-                    const email = result.email || '';
-                    const msg = email
-                        ? `Pemberitahuan verifikasi telah dikirim ke ${email}. Silakan cek email Anda.`
-                        : 'Pemberitahuan verifikasi telah dikirim ke email Anda.';
-                    if (window.Toast && typeof window.Toast.show === 'function') {
-                        window.Toast.show(msg, 'info', 5000);
-                    } else {
-                        alert(msg);
-                    }
+                // Success - reload page or redirect
+                if (result.redirect) {
+                    window.location.href = result.redirect;
+                } else {
+                    window.location.reload();
                 }
-                this.close();
             } else {
                 // Handle validation errors
                 this.displayErrors(result.errors || {}, 'register');

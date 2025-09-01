@@ -56,9 +56,6 @@
     <!-- Auth Modal -->
     <x-auth.modal-container />
     
-    <!-- Toast Component -->
-    <x-ui.toast />
-    
     <!-- Seat Count Modal -->
     <x-booking.seat-count-modal />
     
@@ -133,26 +130,6 @@
                     window.seatCountModal = new SeatCountModal();
                 }
             }
-
-            // Show toast on verified or verification sent
-            try {
-                const params = new URLSearchParams(window.location.search);
-                if (params.get('verified') === '1') {
-                    @if (session('verified_email'))
-                        window.Toast?.show('Akun {{ session('verified_email') }} berhasil terverifikasi.', 'success', 5000);
-                    @else
-                        window.Toast?.show('Email kamu berhasil diverifikasi. Selamat datang di 7PLAY!', 'success', 5000);
-                    @endif
-                    // Remove query param after showing
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete('verified');
-                    window.history.replaceState({}, document.title, url.pathname + url.search);
-                }
-                // From session (non-ajax register fallback)
-                @if (session('verification_sent_email'))
-                    window.Toast?.show('Pemberitahuan verifikasi telah dikirim ke {{ session('verification_sent_email') }}. Silakan cek email Anda.', 'info', 5000);
-                @endif
-            } catch (e) { /* noop */ }
         });
     </script>
     
