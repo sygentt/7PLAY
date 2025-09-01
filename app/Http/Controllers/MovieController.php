@@ -15,20 +15,56 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
-        $movies = Movie::active()
-            ->with(['showtimes'])
-            ->when($request->status, function ($query, $status) {
-                return $query->byStatus($status);
-            })
-            ->when($request->search, function ($query, $search) {
-                return $query->where('title', 'like', "%{$search}%")
-                            ->orWhere('genre', 'like', "%{$search}%")
-                            ->orWhere('director', 'like', "%{$search}%");
-            })
-            ->orderBy('release_date', 'desc')
-            ->paginate(12);
-
-        return view('movies.index', compact('movies'));
+        $query = Movie::active()->with(['showtimes']);
+        
+        // Filter by status (now_playing or coming_soon)
+        if ($request->status) {
+            $query->byStatus($request->status);
+        } else {
+            // Default to now_playing if no status specified
+            $query->byStatus('now_playing');
+        }
+        
+        // Search filter
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('genre', 'like', "%{$search}%")
+                  ->orWhere('director', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Sorting
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('release_date', 'asc');
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'rating':
+                $query->orderByDesc('rating')->orderBy('title', 'asc');
+                break;
+            case 'latest':
+            default:
+                $query->orderBy('release_date', 'desc');
+                break;
+        }
+        
+        // Add secondary sorting for consistency
+        if ($sort !== 'title') {
+            $query->orderBy('title', 'asc');
+        }
+        
+        $movies = $query->paginate(12)->withQueryString();
+        
+        // Pass current page info for navigation
+        $current_page = 'movies';
+        
+        return view('movies.index', compact('movies', 'current_page'));
     }
 
     /**
