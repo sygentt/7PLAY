@@ -113,8 +113,11 @@
                 <!-- Auth Buttons -->
                 @auth
                     <div class="hidden lg:flex items-center space-x-3">
-                        <a href="{{ route('home') }}" class="px-4 py-2.5 text-cinema-600 dark:text-cinema-400 hover:text-cinema-700 dark:hover:text-cinema-300 font-medium transition-colors duration-200 text-sm">
-                            Beranda
+                        <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2 group">
+                            <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : 'https://dummyimage.com/40x40/e5e7eb/111827&text=' . urlencode(substr(auth()->user()->name,0,1)) }}"
+                                 alt="Avatar"
+                                 class="w-10 h-10 rounded-full ring-2 ring-transparent group-hover:ring-cinema-500 transition" />
+                            <span class="sr-only">Profil</span>
                         </a>
                     </div>
                 @else
