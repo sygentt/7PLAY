@@ -111,6 +111,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets');
         
         Route::get('/orders-history', [App\Http\Controllers\OrderHistoryController::class, 'index'])->name('orders-history');
+        Route::get('/orders/{order}', [App\Http\Controllers\OrderHistoryController::class, 'show'])->name('orders.show');
         
         Route::get('/favorites', [App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites');
         

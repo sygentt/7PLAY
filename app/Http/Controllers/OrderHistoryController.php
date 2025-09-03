@@ -25,4 +25,29 @@ class OrderHistoryController extends Controller
 
         return view('profile.orders-history', compact('orders'));
     }
+
+    /**
+     * Display the specified order detail.
+     */
+    public function show(Request $request, Order $order): View
+    {
+        $user = $request->user();
+        
+        // Ensure user can only view their own orders
+        if ($order->user_id !== $user->id) {
+            abort(403, 'Unauthorized');
+        }
+        
+        // Load order with all related data
+        $order->load([
+            'orderItems.seat',
+            'orderItems.showtime' => function ($query) {
+                $query->with(['movie', 'cinemaHall.cinema.city']);
+            },
+            'payment',
+            'user'
+        ]);
+
+        return view('profile.order-detail', compact('order'));
+    }
 }

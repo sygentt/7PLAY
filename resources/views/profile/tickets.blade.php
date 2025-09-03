@@ -48,9 +48,7 @@
 										@if($item->showtime->movie->poster_url)
 											<img src="{{ $item->showtime->movie->poster_url }}" alt="{{ $item->showtime->movie->title }}" class="w-full h-full object-cover">
 										@else
-											<div class="w-full h-full flex items-center justify-center">
-												<x-heroicon-o-film class="w-6 h-6 text-gray-400" />
-											</div>
+											<img src="https://dummyimage.com/64x96/cccccc/000000&text={{ urlencode($item->showtime->movie->title) }}" alt="{{ $item->showtime->movie->title }}" class="w-full h-full object-cover">
 										@endif
 									</div>
 									
@@ -65,7 +63,7 @@
 											{{ $item->showtime->show_time->format('d F Y, H:i') }}
 										</p>
 										<p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
-											{{ $item->quantity }} tiket • Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+											1 tiket • Rp {{ number_format($item->price, 0, ',', '.') }}
 										</p>
 									</div>
 
@@ -103,55 +101,30 @@
 		<div x-show="tab==='history'" class="space-y-4">
 			@if($orderHistory->count() > 0)
 				@foreach($orderHistory as $order)
-					<div class="bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
-						<div class="flex justify-between items-start mb-4">
-							<div>
-								<h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-									Order #{{ $order->order_number }}
-								</h3>
-								<p class="text-sm text-gray-500 dark:text-gray-400">
-									{{ $order->created_at->format('d F Y, H:i') }}
-								</p>
-							</div>
-							<span class="px-3 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 text-sm rounded-full">
-								Selesai
-							</span>
-						</div>
-
-						@foreach($order->orderItems as $item)
-							<div class="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
-								<div class="flex items-start space-x-4">
-									<div class="w-16 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-										@if($item->showtime->movie->poster_url)
-											<img src="{{ $item->showtime->movie->poster_url }}" alt="{{ $item->showtime->movie->title }}" class="w-full h-full object-cover">
-										@else
-											<div class="w-full h-full flex items-center justify-center">
-												<x-heroicon-o-film class="w-6 h-6 text-gray-400" />
-											</div>
-										@endif
-									</div>
-									
-									<div class="flex-1">
-										<h4 class="font-semibold text-gray-900 dark:text-gray-100">
-											{{ $item->showtime->movie->title }}
-										</h4>
-										<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											{{ $item->showtime->cinemaHall->cinema->name }} - {{ $item->showtime->cinemaHall->name }}
-										</p>
-										<p class="text-sm text-gray-500 dark:text-gray-400">
-											{{ $item->showtime->show_time->format('d F Y, H:i') }}
-										</p>
-										<p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
-											{{ $item->quantity }} tiket • Rp {{ number_format($item->subtotal, 0, ',', '.') }}
-										</p>
-									</div>
+					<div class="bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
+						<div class="flex items-center justify-between">
+							<!-- Order Info -->
+							<div class="flex-1">
+								<div class="flex items-center gap-3 mb-2">
+									<h3 class="font-semibold text-gray-900 dark:text-gray-100">
+										#{{ $order->order_number }}
+									</h3>
+									<x-ui.order-status-badge :order="$order" />
+								</div>
+								<div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+									<span>{{ $order->created_at->format('d M Y, H:i') }}</span>
+									<span>{{ $order->getTicketCount() }} tiket</span>
+									<span class="font-medium text-gray-900 dark:text-gray-100">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
 								</div>
 							</div>
-						@endforeach
 
-						<div class="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
-							<div class="flex justify-between items-center">
-								<span class="font-semibold text-gray-900 dark:text-gray-100">Total: Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+							<!-- Action Button -->
+							<div class="ml-4">
+								<a href="{{ route('profile.orders.show', $order) }}" 
+								   class="inline-flex items-center px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+									<x-heroicon-o-eye class="w-4 h-4 mr-1" />
+									Detail
+								</a>
 							</div>
 						</div>
 					</div>

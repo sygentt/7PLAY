@@ -105,4 +105,102 @@ class Payment extends Model
     {
         return 'Rp ' . number_format($this->amount, 0, ',', '.');
     }
+
+    /**
+     * Get payment issuer/provider information
+     */
+    public function getIssuerInfo(): array
+    {
+        $issuers = [
+            'gopay' => [
+                'name' => 'GoPay',
+                'issuer' => 'Gojek',
+                'logo' => '💰'
+            ],
+            'dana' => [
+                'name' => 'DANA',
+                'issuer' => 'DANA',
+                'logo' => '💳'
+            ],
+            'ovo' => [
+                'name' => 'OVO',
+                'issuer' => 'OVO',
+                'logo' => '🟣'
+            ],
+            'shopeepay' => [
+                'name' => 'ShopeePay',
+                'issuer' => 'Shopee',
+                'logo' => '🛒'
+            ],
+            'linkaja' => [
+                'name' => 'LinkAja',
+                'issuer' => 'Telkomsel',
+                'logo' => '📱'
+            ],
+            'bca_va' => [
+                'name' => 'BCA Virtual Account',
+                'issuer' => 'Bank BCA',
+                'logo' => '🏦'
+            ],
+            'bni_va' => [
+                'name' => 'BNI Virtual Account',
+                'issuer' => 'Bank BNI',
+                'logo' => '🏦'
+            ],
+            'bri_va' => [
+                'name' => 'BRI Virtual Account',
+                'issuer' => 'Bank BRI',
+                'logo' => '🏦'
+            ],
+            'mandiri_va' => [
+                'name' => 'Mandiri Virtual Account',
+                'issuer' => 'Bank Mandiri',
+                'logo' => '🏦'
+            ],
+            'permata_va' => [
+                'name' => 'Permata Virtual Account',
+                'issuer' => 'Bank Permata',
+                'logo' => '🏦'
+            ],
+            'qris' => [
+                'name' => 'QRIS',
+                'issuer' => 'Bank Indonesia',
+                'logo' => '📱'
+            ],
+            'credit_card' => [
+                'name' => 'Kartu Kredit',
+                'issuer' => 'Bank Penerbit',
+                'logo' => '💳'
+            ],
+            'bank_transfer' => [
+                'name' => 'Transfer Bank',
+                'issuer' => 'Bank',
+                'logo' => '🏦'
+            ]
+        ];
+
+        return $issuers[$this->payment_method] ?? [
+            'name' => ucfirst(str_replace('_', ' ', $this->payment_method ?? 'Unknown')),
+            'issuer' => 'Unknown',
+            'logo' => '💳'
+        ];
+    }
+
+    /**
+     * Get formatted payment method name
+     */
+    public function getFormattedPaymentMethodAttribute(): string
+    {
+        $issuerInfo = $this->getIssuerInfo();
+        return $issuerInfo['name'];
+    }
+
+    /**
+     * Get payment issuer name
+     */
+    public function getIssuerAttribute(): string
+    {
+        $issuerInfo = $this->getIssuerInfo();
+        return $issuerInfo['issuer'];
+    }
 }
