@@ -26,7 +26,7 @@
 		<x-profile.actions-grid :items="[
 			['href' => route('profile.settings'), 'title' => 'Pengaturan', 'icon' => 'cog-6-tooth', 'subtitle' => 'Bahasa, tema, notifikasi'],
 			['href' => route('profile.notifications'), 'title' => 'Notifikasi', 'icon' => 'bell', 'subtitle' => 'Semua pemberitahuan'],
-			['href' => route('profile.tickets'), 'title' => 'Tiket Saya', 'icon' => 'ticket', 'subtitle' => 'Aktif & Riwayat'],
+			['href' => route('profile.tickets'), 'title' => 'Tiket Saya', 'icon' => 'ticket', 'subtitle' => 'Tiket aktif & kadarluarsa'],
 			['href' => route('profile.orders-history'), 'title' => 'Riwayat Pesanan', 'icon' => 'clock', 'subtitle' => 'Transaksi sebelumnya'],
 			['href' => route('profile.favorites'), 'title' => 'Film Saya (Favorit)', 'icon' => 'heart', 'subtitle' => 'Daftar favorit'],
 			['href' => route('logout'), 'title' => 'Logout', 'icon' => 'arrow-right-on-rectangle', 'subtitle' => 'Keluar dari akun', 'method' => 'post']

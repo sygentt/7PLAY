@@ -17,8 +17,8 @@
 			<button @click="tab='active'" :class="tab==='active' ? 'bg-cinema-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-lg font-medium">
 				Tiket Aktif ({{ $activeTickets->count() }})
 			</button>
-			<button @click="tab='history'" :class="tab==='history' ? 'bg-cinema-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-lg font-medium">
-				Riwayat Pesanan ({{ $orderHistory->total() }})
+			<button @click="tab='expired'" :class="tab==='expired' ? 'bg-cinema-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-lg font-medium">
+				Tiket Kadaluarsa ({{ $expiredTickets->total() }})
 			</button>
 		</div>
 
@@ -68,10 +68,10 @@
 									</div>
 
 									<div class="text-right">
-										<button class="inline-flex items-center px-3 py-1 bg-cinema-600 hover:bg-cinema-700 text-white text-sm rounded-lg transition-colors">
-											<x-heroicon-o-qr-code class="w-4 h-4 mr-1" />
-											QR Code
-										</button>
+										<a href="{{ route('profile.tickets.eticket', $order) }}" class="inline-flex items-center px-3 py-1 bg-cinema-600 hover:bg-cinema-700 text-white text-sm rounded-lg transition-colors">
+											<x-heroicon-o-ticket class="w-4 h-4 mr-1" />
+											E-tiket
+										</a>
 									</div>
 								</div>
 							</div>
@@ -97,10 +97,10 @@
 			@endif
 		</div>
 
-		<!-- Order History Tab -->
-		<div x-show="tab==='history'" class="space-y-4">
-			@if($orderHistory->count() > 0)
-				@foreach($orderHistory as $order)
+		<!-- Expired Tickets Tab -->
+		<div x-show="tab==='expired'" class="space-y-4">
+			@if($expiredTickets->count() > 0)
+				@foreach($expiredTickets as $order)
 					<div class="bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow">
 						<div class="flex items-center justify-between">
 							<!-- Order Info -->
@@ -109,7 +109,7 @@
 									<h3 class="font-semibold text-gray-900 dark:text-gray-100">
 										#{{ $order->order_number }}
 									</h3>
-									<x-ui.order-status-badge :order="$order" />
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">Kadaluarsa</span>
 								</div>
 								<div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
 									<span>{{ $order->created_at->format('d M Y, H:i') }}</span>
@@ -130,17 +130,17 @@
 					</div>
 				@endforeach
 
-				<!-- Pagination for history -->
-				@if($orderHistory->hasPages())
+				<!-- Pagination for expired -->
+				@if($expiredTickets->hasPages())
 					<div class="mt-6">
-						{{ $orderHistory->links() }}
+						{{ $expiredTickets->links() }}
 					</div>
 				@endif
 			@else
 				<div class="text-center py-12">
 					<x-heroicon-o-clock class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-					<h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Belum ada riwayat pesanan</h3>
-					<p class="text-gray-500 dark:text-gray-400">Riwayat pesanan Anda akan muncul di sini.</p>
+					<h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Belum ada tiket kadaluarsa</h3>
+					<p class="text-gray-500 dark:text-gray-400">Tiket yang sudah lewat akan muncul di sini.</p>
 				</div>
 			@endif
 		</div>

@@ -197,11 +197,11 @@
 
 					<!-- Action Buttons -->
 					<div class="mt-6 space-y-2">
-						@if($order->status === 'confirmed' && $order->orderItems->where('showtime.show_time', '>', now())->count() > 0)
-							<button class="w-full inline-flex items-center justify-center px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg transition-colors">
-								<x-heroicon-o-qr-code class="w-4 h-4 mr-2" />
-								Tampilkan QR Code
-							</button>
+						@if(in_array($order->status, ['confirmed', 'paid']) && $order->orderItems->where('showtime.show_time', '>', now())->count() > 0)
+							<a href="{{ route('profile.tickets.eticket', $order) }}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg transition-colors">
+								<x-heroicon-o-ticket class="w-4 h-4 mr-2" />
+								Tampilkan E-tiket
+							</a>
 						@endif
 						
 						<a href="{{ route('profile.orders-history') }}" 

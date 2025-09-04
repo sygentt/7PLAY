@@ -21,6 +21,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 Route::get('/movies/{movie}', [MovieController::class, 'show'])->name('movies.show');
 
+// QR Code verification (public)
+Route::get('/qr/{token}', [App\Http\Controllers\QrVerificationController::class, 'verify'])->name('qr.verify');
+
 // Debug/Test routes (remove in production)
 Route::get('/test-modal', function () {
     $current_page = 'test';
@@ -109,6 +112,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
         
         Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets');
+        Route::get('/tickets/{order}/e-ticket', [App\Http\Controllers\TicketController::class, 'showEticket'])->name('tickets.eticket');
         
         Route::get('/orders-history', [App\Http\Controllers\OrderHistoryController::class, 'index'])->name('orders-history');
         Route::get('/orders/{order}', [App\Http\Controllers\OrderHistoryController::class, 'show'])->name('orders.show');

@@ -283,6 +283,29 @@ class Order extends Model
     }
 
     /**
+     * Generate QR verification token
+     */
+    public function generateQrToken(): string
+    {
+        if (!$this->qr_code) {
+            $token = hash('sha256', $this->id . $this->order_number . $this->created_at . config('app.key'));
+            $this->update(['qr_code' => $token]);
+            return $token;
+        }
+        
+        return $this->qr_code;
+    }
+
+    /**
+     * Get QR verification URL
+     */
+    public function getQrVerificationUrl(): string
+    {
+        $token = $this->generateQrToken();
+        return route('qr.verify', $token);
+    }
+
+    /**
      * Boot method to generate order number
      */
     protected static function boot()

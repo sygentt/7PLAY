@@ -179,8 +179,7 @@ text-yellow-600  /* Warning states */
 
 #### Action Button
 ```blade
-<button type="button" class="inline-flex items-center px-3 py-2 border border-transparent 
-                           text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+<button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
    <x-heroicon-m-plus class="w-4 h-4 mr-2"/>
    Add Movie
 </button>
@@ -189,14 +188,12 @@ text-yellow-600  /* Warning states */
 #### Status Badge
 ```blade
 @if($item->is_active)
-   <span class="inline-flex items-center px-2 py-1 text-xs font-medium 
-                bg-green-100 text-green-800 rounded-full">
+   <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
       <x-heroicon-c-check-circle class="w-3 h-3 mr-1"/>
       Active
    </span>
 @else
-   <span class="inline-flex items-center px-2 py-1 text-xs font-medium 
-                bg-gray-100 text-gray-800 rounded-full">
+   <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full">
       <x-heroicon-c-x-circle class="w-3 h-3 mr-1"/>
       Inactive
    </span>
