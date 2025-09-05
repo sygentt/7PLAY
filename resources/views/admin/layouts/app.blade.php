@@ -23,13 +23,7 @@
             <div class="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
                 <!-- Logo -->
                 <div class="flex items-center flex-shrink-0 px-4">
-                    <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <x-heroicon-s-film class="h-6 w-6 text-white"/>
-                    </div>
-                    <div class="ml-3">
-                        <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
-                        <p class="text-xs text-gray-500">Admin Dashboard</p>
-                    </div>
+                    @include('admin.components.brand-logo')
                 </div>
                 
                 <!-- Navigation -->
@@ -112,11 +106,25 @@
                     </a>
 
                     <!-- Vouchers Management -->
-                    <a href="#" 
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-400 cursor-not-allowed">
-                        <x-heroicon-o-ticket class="mr-3 flex-shrink-0 h-5 w-5"/>
+                    <a href="{{ route('admin.vouchers.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.vouchers.*') ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.vouchers.*'))
+                            <x-heroicon-s-ticket class="mr-3 flex-shrink-0 h-5 w-5 text-teal-500"/>
+                        @else
+                            <x-heroicon-o-ticket class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
                         Vouchers
-                        <span class="ml-auto inline-block py-0.5 px-2 text-xs font-medium bg-gray-100 text-gray-500 rounded-full">Soon</span>
+                    </a>
+
+                    <!-- Notifications Management -->
+                    <a href="{{ route('admin.notifications.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.notifications.*') ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.notifications.*'))
+                            <x-heroicon-s-bell class="mr-3 flex-shrink-0 h-5 w-5 text-red-500"/>
+                        @else
+                            <x-heroicon-o-bell class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Notifications
                     </a>
 
                     <!-- Reports & Analytics -->
@@ -171,13 +179,7 @@
                     <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center px-4">
-                            <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                                <x-heroicon-s-film class="h-6 w-6 text-white"/>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
-                                <p class="text-xs text-gray-500">Admin Dashboard</p>
-                            </div>
+                            @include('admin.components.brand-logo')
                         </div>
                         
                         <!-- Mobile Navigation -->
@@ -256,6 +258,28 @@
                                     <x-heroicon-o-users class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
                                 @endif
                                 Users
+                            </a>
+
+                            <!-- Vouchers Management -->
+                            <a href="{{ route('admin.vouchers.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.vouchers.*') ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.vouchers.*'))
+                                    <x-heroicon-s-ticket class="mr-4 flex-shrink-0 h-6 w-6 text-teal-500"/>
+                                @else
+                                    <x-heroicon-o-ticket class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Vouchers
+                            </a>
+
+                            <!-- Notifications Management -->
+                            <a href="{{ route('admin.notifications.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.notifications.*') ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.notifications.*'))
+                                    <x-heroicon-s-bell class="mr-4 flex-shrink-0 h-6 w-6 text-red-500"/>
+                                @else
+                                    <x-heroicon-o-bell class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Notifications
                             </a>
 
                             <!-- Reports & Analytics -->

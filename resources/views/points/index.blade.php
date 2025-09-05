@@ -41,7 +41,7 @@
                                     <div class="font-bold">{{ $voucher->name }}</div>
                                     <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700">{{ $voucher->type === 'percentage' ? $voucher->value . '% OFF' : 'Rp ' . number_format($voucher->value,0,',','.') }}</span>
                                 </div>
-                                <div class="text-xs text-gray-500">Kode: {{ $voucher->code }}</div>
+                                
                                 <div class="text-sm text-gray-600 dark:text-gray-300 mt-2">{{ $voucher->description }}</div>
                                 <div class="text-xs text-gray-500 mt-2">Berlaku: {{ $voucher->valid_from->format('d M Y') }} - {{ $voucher->valid_until->format('d M Y') }}</div>
                                 @if($voucher->min_purchase)
@@ -73,7 +73,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-bold">{{ $uv->voucher->name }}</div>
-                                    <div class="text-xs text-gray-500">Kode: {{ $uv->voucher->code }}</div>
+                                    
                                     <div class="text-xs text-gray-500">Ditukar: {{ $uv->redeemed_at->format('d M Y H:i') }}</div>
                                 </div>
                                 <div>

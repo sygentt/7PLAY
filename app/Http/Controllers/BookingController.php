@@ -236,19 +236,25 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Subtotal belum memenuhi minimal pembelian'], 400);
         }
 
-        // Calculate discount
-        $discount = 0;
+        // Calculate discount (robust percentage handling and IDR rounding)
+        $subtotal = (float) $order->subtotal;
+        $discount = 0.0;
         if ($voucher->type === 'percentage') {
-            $discount = (float) $order->subtotal * ((float) $voucher->value / 100.0);
-            if (!is_null($voucher->max_discount)) {
-                $discount = min($discount, (float) $voucher->max_discount);
+            $raw = (float) $voucher->value; // could be 60 or 0.6
+            $ratio = $raw > 1 ? $raw / 100.0 : $raw; // normalize to 0-1
+            $discount = $subtotal * $ratio;
+            $maxCap = $voucher->max_discount !== null ? (float) $voucher->max_discount : null;
+            if (!is_null($maxCap) && $maxCap > 0) {
+                $discount = min($discount, $maxCap);
             }
         } else {
             $discount = (float) $voucher->value;
         }
 
-        $discount = max(0, min($discount, (float) $order->subtotal));
-        $new_total = (float) $order->subtotal - $discount;
+        // In IDR we don't use cents; round to nearest rupiah safely
+        $discount = (float) round($discount);
+        $discount = max(0.0, min($discount, $subtotal));
+        $new_total = $subtotal - $discount;
 
         // Update order
         $order->update([

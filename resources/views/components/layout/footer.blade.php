@@ -1,5 +1,5 @@
 <!-- Footer -->
-<footer class="bg-gray-900 dark:bg-gray-950 text-white py-16">
+<footer class="bg-white dark:bg-gray-950 text-gray-800 dark:text-white py-16 border-t border-gray-200 dark:border-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Main Footer Content -->
@@ -18,7 +18,7 @@
                 </div>
                 
                 <!-- Description -->
-                <p class="text-gray-300 text-lg leading-relaxed mb-6 max-w-md">
+                <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6 max-w-md">
                     Platform pemesanan tiket bioskop online terpercaya di Indonesia. 
                     Nikmati pengalaman menonton film favorit Anda dengan mudah dan aman.
                 </p>
@@ -26,30 +26,30 @@
             
             <!-- Quick Links -->
             <div>
-                <h3 class="text-xl font-bold text-white mb-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
                     Tautan Cepat
                 </h3>
                 <ul class="space-y-4">
                     <li>
-                        <a href="{{ route('home') }}#now-playing" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('home') }}#now-playing" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-play-circle class="w-4 h-4" />
                             <span>Film Sedang Tayang</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('home') }}#coming-soon" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('home') }}#coming-soon" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-calendar-days class="w-4 h-4" />
                             <span>Film Akan Datang</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('cinemas.index') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-building-office class="w-4 h-4" />
                             <span>Daftar Bioskop</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('points.index') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-star class="w-4 h-4" />
                             <span>Program Loyalitas</span>
                         </a>
@@ -59,30 +59,30 @@
             
             <!-- Support -->
             <div>
-                <h3 class="text-xl font-bold text-white mb-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
                     Bantuan & Dukungan
                 </h3>
                 <ul class="space-y-4">
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-question-mark-circle class="w-4 h-4" />
                             <span>FAQ</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-chat-bubble-oval-left-ellipsis class="w-4 h-4" />
                             <span>Live Chat</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-phone class="w-4 h-4" />
                             <span>Hubungi Kami</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-300 hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-ticket class="w-4 h-4" />
                             <span>Cara Pesan Tiket</span>
                         </a>
@@ -92,12 +92,12 @@
         </div>
         
         <!-- Bottom Footer -->
-        <div class="border-t border-gray-800 pt-8">
+        <div class="border-t border-gray-200 dark:border-gray-800 pt-8">
             <div class="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
                 
                 <!-- Copyright -->
                 <div class="flex items-center space-x-6">
-                    <p class="text-gray-400 text-sm flex items-center space-x-2">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm flex items-center space-x-2">
                         <span class="text-sm">©</span>
                         <span>{{ date('Y') }} 7PLAY. Semua hak dilindungi.</span>
                     </p>
@@ -105,19 +105,19 @@
                 
                 <!-- Footer Links -->
                 <div class="flex items-center space-x-1">
-                    <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Tentang Kami
                     </a>
-                    <span class="text-gray-600">•</span>
-                    <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                    <span class="text-gray-400 dark:text-gray-600">•</span>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Hubungi Kami
                     </a>
-                    <span class="text-gray-600">•</span>
-                    <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                    <span class="text-gray-400 dark:text-gray-600">•</span>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Kebijakan Privasi
                     </a>
-                    <span class="text-gray-600">•</span>
-                    <a href="#" class="text-gray-400 hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-800 text-sm">
+                    <span class="text-gray-400 dark:text-gray-600">•</span>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Syarat & Ketentuan
                     </a>
                 </div>

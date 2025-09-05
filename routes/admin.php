@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\UserController;
 // use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\NotificationController;
 // use App\Http\Controllers\Admin\CinemaHallController;
 use Illuminate\Support\Facades\Route;
 
@@ -98,6 +100,28 @@ Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus
 Route::patch('users/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('admin.users.verify-email');
 Route::patch('users/{user}/unverify-email', [UserController::class, 'unverifyEmail'])->name('admin.users.unverify-email');
 Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset-password');
+
+// Vouchers Management
+Route::resource('vouchers', VoucherController::class)->names([
+    'index' => 'admin.vouchers.index',
+    'create' => 'admin.vouchers.create',
+    'store' => 'admin.vouchers.store',
+    'show' => 'admin.vouchers.show',
+    'edit' => 'admin.vouchers.edit',
+    'update' => 'admin.vouchers.update',
+    'destroy' => 'admin.vouchers.destroy',
+]);
+Route::patch('vouchers/{voucher}/toggle-status', [VoucherController::class, 'toggleStatus'])->name('admin.vouchers.toggle-status');
+
+// Notifications Management
+Route::resource('notifications', NotificationController::class)->except(['show'])->names([
+    'index' => 'admin.notifications.index',
+    'create' => 'admin.notifications.create',
+    'store' => 'admin.notifications.store',
+    'edit' => 'admin.notifications.edit',
+    'update' => 'admin.notifications.update',
+    'destroy' => 'admin.notifications.destroy',
+]);
 
 // Reports & Analytics
 Route::prefix('reports')->name('admin.reports.')->group(function () {

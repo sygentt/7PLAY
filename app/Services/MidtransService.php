@@ -42,6 +42,27 @@ class MidtransService
             $externalId = '7play-' . $order->id . '-' . time();
             $grossAmount = (int) round($order->total_amount);
 
+            // Hitung ulang item_details agar sesuai dengan gross_amount (subtotal - discount)
+            $itemDetails = array_map(function ($item) use ($order) {
+                return [
+                    'id' => 'ticket-' . $item->id,
+                    'price' => (int) round($item->price),
+                    'quantity' => 1,
+                    'name' => $order->showtime?->movie?->title ?? 'Tiket',
+                ];
+            }, $order->orderItems->all());
+
+            // Tambahkan item diskon sebagai item negatif jika ada diskon
+            $discountAmount = (int) round(max(0, (float) $order->discount_amount));
+            if ($discountAmount > 0) {
+                $itemDetails[] = [
+                    'id' => 'discount',
+                    'price' => -$discountAmount,
+                    'quantity' => 1,
+                    'name' => 'Voucher Discount',
+                ];
+            }
+
             $payload = [
                 'payment_type' => 'qris',
                 'transaction_details' => [
@@ -49,14 +70,7 @@ class MidtransService
                     'gross_amount' => $grossAmount,
                 ],
                 'qris' => ['acquirer' => 'gopay'],
-                'item_details' => array_map(function ($item) use ($order) {
-                    return [
-                        'id' => 'ticket-' . $item->id,
-                        'price' => (int) round($item->price),
-                        'quantity' => 1,
-                        'name' => $order->showtime?->movie?->title ?? 'Tiket',
-                    ];
-                }, $order->orderItems->all()),
+                'item_details' => $itemDetails,
                 'customer_details' => [
                     'first_name' => $order->user->name ?? 'Customer',
                     'email' => $order->user->email,

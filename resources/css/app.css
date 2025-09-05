@@ -12,3 +12,26 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 }
+
+/* Global select styling: hide native arrow, spacing only by default */
+@layer base {
+    /* Default: no background-image to avoid double chevron when using custom SVG overlays */
+    select:not([multiple]):not([size]) {
+        @apply pr-10;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: none;
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1rem 1rem;
+    }
+    /* Opt-in chevron: add attribute data-chevron to enable built-in chevron */
+    select[data-chevron]:not([multiple]):not([size]) {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 8l4 4 4-4' /%3E%3C/svg%3E");
+    }
+    .dark select[data-chevron]:not([multiple]):not([size]) {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 8l4 4 4-4' /%3E%3C/svg%3E");
+    }
+    select::-ms-expand { display: none; }
+}

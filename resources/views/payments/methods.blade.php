@@ -1,3 +1,58 @@
+@extends('layouts.public')
+
+@section('title', 'Pilih Metode Pembayaran - 7PLAY')
+
+@section('content')
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-black py-10">
+	<div class="max-w-3xl mx-auto px-4">
+		<h1 class="text-2xl font-bold mb-6">Pilih Metode Pembayaran</h1>
+
+		<div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
+			<div class="space-y-4">
+				<!-- QRIS -->
+				<div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+					<div>
+						<div class="font-semibold">QRIS</div>
+						<div class="text-sm text-gray-500">Bayar dengan QR Code</div>
+					</div>
+					<button onclick="startQris()" class="px-4 py-2 bg-cinema-600 text-white rounded-lg">Lanjutkan</button>
+				</div>
+
+				<!-- VA (placeholder) -->
+				<div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 opacity-60">
+					<div>
+						<div class="font-semibold">Virtual Account</div>
+						<div class="text-sm text-gray-500">Transfer via bank</div>
+					</div>
+					<button disabled class="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg">Segera</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@push('scripts')
+<script>
+async function startQris(){
+	try{
+		const resp = await fetch(`{{ route('payment.qris.create', $order) }}`, {
+			method: 'POST',
+			headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' }
+		});
+		const data = await resp.json();
+		if(!resp.ok || !data.success){
+			alert(data.message || 'Gagal membuat pembayaran');
+			return;
+		}
+		window.location.href = `{{ route('payment.qris.show', ':id') }}`.replace(':id', data.payment_id);
+	}catch(e){
+		alert('Gagal membuat pembayaran');
+	}
+}
+</script>
+@endpush
+@endsection
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
