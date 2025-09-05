@@ -4,14 +4,14 @@
         show: false,
         message: '',
         type: 'success',
-        timeout: 5000,
+        timeout: 4000,
         icon(type) {
             if (type === 'success') return 'M9 12l2 2 4-4';
             if (type === 'error') return 'M6 18L18 6M6 6l12 12';
             if (type === 'info') return 'M13 16h-1v-4h-1m1-4h.01';
             return 'M13 16h-1v-4h-1m1-4h.01';
         },
-        showToast(msg, t = 'success', duration = 5000) {
+        showToast(msg, t = 'success', duration = 4000) {
             this.message = msg;
             this.type = t;
             this.timeout = duration;
@@ -51,7 +51,7 @@
             }
             return this.el;
         },
-        show(message, type = 'success', timeout = 5000) {
+        show(message, type = 'success', timeout = 4000) {
             const el = this.ensure();
             if (!el || !window.Alpine) return alert(message);
             window.Alpine.$data(el).showToast(message, type, timeout);

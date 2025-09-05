@@ -59,10 +59,19 @@
                                     Tayang: {{ $movie->release_date->format('F d') }} | 
                                     Jual: {{ $movie->release_date->subDays(7)->format('F d') }}
                                 </div>
-                                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                                    {{ $movie->title }}
-                                </h1>
-                                <div class="text-gray-600 dark:text-gray-300 mb-4">{{ $movie->genre }}</div>
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                                            {{ $movie->title }}
+                                        </h1>
+                                        <div class="text-gray-600 dark:text-gray-300 mb-4">{{ $movie->genre }}</div>
+                                    </div>
+                                    @auth
+                                    <div class="flex-shrink-0">
+                                        <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="$isFavorited" />
+                                    </div>
+                                    @endauth
+                                </div>
                             </div>
 
                             <!-- Trailer Button -->

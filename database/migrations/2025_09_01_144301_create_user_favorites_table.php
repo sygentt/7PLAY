@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_preferences', function (Blueprint $table) {
+        Schema::create('user_favorites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('theme', ['light', 'dark'])->default('light');
-            $table->enum('language', ['id', 'en'])->default('id');
-            $table->boolean('email_notifications')->default(true);
-            $table->boolean('push_notifications')->default(true);
+            $table->foreignId('movie_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+            
+            // Prevent duplicate favorites
+            $table->unique(['user_id', 'movie_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_preferences');
+        Schema::dropIfExists('user_favorites');
     }
 };

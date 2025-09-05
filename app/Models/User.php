@@ -75,6 +75,14 @@ class User extends Authenticatable implements MustVerifyEmail
     // }
 
     /**
+     * Get the user's settings.
+     */
+    public function settings(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    /**
      * Get the user's preferences.
      * TODO: Uncomment when UserPreferences model is created
      */
@@ -107,6 +115,38 @@ class User extends Authenticatable implements MustVerifyEmail
     public function seatReservations(): HasMany
     {
         return $this->hasMany(SeatReservation::class);
+    }
+
+    /**
+     * Get all favorite movies for the user.
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    /**
+     * Get all favorite movies directly.
+     */
+    public function favoriteMovies(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Movie::class, 'user_favorites');
+    }
+
+    /**
+     * Check if user has favorited a movie.
+     */
+    public function hasFavorited(int $movieId): bool
+    {
+        return $this->favorites()->where('movie_id', $movieId)->exists();
+    }
+
+    /**
+     * Get all notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\Notification::class);
     }
 
     /**

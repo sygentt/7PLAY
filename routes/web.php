@@ -21,6 +21,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 Route::get('/movies/{movie}', [MovieController::class, 'show'])->name('movies.show');
 
+// QR Code verification (public)
+Route::get('/qr/{token}', [App\Http\Controllers\QrVerificationController::class, 'verify'])->name('qr.verify');
+
 // Debug/Test routes (remove in production)
 Route::get('/test-modal', function () {
     $current_page = 'test';
@@ -103,7 +106,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\PointsController::class, 'index'])->name('index');
         Route::post('/redeem/{voucher}', [\App\Http\Controllers\PointsController::class, 'redeem'])->name('redeem');
     });
+
+    // Profile related routes  
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
+        
+        Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets');
+        Route::get('/tickets/{order}/e-ticket', [App\Http\Controllers\TicketController::class, 'showEticket'])->name('tickets.eticket');
+        
+        Route::get('/orders-history', [App\Http\Controllers\OrderHistoryController::class, 'index'])->name('orders-history');
+        Route::get('/orders/{order}', [App\Http\Controllers\OrderHistoryController::class, 'show'])->name('orders.show');
+        
+        Route::get('/favorites', [App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites');
+        
+        Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'show'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
+    });
+
+    // Favorites API routes
+    Route::prefix('favorites')->middleware('auth')->group(function () {
+        Route::post('/', [App\Http\Controllers\FavoriteController::class, 'store'])->name('favorites.store');
+        Route::delete('/{movieId}', [App\Http\Controllers\FavoriteController::class, 'destroy'])->name('favorites.destroy');
+        Route::post('/toggle', [App\Http\Controllers\FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    });
+
+    // Notifications API routes
+    Route::prefix('notifications')->middleware('auth')->group(function () {
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::post('/{notification}/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+        Route::get('/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+    });
 });
+
+// Removed duplicate test route for settings; use profile.settings routes above
 
 /*
 |--------------------------------------------------------------------------

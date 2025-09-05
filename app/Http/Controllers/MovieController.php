@@ -60,11 +60,15 @@ class MovieController extends Controller
         }
         
         $movies = $query->paginate(12)->withQueryString();
+        $favoriteIds = [];
+        if ($request->user()) {
+            $favoriteIds = $request->user()->favorites()->pluck('movie_id')->toArray();
+        }
         
         // Pass current page info for navigation
         $current_page = 'movies';
         
-        return view('movies.index', compact('movies', 'current_page'));
+        return view('movies.index', compact('movies', 'current_page', 'favoriteIds'));
     }
 
     /**
@@ -150,12 +154,15 @@ class MovieController extends Controller
         }])
         ->get();
 
+        $isFavorited = $request->user() ? $request->user()->hasFavorited($movie->id) : false;
+
         return view('movies.show', compact(
             'movie', 
             'availableDates', 
             'selectedDate', 
             'cinemas',
-            'showtimesByCinema'
+            'showtimesByCinema',
+            'isFavorited'
         ));
     }
 }

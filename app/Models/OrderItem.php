@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class OrderItem extends Model
 {
@@ -44,6 +45,21 @@ class OrderItem extends Model
     public function seat(): BelongsTo
     {
         return $this->belongsTo(Seat::class);
+    }
+
+    /**
+     * Get order item's showtime through order
+     */
+    public function showtime(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Showtime::class,
+            Order::class,
+            'id', // Foreign key on orders table
+            'id', // Foreign key on showtimes table  
+            'order_id', // Local key on order_items table
+            'showtime_id' // Local key on orders table
+        );
     }
 
     /**

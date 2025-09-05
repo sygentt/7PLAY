@@ -116,6 +116,14 @@ class Order extends Model
     }
 
     /**
+     * Get order's payment (singular - for backward compatibility)
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class)->latest();
+    }
+
+    /**
      * Scope to filter by status
      */
     public function scopeByStatus($query, string $status)
@@ -272,6 +280,29 @@ class Order extends Model
         $date = now()->format('Ymd');
         $random = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
         return '7PLAY' . $date . $random;
+    }
+
+    /**
+     * Generate QR verification token
+     */
+    public function generateQrToken(): string
+    {
+        if (!$this->qr_code) {
+            $token = hash('sha256', $this->id . $this->order_number . $this->created_at . config('app.key'));
+            $this->update(['qr_code' => $token]);
+            return $token;
+        }
+        
+        return $this->qr_code;
+    }
+
+    /**
+     * Get QR verification URL
+     */
+    public function getQrVerificationUrl(): string
+    {
+        $token = $this->generateQrToken();
+        return route('qr.verify', $token);
     }
 
     /**

@@ -51,22 +51,18 @@ class RegisteredUserController extends Controller
             ]);
 
             event(new Registered($user));
-            // Explicitly send verification email to ensure delivery
-            $user->sendEmailVerificationNotification();
             Auth::login($user);
 
             // Check if this is an AJAX request
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'verification_sent' => true,
-                    'email' => $user->email,
-                    'message' => 'Registrasi berhasil! Tautan verifikasi telah dikirim ke email Anda.'
+                    'message' => 'Registrasi berhasil! Selamat datang di 7PLAY.',
+                    'redirect' => route('home', absolute: false)
                 ]);
             }
 
-            return redirect()->route('home')
-                ->with('verification_sent_email', $user->email);
+            return redirect()->route('home');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {

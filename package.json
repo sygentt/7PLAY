@@ -19,6 +19,7 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
+        "qrcode": "^1.5.4",
         "swiper": "^11.2.10"
     }
 }
