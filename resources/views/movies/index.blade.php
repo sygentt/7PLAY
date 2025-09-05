@@ -158,6 +158,12 @@
                                 </div>
                             </div>
                             
+                            @auth
+                            <div class="mt-3 flex justify-end">
+                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                            </div>
+                            @endauth
+                            
                         @auth
                             </a>
                         @else
@@ -253,6 +259,12 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            @auth
+                            <div class="px-6 pb-4 -mt-4 flex justify-end">
+                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                            </div>
+                            @endauth
                             
                         @auth
                             </a>

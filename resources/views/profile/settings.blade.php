@@ -34,7 +34,7 @@
 						<option value="dark">Dark</option>
 						<option value="system">System</option>
 					</select>
-					<button @click="applyTheme()" class="px-3 py-2 rounded-lg bg-cinema-600 text-white">Terapkan</button>
+					<button @click="applyTheme(); save('theme')" class="px-3 py-2 rounded-lg bg-cinema-600 text-white">Terapkan</button>
 				</div>
 			</div>
 
@@ -62,39 +62,56 @@
 	<script>
 		function settingsPage() {
 			return {
-				language: localStorage.getItem('lang') || 'id',
-				theme: localStorage.getItem('theme') || (document.documentElement.classList.contains('dark') ? 'dark' : 'light'),
-				emailNotif: JSON.parse(localStorage.getItem('email_notif') || 'true'),
-				pushNotif: JSON.parse(localStorage.getItem('push_notif') || 'false'),
-				save(type) {
-					if (type === 'language') {
-						localStorage.setItem('lang', this.language);
-					}
-					if (type === 'notifications') {
-						localStorage.setItem('email_notif', JSON.stringify(this.emailNotif));
-						localStorage.setItem('push_notif', JSON.stringify(this.pushNotif));
-					}
-					if (window.Toast) {
-						window.Toast.show('Pengaturan disimpan', 'success', 2500);
+				language: @json(($settings->language ?? 'id') ?? 'id'),
+				theme: @json(($settings->theme ?? 'system') ?? 'system'),
+				emailNotif: @json(($settings->email_notif ?? true) ?? true),
+				pushNotif: @json(($settings->push_notif ?? false) ?? false),
+				async save(type) {
+					try {
+						const payload = {
+							language: this.language,
+							theme: this.theme,
+							email_notif: !!this.emailNotif,
+							push_notif: !!this.pushNotif,
+						};
+
+						const response = await fetch('{{ route('profile.settings.update') }}', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+							},
+							body: JSON.stringify(payload)
+						});
+
+						const data = await response.json();
+						if (data.success) {
+							if (window.Toast) {
+								window.Toast.show('Pengaturan disimpan', 'success', 2500);
+							}
+						} else {
+							if (window.Toast) {
+								window.Toast.show('Gagal menyimpan pengaturan', 'error', 4000);
+							}
+						}
+					} catch (e) {
+						console.error(e);
+						if (window.Toast) {
+							window.Toast.show('Terjadi kesalahan', 'error', 4000);
+						}
 					}
 				},
 				applyTheme() {
 					if (this.theme === 'dark') {
 						document.documentElement.classList.add('dark');
-						localStorage.setItem('theme', 'dark');
 					} else if (this.theme === 'light') {
 						document.documentElement.classList.remove('dark');
-						localStorage.setItem('theme', 'light');
 					} else {
-						localStorage.removeItem('theme');
 						if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 							document.documentElement.classList.add('dark');
 						} else {
 							document.documentElement.classList.remove('dark');
 						}
-					}
-					if (window.Toast) {
-						window.Toast.show('Tema diterapkan', 'success', 2000);
 					}
 				}
 			}

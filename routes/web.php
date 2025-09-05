@@ -119,9 +119,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/favorites', [App\Http\Controllers\FavoriteController::class, 'index'])->name('favorites');
         
-        Route::get('/settings', function () {
-            return view('profile.settings');
-        })->name('settings');
+        Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'show'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
     });
 
     // Favorites API routes
@@ -139,10 +138,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-// Test route untuk settings
-Route::get('/profile/settings', function () {
-    return view('profile.settings');
-})->name('profile.settings')->middleware(['auth', 'verified']);
+// Removed duplicate test route for settings; use profile.settings routes above
 
 /*
 |--------------------------------------------------------------------------

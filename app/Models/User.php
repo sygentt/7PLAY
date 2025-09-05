@@ -75,6 +75,14 @@ class User extends Authenticatable implements MustVerifyEmail
     // }
 
     /**
+     * Get the user's settings.
+     */
+    public function settings(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    /**
      * Get the user's preferences.
      * TODO: Uncomment when UserPreferences model is created
      */
