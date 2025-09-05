@@ -9,7 +9,7 @@
 		<x-ui.breadcrumb :items="[
 			['title' => 'Beranda', 'url' => route('home')],
 			['title' => 'Profil', 'url' => route('profile.edit')],
-			['title' => 'Tiket Saya', 'url' => route('profile.tickets')],
+			['title' => 'Tiket Saya', 'url' => route('profile.tickets', array_filter(['tab' => request('tab')]))],
 			['title' => 'E-Tiket']
 		]" />
 
@@ -117,17 +117,11 @@
 
 		<!-- Action Buttons -->
 		<div class="mt-8 flex flex-col sm:flex-row gap-4">
-			<a href="{{ route('profile.tickets') }}" 
+			<a href="{{ route('profile.tickets', array_filter(['tab' => request('tab')])) }}" 
 			   class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
 				<x-heroicon-o-arrow-left class="w-5 h-5 mr-2" />
 				Kembali ke Tiket Saya
 			</a>
-			
-			<button onclick="window.print()" 
-					class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg transition-colors">
-				<x-heroicon-o-printer class="w-5 h-5 mr-2" />
-				Cetak E-Tiket
-			</button>
 		</div>
 	</div>
 </div>

@@ -12,7 +12,7 @@
 
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Tiket Saya</h1>
 
-			<div x-data="{ tab: 'active' }">
+			<div x-data="{ tab: '{{ in_array(request('tab'), ['active', 'expired']) ? request('tab') : 'active' }}' }">
 		<div class="flex space-x-2 mb-6">
 			<button @click="tab='active'" :class="tab==='active' ? 'bg-cinema-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-lg font-medium">
 				Tiket Aktif ({{ $activeTickets->count() }})
@@ -68,7 +68,7 @@
 									</div>
 
 									<div class="text-right">
-										<a href="{{ route('profile.tickets.eticket', $order) }}" class="inline-flex items-center px-3 py-1 bg-cinema-600 hover:bg-cinema-700 text-white text-sm rounded-lg transition-colors">
+										<a href="{{ route('profile.tickets.eticket', ['order' => $order, 'from' => 'tickets', 'tab' => 'active']) }}" class="inline-flex items-center px-3 py-1 bg-cinema-600 hover:bg-cinema-700 text-white text-sm rounded-lg transition-colors">
 											<x-heroicon-o-ticket class="w-4 h-4 mr-1" />
 											E-tiket
 										</a>
@@ -120,7 +120,7 @@
 
 							<!-- Action Button -->
 							<div class="ml-4">
-								<a href="{{ route('profile.orders.show', $order) }}" 
+								<a href="{{ route('profile.orders.show', ['order' => $order, 'from' => 'tickets', 'tab' => 'expired']) }}" 
 								   class="inline-flex items-center px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
 									<x-heroicon-o-eye class="w-4 h-4 mr-1" />
 									Detail

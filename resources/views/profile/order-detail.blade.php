@@ -204,10 +204,10 @@
 							</a>
 						@endif
 						
-						<a href="{{ route('profile.orders-history') }}" 
+						<a href="{{ request('from') === 'tickets' ? route('profile.tickets', array_filter(['tab' => request('tab')])) : route('profile.orders-history') }}" 
 						   class="w-full inline-flex items-center justify-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
 							<x-heroicon-o-arrow-left class="w-4 h-4 mr-2" />
-							Kembali ke Riwayat
+							{{ request('from') === 'tickets' ? 'Kembali ke Tiket Saya' : 'Kembali ke Riwayat' }}
 						</a>
 					</div>
 				</div>
