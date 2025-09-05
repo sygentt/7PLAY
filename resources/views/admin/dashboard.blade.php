@@ -2,12 +2,12 @@
 
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
-@section('page-description', 'Overview of 7PLAY cinema booking system')
+@section('page-description', 'Ringkasan sistem pemesanan tiket 7PLAY')
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Welcome Banner -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg p-6 mb-8">
+        <div class="bg-gradient-to-r from-cinema-600 to-cinema-700 rounded-lg shadow-lg p-6 mb-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center text-white">
                     <div class="flex-shrink-0">
@@ -17,15 +17,15 @@
                         <h2 class="text-2xl font-bold">
                             Selamat datang kembali, {{ Auth::user()->name }}!
                         </h2>
-                        <p class="text-blue-100 mt-1">
-                            Dashboard admin 7PLAY - Kelola sistem cinema booking dengan mudah
+                        <p class="text-cinema-100 mt-1">
+                            Dashboard admin 7PLAY - Kelola sistem pemesanan tiket dengan mudah
                         </p>
                     </div>
                 </div>
                 <div class="hidden sm:block">
                     <div class="text-white text-right">
                         <p class="text-sm font-medium">{{ now()->format('l, d F Y') }}</p>
-                        <p class="text-xs text-blue-100">{{ now()->format('H:i') }} WIB</p>
+                        <p class="text-xs text-cinema-100">{{ now()->format('H:i') }} WIB</p>
                     </div>
                 </div>
             </div>

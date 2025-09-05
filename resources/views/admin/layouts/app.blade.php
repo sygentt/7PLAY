@@ -23,13 +23,7 @@
             <div class="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
                 <!-- Logo -->
                 <div class="flex items-center flex-shrink-0 px-4">
-                    <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                        <x-heroicon-s-film class="h-6 w-6 text-white"/>
-                    </div>
-                    <div class="ml-3">
-                        <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
-                        <p class="text-xs text-gray-500">Admin Dashboard</p>
-                    </div>
+                    @include('admin.components.brand-logo')
                 </div>
                 
                 <!-- Navigation -->
@@ -171,13 +165,7 @@
                     <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center px-4">
-                            <div class="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                                <x-heroicon-s-film class="h-6 w-6 text-white"/>
-                            </div>
-                            <div class="ml-3">
-                                <h1 class="text-xl font-bold text-gray-900">7PLAY</h1>
-                                <p class="text-xs text-gray-500">Admin Dashboard</p>
-                            </div>
+                            @include('admin.components.brand-logo')
                         </div>
                         
                         <!-- Mobile Navigation -->
