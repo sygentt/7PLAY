@@ -26,6 +26,18 @@ class Notification extends Model
         ];
     }
 
+    public function getIsBroadcastAttribute(): bool
+    {
+        $data = $this->data;
+        return is_array($data) && ($data['audience'] ?? null) === 'all';
+    }
+
+    public function getBatchKeyAttribute(): ?string
+    {
+        $data = $this->data;
+        return is_array($data) ? ($data['batch_key'] ?? null) : null;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

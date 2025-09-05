@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\CinemaController as PublicCinemaController;
+use App\Http\Controllers\UserVoucherController;
 use App\Http\Controllers\BookingController;
 // use App\Http\Controllers\OrderController;
 // use App\Http\Controllers\PointController;
@@ -30,9 +32,8 @@ Route::get('/test-modal', function () {
     return view('test-modal', compact('current_page'));
 })->name('test.modal');
 
-// Cinema and showtime info (public)
-// Route::get('/cinemas', [CinemaController::class, 'index'])->name('cinemas.index');
-// Route::get('/cinemas/{cinema}', [CinemaController::class, 'show'])->name('cinemas.show');
+// Cinema (public)
+Route::get('/cinemas', [PublicCinemaController::class, 'index'])->name('cinemas.index');
 
 /*
 |--------------------------------------------------------------------------
@@ -106,6 +107,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\PointsController::class, 'index'])->name('index');
         Route::post('/redeem/{voucher}', [\App\Http\Controllers\PointsController::class, 'redeem'])->name('redeem');
     });
+
+    // User Vouchers
+    Route::get('/vouchers', [UserVoucherController::class, 'index'])->name('vouchers.index');
 
     // Profile related routes  
     Route::prefix('profile')->name('profile.')->group(function () {

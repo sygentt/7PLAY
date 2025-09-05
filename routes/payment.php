@@ -38,6 +38,9 @@ Route::middleware(['auth'])->group(function () {
             ->name('cancel');
     });
 
+    // Short URL for showing payment page (same experience as checkout + QR modal)
+    Route::get('/pay/{payment}', [PaymentController::class, 'showQrisPayment'])->name('pay.show');
+
     // Halaman sukses pembayaran
     Route::get('/payment/success/{payment}', [PaymentController::class, 'paymentSuccess'])
         ->name('payment.success');

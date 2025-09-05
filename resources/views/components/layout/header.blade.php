@@ -49,7 +49,7 @@
                 </div>
 
                 <!-- Cinemas Link -->
-                <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'cinemas' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
+                <a href="{{ route('cinemas.index') }}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 {{ $current_page === 'cinemas' ? 'text-cinema-600 dark:text-cinema-400 bg-cinema-50 dark:bg-cinema-900/20' : '' }}">
                     <x-heroicon-o-building-office class="w-4 h-4" />
                     <span class="text-sm">Bioskop</span>
                 </a>
@@ -100,15 +100,29 @@
                     @endif
                 </div>
 
-                <!-- Dark Mode Toggle -->
-                <button 
-                    onclick="toggleDarkMode()" 
-                    class="p-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
-                    aria-label="Toggle dark mode"
-                >
-                    <x-heroicon-o-sun class="w-5 h-5 block dark:hidden" />
-                    <x-heroicon-o-moon class="w-5 h-5 hidden dark:block" />
-                </button>
+                <!-- Notifications Dropdown -->
+                <div class="relative" x-data="{ open:false }">
+                    <button 
+                        class="p-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105 relative"
+                        aria-label="Notifikasi"
+                        x-on:click="open = !open"
+                    >
+                        <x-heroicon-o-bell class="w-5 h-5" />
+                        <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full"></span>
+                    </button>
+                    <div 
+                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-2"
+                        x-show="open" x-transition style="display:none"
+                        x-on:click.outside="open=false"
+                    >
+                        <a href="{{ route('profile.notifications') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200">
+                            <x-heroicon-o-bell class="w-4 h-4 mr-2" /> Lihat Notifikasi
+                        </a>
+                        <button onclick="markAllNotificationsRead()" class="w-full text-left flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200">
+                            <x-heroicon-o-check class="w-4 h-4 mr-2" /> Tandai semua terbaca
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Auth Buttons -->
                 @auth
@@ -171,7 +185,7 @@
                     </div>
                     <span class="font-medium">Akan Datang</span>
                 </a>
-                <a href="#" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
+                <a href="{{ route('cinemas.index') }}" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                         <x-heroicon-o-building-office class="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
@@ -231,5 +245,29 @@
         // You can emit an event or call an API to update the content based on selected city
         window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityName } }));
     }
+</script>
+
+<script>
+    // Fetch unread count and update badge
+    async function refreshUnreadCount(){
+        try{
+            const resp = await fetch('{{ route('notifications.unread-count') }}');
+            const data = await resp.json();
+            const badge = document.getElementById('notif-badge');
+            if(badge){
+                const n = Number(data.count||0);
+                badge.textContent = n>99? '99+': String(n);
+                badge.classList.toggle('hidden', n<=0);
+            }
+        }catch(e){/* ignore */}
+    }
+    async function markAllNotificationsRead(){
+        try{
+            const resp = await fetch('{{ route('notifications.mark-all-read') }}',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content}});
+            await resp.json();
+            refreshUnreadCount();
+        }catch(e){/* ignore */}
+    }
+    document.addEventListener('DOMContentLoaded', refreshUnreadCount);
 </script>
 

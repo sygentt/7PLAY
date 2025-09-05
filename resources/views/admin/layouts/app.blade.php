@@ -106,11 +106,25 @@
                     </a>
 
                     <!-- Vouchers Management -->
-                    <a href="#" 
-                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-400 cursor-not-allowed">
-                        <x-heroicon-o-ticket class="mr-3 flex-shrink-0 h-5 w-5"/>
+                    <a href="{{ route('admin.vouchers.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.vouchers.*') ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.vouchers.*'))
+                            <x-heroicon-s-ticket class="mr-3 flex-shrink-0 h-5 w-5 text-teal-500"/>
+                        @else
+                            <x-heroicon-o-ticket class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
                         Vouchers
-                        <span class="ml-auto inline-block py-0.5 px-2 text-xs font-medium bg-gray-100 text-gray-500 rounded-full">Soon</span>
+                    </a>
+
+                    <!-- Notifications Management -->
+                    <a href="{{ route('admin.notifications.index') }}" 
+                       class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.notifications.*') ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                        @if(request()->routeIs('admin.notifications.*'))
+                            <x-heroicon-s-bell class="mr-3 flex-shrink-0 h-5 w-5 text-red-500"/>
+                        @else
+                            <x-heroicon-o-bell class="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"/>
+                        @endif
+                        Notifications
                     </a>
 
                     <!-- Reports & Analytics -->
@@ -244,6 +258,28 @@
                                     <x-heroicon-o-users class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
                                 @endif
                                 Users
+                            </a>
+
+                            <!-- Vouchers Management -->
+                            <a href="{{ route('admin.vouchers.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.vouchers.*') ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.vouchers.*'))
+                                    <x-heroicon-s-ticket class="mr-4 flex-shrink-0 h-6 w-6 text-teal-500"/>
+                                @else
+                                    <x-heroicon-o-ticket class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Vouchers
+                            </a>
+
+                            <!-- Notifications Management -->
+                            <a href="{{ route('admin.notifications.index') }}" 
+                               class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.notifications.*') ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                @if(request()->routeIs('admin.notifications.*'))
+                                    <x-heroicon-s-bell class="mr-4 flex-shrink-0 h-6 w-6 text-red-500"/>
+                                @else
+                                    <x-heroicon-o-bell class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"/>
+                                @endif
+                                Notifications
                             </a>
 
                             <!-- Reports & Analytics -->

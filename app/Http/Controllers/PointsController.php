@@ -89,10 +89,7 @@ class PointsController extends Controller
                 'is_used' => false,
             ]);
 
-            // Tambah used_count voucher jika ada limit
-            if (!is_null($voucher->usage_limit)) {
-                $voucher->increment('used_count');
-            }
+            // Tidak ada lagi usage_limit/used_count pada voucher (single-use via user_vouchers)
 
             DB::commit();
 

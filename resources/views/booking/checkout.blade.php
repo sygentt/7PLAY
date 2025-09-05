@@ -127,51 +127,14 @@
 
                 <div id="voucher-selected" class="hidden mt-2 text-sm text-green-400"></div>
             </div>
-            <!-- QRIS Payment -->
+            <!-- Metode Pembayaran (popup) -->
             <div class="bg-gray-800/50 rounded-xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h2v2H7V7zm4 0h2v2h-2V7zm4 0h2v2h-2V7zM7 11h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2zM7 15h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg">QRIS</h3>
-                            <p class="text-sm text-gray-400">Bayar dengan QR Code</p>
-                        </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg">Metode Pembayaran</h3>
+                        <p class="text-sm text-gray-400">Pilih salah satu metode</p>
                     </div>
-                    <button 
-                        type="button"
-                        onclick="selectPaymentMethod('qris')"
-                        class="px-6 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-                    >
-                        Pilih
-                    </button>
-                </div>
-            </div>
-
-            <!-- Virtual Account -->
-            <div class="bg-gray-800/50 rounded-xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 7H5c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM5 15V9h14v6H5zm7-4h5v2h-5v-2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg">Virtual Account</h3>
-                            <p class="text-sm text-gray-400">Transfer melalui ATM/Mobile Banking</p>
-                        </div>
-                    </div>
-                    <button 
-                        type="button"
-                        onclick="selectPaymentMethod('bank_transfer')"
-                        class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium hover:bg-gray-600 transition-colors"
-                    >
-                        Pilih
-                    </button>
+                    <button class="px-6 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors" onclick="openPaymentModal()">Pilih</button>
                 </div>
             </div>
         </div>
@@ -223,6 +186,33 @@
             </button>
         </div>
     </div>
+</div>
+
+<!-- Payment Methods Modal -->
+<div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
+    <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold">Pilih Metode Pembayaran</h3>
+            <button onclick="closePaymentModal()" class="text-gray-500 hover:text-gray-700">Tutup</button>
+        </div>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200">
+                <div>
+                    <div class="font-semibold">QRIS</div>
+                    <div class="text-sm text-gray-500">Bayar dengan QR Code</div>
+                </div>
+                <button onclick="createQrisAndOpen()" class="px-4 py-2 bg-cinema-600 text-white rounded-lg">Lanjutkan</button>
+            </div>
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 opacity-60">
+                <div>
+                    <div class="font-semibold">Virtual Account</div>
+                    <div class="text-sm text-gray-500">Segera tersedia</div>
+                </div>
+                <button disabled class="px-4 py-2 bg-gray-200 text-gray-500 rounded-lg">Segera</button>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <!-- Voucher Modal -->
@@ -350,6 +340,52 @@ function closeQRModal() {
     }
 }
 
+function openPaymentModal(){
+    const modal = document.getElementById('payment-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closePaymentModal(){
+    const modal = document.getElementById('payment-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+async function createQrisAndOpen(){
+    try {
+        const response = await fetch('{{ route('payment.qris.create', $order) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        const raw = await response.text();
+        let result; try { result = raw ? JSON.parse(raw) : {}; } catch (e) { result = { message: raw }; }
+        if (!response.ok || !result.success){
+            alert(result.message || 'Gagal membuat pembayaran');
+            return;
+        }
+        currentPaymentId = result.payment_id || currentPaymentId;
+        const p = result.payment || {};
+        let qrUrl = p.qr_code_url || null;
+        if (!qrUrl && p.raw_response && Array.isArray(p.raw_response.actions)) {
+            const a = p.raw_response.actions.find(x => x.name === 'generate-qr-code');
+            if (a) qrUrl = a.url;
+        }
+        if (!qrUrl && p.raw_response && p.raw_response.qr_string) {
+            qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.raw_response.qr_string)}`;
+        }
+        closePaymentModal();
+        if (qrUrl) { showQRCode(qrUrl); if (currentPaymentId) startPaymentStatusCheck(currentPaymentId); }
+    } catch (e) {
+        alert('Gagal membuat pembayaran');
+    }
+}
+
 function startPaymentStatusCheck(paymentId) {
     currentPaymentId = paymentId || currentPaymentId;
     paymentCheckInterval = setInterval(async () => {
@@ -441,7 +477,7 @@ async function openVoucherSelector() {
                 el.innerHTML = `
                     <div>
                         <div class="font-semibold">${v.name}</div>
-                        <div class="text-xs text-gray-500">Kode: ${v.code} &middot; ${badge} OFF</div>
+                        <div class="text-xs text-gray-500">${badge} OFF</div>
                     </div>
                     <button class="px-4 py-2 bg-cinema-600 text-white rounded-lg text-sm">Pakai</button>
                 `;
@@ -480,8 +516,10 @@ async function applyVoucher(userVoucherId, voucher) {
             alert(data.message || 'Gagal menerapkan voucher');
             return;
         }
+        const disc = Number(data.discount || 0);
+        const total = Number(data.total || 0);
         document.getElementById('voucher-selected').classList.remove('hidden');
-        document.getElementById('voucher-selected').textContent = `Voucher diterapkan: ${voucher.name} - Diskon ${voucher.type === 'percentage' ? voucher.value + '%' : 'Rp ' + Number(voucher.value).toLocaleString('id-ID')} | Total baru: Rp ${Number(data.total).toLocaleString('id-ID')}`;
+        document.getElementById('voucher-selected').textContent = `Voucher diterapkan: ${voucher.name} - Diskon Rp ${disc.toLocaleString('id-ID')} | Total baru: Rp ${total.toLocaleString('id-ID')}`;
         // Optionally update total display in the summary section if present
         const totalEl = document.querySelector('[data-total-amount]');
         if (totalEl) totalEl.textContent = 'Rp' + Number(data.total).toLocaleString('id-ID');

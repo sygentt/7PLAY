@@ -30,6 +30,8 @@
                             type="text" 
                             placeholder="Cari bioskop atau lokasi..." 
                             class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200"
+                            value="{{ $search ?? '' }}"
+                            onkeydown="if(event.key==='Enter'){window.location='{{ route('cinemas.index') }}?'+new URLSearchParams({q: this.value, city_id: document.getElementById('city-select')?.value||''});}"
                         >
                         <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
@@ -37,12 +39,11 @@
 
                 <!-- City Filter -->
                 <div class="relative">
-                    <select class="appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 pr-10 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200">
+                    <select id="city-select" class="appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 pr-10 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:border-cinema-500 transition-all duration-200" onchange="window.location='{{ route('cinemas.index') }}?'+new URLSearchParams({q: '{{ $search ?? '' }}', city_id: this.value}).toString()">
                         <option value="">Semua Kota</option>
-                        <option value="jakarta">Jakarta</option>
-                        <option value="bandung">Bandung</option>
-                        <option value="surabaya">Surabaya</option>
-                        <option value="medan">Medan</option>
+                        @foreach(($cities ?? []) as $city)
+                            <option value="{{ $city->id }}" @selected(isset($cityId) && $cityId == $city->id)>{{ $city->name }}</option>
+                        @endforeach
                     </select>
                     <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
@@ -65,14 +66,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 
-                @foreach($cinemas ?? [] as $cinema)
+                @foreach(($cinemas ?? []) as $cinema)
                     <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
                         
                         <!-- Cinema Image -->
                         <div class="relative h-48 overflow-hidden">
                             <img 
-                                src="{{ $cinema['image'] ?? 'https://via.placeholder.com/400x200' }}" 
-                                alt="{{ $cinema['name'] }}"
+                                src="https://dummyimage.com/400x200/1f2937/ffffff&text={{ urlencode($cinema->brand . ' ' . $cinema->name) }}" 
+                                alt="{{ $cinema->full_name }}"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             >
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -80,7 +81,7 @@
                             <!-- Cinema Chain Badge -->
                             <div class="absolute top-4 left-4">
                                 <span class="px-3 py-1 bg-cinema-600 text-white text-sm font-semibold rounded-full">
-                                    {{ $cinema['chain'] ?? 'Cinema' }}
+                                    {{ $cinema->brand ?? 'Cinema' }}
                                 </span>
                             </div>
                         </div>
@@ -88,12 +89,12 @@
                         <!-- Cinema Info -->
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                                {{ $cinema['name'] }}
+                                {{ $cinema->full_name }}
                             </h3>
                             
                             <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
                                 <x-heroicon-o-map-pin class="w-4 h-4" />
-                                <span class="text-sm">{{ $cinema['location'] }}</span>
+                                <span class="text-sm">{{ $cinema->city->name }}</span>
                             </div>
 
                             <!-- Facilities -->
