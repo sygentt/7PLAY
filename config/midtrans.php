@@ -59,5 +59,23 @@ return [
     */
     'webhook' => [
         'notification_url' => env('APP_URL') . '/api/midtrans/notification',
+        // Optional: static callback token to validate Midtrans webhook (set in Midtrans dashboard)
+        'callback_token' => env('MIDTRANS_CALLBACK_TOKEN'),
+        // Optional: allowed IPs for webhook, leave empty to skip IP check
+        'allowed_ips' => array_filter(array_map('trim', explode(',', (string) env('MIDTRANS_ALLOWED_IPS', '')))),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enabled Payment Methods (UI)
+    |--------------------------------------------------------------------------
+    | Control which methods are shown/enabled on the frontend. By default only
+    | QRIS is enabled. Add other methods when ready to implement.
+    */
+    'enabled_methods' => [
+        'qris',
+        // 'va', // bank_transfer (BCA/BNI/BRI/Mandiri/Permata)
+        // 'ewallet', // gopay/ovo/dana/shopeepay
+        // 'credit_card',
     ],
 ];

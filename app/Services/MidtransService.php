@@ -213,6 +213,14 @@ class MidtransService
                 'payment_type' => $notification->payment_type
             ]);
 
+            // Optional security checks: callback token & IP allowlist
+            try {
+                $this->assertValidWebhookRequest();
+            } catch (\Throwable $sec) {
+                Log::warning('Midtrans webhook rejected by security check', ['error' => $sec->getMessage()]);
+                return [ 'status' => 'ignored', 'message' => 'Invalid webhook source' ];
+            }
+
             // Cari payment berdasarkan order_id
             $payment = Payment::where('external_id', $notification->order_id)->first();
             
@@ -274,6 +282,12 @@ class MidtransService
                         $this->finalizeOrderOnSettlement($order, $payment, $notification);
                     } catch (\Throwable $e) {
                         Log::error('Finalize settlement failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
+                    // Queue e-ticket email
+                    try {
+                        \App\Jobs\SendEticketEmailJob::dispatch((int) $order->id)->onQueue('default');
+                    } catch (\Throwable $e) {
+                        Log::error('Queue Eticket email failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                     }
                     Log::info("Order {$order->id} marked as paid");
                     // Award points on settlement
@@ -476,6 +490,34 @@ class MidtransService
             'description' => 'Poin dari order #' . $order_id,
             'order_id' => $order_id,
         ]);
+    }
+
+    /**
+     * Validate Midtrans webhook request by callback token or source IP.
+     */
+    private function assertValidWebhookRequest(): void
+    {
+        $allowed_ips = (array) config('midtrans.webhook.allowed_ips', []);
+        $callback_token = (string) config('midtrans.webhook.callback_token', '');
+
+        $request = request();
+        $remote_ip = $request->ip();
+
+        // Prefer callback token via header X-Callback-Token (custom) or query param
+        $header_token = $request->header('X-Callback-Token', $request->query('callback_token'));
+        if (!empty($callback_token)) {
+            if (!hash_equals($callback_token, (string) $header_token)) {
+                throw new \RuntimeException('Invalid callback token');
+            }
+            return; // token passes, skip IP check
+        }
+
+        // If allowlist configured, enforce it
+        if (!empty($allowed_ips)) {
+            if (!in_array($remote_ip, $allowed_ips, true)) {
+                throw new \RuntimeException('IP not allowed: ' . $remote_ip);
+            }
+        }
     }
 
     /**

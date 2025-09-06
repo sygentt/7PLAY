@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="user-authenticated" content="{{ auth()->check() ? 'true' : 'false' }}">
 
-    <title>@yield('title', config('app.name', '7PLAY') . ' - Platform Pemesanan Tiket Bioskop')</title>
+    <title>{{ config('app.name', '7PLAY') }} - @yield('title', 'Platform Pemesanan')</title>
     <meta name="description" content="@yield('description', 'Platform pemesanan tiket bioskop online terpercaya di Indonesia. Booking tiket film favorit Anda dengan mudah dan aman.')">
     
     <!-- SEO Meta Tags -->
@@ -70,8 +70,6 @@
     
     <!-- Booking Modal Scripts -->
     <script src="{{ asset('js/seat-count-modal.js') }}"></script>
-    <!-- Debug Modal Fallback -->
-    <script src="{{ asset('js/modal-debug.js') }}"></script>
     
     <!-- Global Scripts -->
     <script>
@@ -89,47 +87,29 @@
             }
         }
         
-        // Debug function to check modal availability
-        function debugModal() {
-            console.log('=== MODAL DEBUG ===');
-            console.log('DOM ready state:', document.readyState);
-            console.log('seat-count-modal element:', document.getElementById('seat-count-modal'));
-            console.log('window.seatCountModal:', window.seatCountModal);
-            console.log('================');
-        }
-        
         // Global openSeatCountModal function with fallback
         function openSeatCountModal(showtimeId) {
-            console.log('openSeatCountModal called with ID:', showtimeId);
-            
             // Try main modal first
             if (window.seatCountModal && window.seatCountModal.modal) {
-                console.log('Using main modal');
                 window.seatCountModal.open(showtimeId);
             } else if (typeof SeatCountModal !== 'undefined') {
-                console.log('Creating new modal instance');
                 window.seatCountModal = new SeatCountModal();
                 if (window.seatCountModal.modal) {
                     window.seatCountModal.open(showtimeId);
                 } else {
-                    console.log('Main modal failed, using fallback');
-                    openSimpleModal(showtimeId);
+                    // Fallback: arahkan langsung ke halaman pilih kursi
+                    window.location.href = `/booking/select-seats/${showtimeId}`;
                 }
             } else {
-                console.log('SeatCountModal class not found, using fallback');
-                openSimpleModal(showtimeId);
+                window.location.href = `/booking/select-seats/${showtimeId}`;
             }
         }
         
         // Initialize modal when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded');
-            debugModal();
-            
             // Ensure seat count modal is initialized
             if (typeof SeatCountModal !== 'undefined') {
                 if (!window.seatCountModal) {
-                    console.log('Initializing seat count modal...');
                     window.seatCountModal = new SeatCountModal();
                 }
             }

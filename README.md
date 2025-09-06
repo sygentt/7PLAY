@@ -7,19 +7,70 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## 7PLAY Cinema Booking
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Platform pemesanan tiket bioskop berbasis Laravel 11 dengan pembayaran Midtrans (QRIS), reservasi kursi, voucher, loyalti poin, dan dashboard admin.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Fitur
+- Reservasi kursi dengan TTL terpusat (`config/booking.php`)
+- Pembayaran Midtrans QRIS (opsi VA/e-wallet/kartu siap ekspansi)
+- Webhook Midtrans dengan hardening (callback token/IP allowlist)
+- Poin loyalti & voucher
+- Check-in QR sekali-pakai
+- Admin dashboard & laporan terintegrasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Instalasi Cepat
+```
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate --seed
+npm ci
+```
+
+### Build Frontend
+- Dev (Vite): `npm run dev`
+- Prod: `npm run build`
+
+Jika share via ngrok, gunakan build prod agar tidak memuat Vite lintas-origin.
+
+### Konfigurasi Midtrans (Sandbox)
+Tambahkan di `.env`:
+```
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx
+MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxx
+MIDTRANS_MERCHANT_ID=YOUR_SANDBOX_MERCHANT_ID
+MIDTRANS_CALLBACK_TOKEN=
+MIDTRANS_ALLOWED_IPS=
+APP_URL=https://your-ngrok-domain.ngrok-free.app
+```
+Webhook: `APP_URL/api/midtrans/notification`
+
+Enabled methods UI di `config/midtrans.php`:
+```php
+'enabled_methods' => ['qris'/*, 'va','ewallet','credit_card'*/],
+```
+
+### Queue & Scheduler
+Jalankan worker queue (email e-ticket, proses async):
+```
+php artisan queue:work --queue=default --tries=3 --backoff=5
+```
+Scheduler:
+```
+php artisan schedule:work
+# atau cron: * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
+```
+Jobs terjadwal: `ExpireSeatReservationsJob`, `CancelExpiredOrdersJob`, `ShowtimeReminderJob`.
+
+### Testing
+```
+php artisan test
+```
+
+### Keamanan Webhook
+Gunakan `webhook.callback_token` atau `webhook.allowed_ips` pada `config/midtrans.php`.
 
 ## Learning Laravel
 

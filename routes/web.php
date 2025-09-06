@@ -26,11 +26,6 @@ Route::get('/movies/{movie}', [MovieController::class, 'show'])->name('movies.sh
 // QR Code verification (public)
 Route::get('/qr/{token}', [App\Http\Controllers\QrVerificationController::class, 'verify'])->name('qr.verify');
 
-// Debug/Test routes (remove in production)
-Route::get('/test-modal', function () {
-    $current_page = 'test';
-    return view('test-modal', compact('current_page'));
-})->name('test.modal');
 
 // Cinema (public)
 Route::get('/cinemas', [PublicCinemaController::class, 'index'])->name('cinemas.index');

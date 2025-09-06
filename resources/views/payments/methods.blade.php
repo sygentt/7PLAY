@@ -128,11 +128,50 @@ async function startQris(){
                         </div>
 
                         <!-- Metode pembayaran lain (untuk implementasi masa depan) -->
+                        @php($enabled = config('midtrans.enabled_methods', ['qris']))
+                        @if(in_array('va', $enabled) || in_array('ewallet', $enabled) || in_array('credit_card', $enabled))
+                        <div class="mt-4 space-y-3">
+                            @if(in_array('va', $enabled))
+                            <div class="border border-gray-200 rounded-lg p-4 opacity-70">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Virtual Account</h4>
+                                        <p class="text-sm text-gray-600">BCA/BNI/BRI/Mandiri/Permata</p>
+                                    </div>
+                                    <button disabled class="px-3 py-2 bg-gray-200 text-gray-500 rounded">Segera</button>
+                                </div>
+                            </div>
+                            @endif
+                            @if(in_array('ewallet', $enabled))
+                            <div class="border border-gray-200 rounded-lg p-4 opacity-70">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">E-Wallet</h4>
+                                        <p class="text-sm text-gray-600">GoPay/OVO/DANA/ShopeePay</p>
+                                    </div>
+                                    <button disabled class="px-3 py-2 bg-gray-200 text-gray-500 rounded">Segera</button>
+                                </div>
+                            </div>
+                            @endif
+                            @if(in_array('credit_card', $enabled))
+                            <div class="border border-gray-200 rounded-lg p-4 opacity-70">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Kartu Kredit</h4>
+                                        <p class="text-sm text-gray-600">Visa/Mastercard/JCB</p>
+                                    </div>
+                                    <button disabled class="px-3 py-2 bg-gray-200 text-gray-500 rounded">Segera</button>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @else
                         <div class="mt-4 p-4 bg-gray-50 rounded-lg">
                             <p class="text-sm text-gray-600 text-center">
-                                Metode pembayaran lain seperti Virtual Account dan Transfer Bank akan segera tersedia.
+                                Metode pembayaran lain seperti Virtual Account, E-Wallet, atau Kartu Kredit akan segera tersedia.
                             </p>
                         </div>
+                        @endif
                     </div>
 
                     <!-- Action Buttons -->
@@ -284,6 +323,10 @@ async function startQris(){
                 
                 if (data.success) {
                     console.log('SUCCESS - showing modal with payment:', data.payment);
+                    // Jika deep_link_url tersedia (misal e-wallet), arahkan agar pengguna bisa bayar di app
+                    if (data.payment && data.payment.deep_link_url) {
+                        try { window.location.href = data.payment.deep_link_url; } catch (e) {}
+                    }
                     // Show modal instead of redirect
                     currentPayment = data.payment;
                     showQrModal(data.payment);
