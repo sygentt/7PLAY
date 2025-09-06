@@ -103,22 +103,19 @@ class AuthModal {
 
     bindCloseEvents() {
         if (!this.modal) return;
-        
-        // Remove any existing event listeners to prevent duplicates
-        this.modal.replaceWith(this.modal.cloneNode(true));
-        this.modal = document.getElementById('auth-modal');
-        
-        // Single event handler on the main modal container
-        this.modal.addEventListener('click', (e) => {
-            // Check if clicked element is part of the modal content
-            const modalContent = e.target.closest('.modal-content');
-            const isFormElement = e.target.closest('form, input, button, select, textarea, label');
-            
-            // Only close if NOT clicking on modal content or form elements
-            if (!modalContent && !isFormElement) {
-                this.close();
-            }
-        }, true); // Use capture phase to catch all clicks
+
+        // Avoid replacing the modal element; that removes all child event listeners.
+        // Instead, attach a single delegated click handler once.
+        if (!this._closeHandlerBound) {
+            this.modal.addEventListener('click', (e) => {
+                const modalContent = e.target.closest('.modal-content');
+                const isFormElement = e.target.closest('form, input, button, select, textarea, label');
+                if (!modalContent && !isFormElement) {
+                    this.close();
+                }
+            }, true);
+            this._closeHandlerBound = true;
+        }
     }
 
     close() {

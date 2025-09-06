@@ -38,12 +38,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active_user' => \App\Http\Middleware\EnsureUserIsActive::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            // 'set_locale' removed with language settings feature
         ]);
         
         // Exclude Midtrans webhook from CSRF verification
         $middleware->validateCsrfTokens(except: [
             'api/midtrans/notification',
         ]);
+
+        // Locale middleware removed; language settings feature is dropped
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

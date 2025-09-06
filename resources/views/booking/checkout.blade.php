@@ -137,8 +137,8 @@
 </div>
 
 <!-- QR Code Modal -->
-<div id="qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
-    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center text-gray-900">
+<div id="qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 text-center text-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl">
         <div class="mb-6">
             <h3 class="text-2xl font-bold mb-2">Scan QR Code</h3>
             <p class="text-gray-600">Gunakan aplikasi e-wallet atau mobile banking untuk scan</p>
@@ -165,7 +165,7 @@
             </button>
             <button 
                 onclick="checkPaymentStatus()"
-                class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                class="flex-1 px-4 py-3 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-lg font-semibold transition-all duration-200"
             >
                 Cek Status
             </button>
@@ -174,8 +174,8 @@
 </div>
 
 <!-- Payment Methods Modal -->
-<div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
-    <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900">
+<div id="payment-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold">Pilih Metode Pembayaran</h3>
             <button onclick="closePaymentModal()" class="text-gray-500 hover:text-gray-700">Tutup</button>
@@ -186,7 +186,7 @@
                     <div class="font-semibold">QRIS</div>
                     <div class="text-sm text-gray-500">Bayar dengan QR Code</div>
                 </div>
-                <button onclick="createQrisAndOpen()" class="px-4 py-2 bg-cinema-600 text-white rounded-lg">Lanjutkan</button>
+                <button onclick="createQrisAndOpen()" class="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-lg font-semibold">Lanjutkan</button>
             </div>
             <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 opacity-60">
                 <div>
@@ -201,8 +201,8 @@
 </div>
 
 <!-- Voucher Modal -->
-<div id="voucher-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
-    <div class="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900">
+<div id="voucher-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold">Pilih Voucher</h3>
             <button onclick="closeVoucherModal()" class="text-gray-500 hover:text-gray-700">Tutup</button>

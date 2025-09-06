@@ -106,7 +106,7 @@ class MovieController extends Controller
                 
             $availableDates->push([
                 'date' => $date->copy(),
-                'formatted_day' => ucfirst($date->locale('id')->translatedFormat('D')),
+                'formatted_day' => ucfirst($date->locale(app()->getLocale())->translatedFormat('D')),
                 'formatted_date' => $date->format('d'),
                 'has_showtimes' => true,
                 'is_today' => $date->isToday(),

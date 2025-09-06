@@ -12,7 +12,6 @@ class UserSetting extends Model
 
     protected $fillable = [
         'user_id',
-        'language',
         'theme',
         'email_notif',
         'push_notif',

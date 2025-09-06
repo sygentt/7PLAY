@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Locale is set via SetLocaleFromUser middleware
         // Force HTTPS in local environment
         // if(config('app.env') === 'local') {
         //     URL::forceScheme('https');

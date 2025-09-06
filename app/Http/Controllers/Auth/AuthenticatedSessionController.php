@@ -42,10 +42,12 @@ class AuthenticatedSessionController extends Controller
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {
+                $errors = $e->errors();
+                $message = collect($errors)->flatten()->first() ?? 'Email atau password salah!';
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data login tidak valid.',
-                    'errors' => $e->errors()
+                    'message' => $message,
+                    'errors' => $errors,
                 ], 422);
             }
             
@@ -54,7 +56,7 @@ class AuthenticatedSessionController extends Controller
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Email atau password tidak valid.'
+                    'message' => 'Terjadi kesalahan. Silakan coba lagi.'
                 ], 422);
             }
             

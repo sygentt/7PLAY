@@ -22,7 +22,6 @@ class SettingsController extends Controller
     public function update(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'language' => 'required|in:id,en',
             'theme' => 'required|in:light,dark,system',
             'email_notif' => 'required|boolean',
             'push_notif' => 'required|boolean',

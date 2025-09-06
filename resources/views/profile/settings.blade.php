@@ -13,17 +13,7 @@
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Pengaturan</h1>
 
 		<div class="space-y-6">
-			<!-- Bahasa -->
-			<div class="p-4 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700">
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Bahasa</h2>
-				<div class="flex items-center space-x-3">
-					<select x-model="language" class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
-						<option value="id">Indonesia</option>
-						<option value="en">English</option>
-					</select>
-					<button @click="save('language')" class="px-3 py-2 rounded-lg bg-cinema-600 text-white">Simpan</button>
-				</div>
-			</div>
+			<!-- Bahasa section removed -->
 
 			<!-- Tema -->
 			<div class="p-4 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700">
@@ -62,14 +52,14 @@
 	<script>
 		function settingsPage() {
 			return {
-				language: @json(($settings->language ?? 'id') ?? 'id'),
+				// language removed
 				theme: @json(($settings->theme ?? 'system') ?? 'system'),
 				emailNotif: @json(($settings->email_notif ?? true) ?? true),
 				pushNotif: @json(($settings->push_notif ?? false) ?? false),
 				async save(type) {
 					try {
 						const payload = {
-							language: this.language,
+							// language removed
 							theme: this.theme,
 							email_notif: !!this.emailNotif,
 							push_notif: !!this.pushNotif,

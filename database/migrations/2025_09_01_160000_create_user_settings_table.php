@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('language', 5)->default('id');
+            // language column removed; feature dropped
             $table->string('theme', 10)->default('system'); // light, dark, system
             $table->boolean('email_notif')->default(true);
             $table->boolean('push_notif')->default(false);

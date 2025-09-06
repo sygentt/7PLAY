@@ -1,3 +1,50 @@
+@props(['id', 'maxWidth' => 'md'])
+
+@php
+    $maxWidthClass = match ($maxWidth) {
+        'sm' => 'sm:max-w-sm',
+        'md' => 'sm:max-w-md',
+        'lg' => 'sm:max-w-lg',
+        'xl' => 'sm:max-w-xl',
+        '2xl' => 'sm:max-w-2xl',
+        default => 'sm:max-w-md',
+    };
+@endphp
+
+<style>
+#{{ $id }} {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+#{{ $id }}.show {
+    opacity: 1;
+}
+#{{ $id }} .modal-content {
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.3s ease-in-out;
+}
+#{{ $id }}.show .modal-content {
+    transform: scale(1) translateY(0);
+}
+</style>
+
+<div
+    id="{{ $id }}"
+    class="fixed inset-0 hidden"
+    style="z-index: 9999;"
+    role="dialog"
+    aria-modal="true"
+>
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="modal-content relative w-full {{ $maxWidthClass }} max-h-[90vh] flex flex-col text-left transform bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700">
+            <div class="flex-1 overflow-y-auto p-6 sm:p-8" id="{{ $id }}-content">
+                {{ $slot }}
+            </div>
+        </div>
+    </div>
+    
+</div>
+
 @props([
     'name',
     'show' => false,

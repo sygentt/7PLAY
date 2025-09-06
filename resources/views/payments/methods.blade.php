@@ -201,8 +201,8 @@ async function startQris(){
     </div>
 
     <!-- QR Code Modal -->
-    <div id="qr-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div id="qr-modal" class="fixed inset-0 hidden items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm z-50">
+        <div class="modal-content relative w-11/12 md:w-2/3 lg:w-1/2 max-w-3xl mx-auto p-6 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-2xl bg-white dark:bg-gray-800">
             <div class="mt-3">
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between mb-4">
@@ -280,11 +280,11 @@ async function startQris(){
                 <div class="flex space-x-4">
                     <button onclick="checkPaymentStatus()" 
                             id="check-status-btn"
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                            class="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
                         Cek Status Pembayaran
                     </button>
                     <button onclick="closeQrModal()" 
-                            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
                         Tutup
                     </button>
                 </div>

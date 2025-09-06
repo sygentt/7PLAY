@@ -11,7 +11,7 @@
 		 x-transition:leave="transition ease-in duration-200" 
 		 x-transition:leave-start="opacity-100" 
 		 x-transition:leave-end="opacity-0"
-		 class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 modal-backdrop"
+		 class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm modal-backdrop"
 		 @click="showEditModal = false"
 		 x-cloak>
 		
@@ -23,7 +23,7 @@
 			 x-transition:leave-start="opacity-100 scale-100" 
 			 x-transition:leave-end="opacity-0 scale-95"
 			 @click.stop
-			 class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto ring-1 ring-black/10 dark:ring-white/10">
+			 class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700 ring-0">
 			
 			<!-- Modal Header -->
 			<div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
