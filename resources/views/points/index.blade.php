@@ -67,9 +67,9 @@
             <!-- My Vouchers -->
             <div>
                 <h2 class="text-xl font-semibold mb-4">Voucher Saya</h2>
-                <div class="space-y-3">
+                <div class="space-y-3" id="my-vouchers-list">
                     @forelse($user_vouchers as $uv)
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 my-voucher-item {{ $loop->index >= 2 ? 'hidden' : '' }}">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-bold">{{ $uv->voucher->name }}</div>
@@ -89,11 +89,16 @@
                         <div class="text-gray-500">Belum ada voucher yang ditukar</div>
                     @endforelse
                 </div>
+                @if($user_vouchers->count() > 2)
+                    <div class="mt-3">
+                        <button type="button" id="btn-more-vouchers" class="text-sm text-cinema-600 dark:text-cinema-400 hover:underline" onclick="toggleShowMore('my-voucher-item','btn-more-vouchers')">Tampilkan lainnya</button>
+                    </div>
+                @endif
 
                 <h2 class="text-xl font-semibold mt-8 mb-4">Riwayat Poin</h2>
-                <div class="space-y-3">
+                <div class="space-y-3" id="point-history-list">
                     @forelse($transactions as $tx)
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between point-history-item {{ $loop->index >= 2 ? 'hidden' : '' }}">
                             <div>
                                 <div class="font-medium text-sm">{{ ucfirst($tx->type) }}</div>
                                 <div class="text-xs text-gray-500">{{ $tx->description }}</div>
@@ -106,6 +111,11 @@
                         <div class="text-gray-500">Belum ada transaksi poin</div>
                     @endforelse
                 </div>
+                @if($transactions->count() > 2)
+                    <div class="mt-3">
+                        <button type="button" id="btn-more-points" class="text-sm text-cinema-600 dark:text-cinema-400 hover:underline" onclick="toggleShowMore('point-history-item','btn-more-points')">Tampilkan lainnya</button>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -134,6 +144,30 @@ async function redeemVoucher(voucherId) {
     } catch (e) {
         console.error(e);
         alert('Terjadi kesalahan.');
+    }
+}
+
+function toggleShowMore(itemClass, btnId) {
+    const items = document.querySelectorAll('.' + itemClass);
+    let anyHidden = false;
+    items.forEach((el, idx) => {
+        if (idx >= 2 && el.classList.contains('hidden')) anyHidden = true;
+    });
+
+    const show = anyHidden;
+    items.forEach((el, idx) => {
+        if (idx >= 2) {
+            if (show) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+    });
+
+    const btn = document.getElementById(btnId);
+    if (btn) {
+        btn.textContent = show ? 'Tampilkan lebih sedikit' : 'Tampilkan lainnya';
     }
 }
 </script>
