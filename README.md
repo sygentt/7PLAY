@@ -1,4 +1,4 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel"></a></p>
+<p align="center"><img src="https://raw.githubusercontent.com/sygentt/7PLAY/refs/heads/main/logo.svg?token=GHSAT0AAAAAADHMVW3IYVNJHARXDZERYZAI2F3YQ6A" width="300" alt="7PLAY"></a></p>
 
 ## 7PLAY Cinema Booking
 
