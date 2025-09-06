@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="py-12">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-lg mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
                     
@@ -13,12 +13,12 @@
                         <!-- Alert akan di-generate oleh JavaScript -->
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        
-                        <!-- QR Code Section -->
-                        <div class="text-center">
+                    <div class="space-y-8 max-h-[80vh] overflow-y-auto pr-2">
+
+                        <!-- 1) QR Code Section -->
+                        <section class="text-center">
                             <h3 class="text-lg font-semibold mb-4">Scan QR Code untuk Bayar</h3>
-                            
+
                             @php
                                 $qrUrl = $payment->qr_code_url
                                     ?? data_get($payment->raw_response, 'qr_url')
@@ -32,14 +32,10 @@
                                             return null;
                                         })(data_get($payment->raw_response, 'actions', []));
                             @endphp
-                            
 
                             @if($qrUrl)
                                 <div class="bg-white border-2 border-gray-200 rounded-lg p-6 inline-block">
-                                    <img src="{{ $qrUrl }}" 
-                                         alt="QR Code QRIS" 
-                                         class="w-64 h-64 mx-auto"
-                                         id="qr-code">
+                                    <img src="{{ $qrUrl }}" alt="QR Code QRIS" class="w-64 h-64 mx-auto" id="qr-code">
                                 </div>
                             @else
                                 <div class="bg-gray-100 border-2 border-gray-200 rounded-lg p-6 inline-block">
@@ -50,66 +46,29 @@
                                             </svg>
                                             <p class="text-gray-500">QR Code sedang dimuat...</p>
                                             @if(app()->environment('local'))
-                                                <p class="text-xs text-gray-400 mt-1">Jika lama, klik "Cek Status Pembayaran" di kanan.</p>
+                                                <p class="text-xs text-gray-400 mt-1">Jika lama, klik "Cek Status Pembayaran" di bawah.</p>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                             @endif
 
-                            <!-- Payment Apps Icons -->
-                            <div class="mt-6">
-                                <p class="text-sm text-gray-600 mb-3">Dapat dibayar menggunakan:</p>
-                                <div class="flex justify-center space-x-4">
-                                    <div class="text-center">
-                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-1">
-                                            <span class="text-green-600 font-bold text-xs">GP</span>
-                                        </div>
-                                        <span class="text-xs text-gray-600">GoPay</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-1">
-                                            <span class="text-purple-600 font-bold text-xs">OVO</span>
-                                        </div>
-                                        <span class="text-xs text-gray-600">OVO</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-1">
-                                            <span class="text-blue-600 font-bold text-xs">DANA</span>
-                                        </div>
-                                        <span class="text-xs text-gray-600">DANA</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-1">
-                                            <span class="text-orange-600 font-bold text-xs">SP</span>
-                                        </div>
-                                        <span class="text-xs text-gray-600">ShopeePay</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
-                                            <span class="text-gray-600 font-bold text-xs">mBanking</span>
-                                        </div>
-                                        <span class="text-xs text-gray-600">Mobile Banking</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Timer -->
-                            <div class="mt-6 p-4 bg-orange-50 rounded-lg">
-                                <div class="flex items-center justify-center space-x-2">
-                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="text-sm text-orange-700">Waktu tersisa: <span id="countdown" class="font-bold">--:--</span></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Details Section -->
-                        <div>
-                            <h3 class="text-lg font-semibold mb-4">Detail Pembayaran</h3>
                             
-                            <!-- Payment Info -->
+                        </section>
+
+                        <!-- 2) Timer -->
+                        <section class="p-4 bg-orange-50 rounded-lg">
+                            <div class="flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="text-sm text-orange-700">Waktu tersisa: <span id="countdown" class="font-bold">--:--</span></span>
+                            </div>
+                        </section>
+
+                        <!-- 3) Payment Info -->
+                        <section>
+                            <h3 class="text-lg font-semibold mb-4">Detail Pembayaran</h3>
                             <div class="bg-gray-50 p-4 rounded-lg mb-6">
                                 <div class="space-y-3">
                                     <div class="flex justify-between">
@@ -124,80 +83,33 @@
                                         <span class="text-sm text-gray-600">Metode:</span>
                                         <span class="font-medium">QRIS</span>
                                     </div>
-                                    <!-- Status ditampilkan sebagai alert di atas, bukan label terpisah -->
                                     <div class="flex justify-between border-t pt-3">
                                         <span class="text-lg font-semibold">Total:</span>
                                         <span class="text-xl font-bold text-blue-600">{{ $payment->formatted_amount }}</span>
                                     </div>
                                 </div>
                             </div>
+                            
+                        </section>
 
-                            <!-- Order Items -->
-                            <div class="mb-6">
-                                <h4 class="font-semibold mb-3">Detail Tiket:</h4>
-                                @php $itemsCount = $payment->order->orderItems->count(); @endphp
-                                <div class="space-y-3" id="payment-items">
-                                    @foreach($payment->order->orderItems as $index => $item)
-                                        <div class="border border-gray-200 rounded-lg p-3 {{ ($itemsCount > 3 && $index >= 2) ? 'hidden payment-item-extra' : '' }}">
-                                            <div class="font-medium">{{ $payment->order->showtime?->movie?->title ?? 'Tiket' }}</div>
-                                            <div class="text-sm text-gray-600">
-                                                {{ $payment->order->showtime?->cinemaHall?->cinema?->name }} - {{ $payment->order->showtime?->cinemaHall?->name }}
-                                            </div>
-                                            <div class="text-sm text-gray-600">
-                                                {{ $payment->order->showtime ? $payment->order->showtime->getFormattedDateTime() : '-' }}
-                                            </div>
-                                            <div class="text-sm font-medium mt-1">
-                                                {{ 1 }} tiket × Rp {{ number_format($item->price, 0, ',', '.') }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                        <!-- 4) Cara Pembayaran -->
+                        <section class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2">Cara Pembayaran:</h4>
+                            <ol class="text-sm text-blue-700 space-y-1">
+                                <li>1. Buka aplikasi mobile banking atau e-wallet Anda</li>
+                                <li>2. Pilih menu "Scan QR" atau "QRIS"</li>
+                                <li>3. Arahkan kamera ke QR code di atas</li>
+                                <li>4. Pastikan nominal pembayaran sesuai</li>
+                                <li>5. Konfirmasi pembayaran</li>
+                                <li>6. Halaman akan otomatis terupdate setelah pembayaran berhasil</li>
+                            </ol>
+                        </section>
 
-                                @if($itemsCount > 3)
-                                    <div class="text-center mt-3">
-                                        <button id="show-more-btn" class="text-cinema-600 hover:text-cinema-700 font-medium underline" onclick="togglePaymentItems()">
-                                            Tampilkan lebih banyak ({{ $itemsCount - 2 }})
-                                        </button>
-                                        <button id="show-less-btn" class="text-cinema-600 hover:text-cinema-700 font-medium underline hidden" onclick="togglePaymentItems()">
-                                            Tampilkan lebih sedikit
-                                        </button>
-                                    </div>
-                                @endif
-                            </div>
+                        <!-- 5) Hanya tombol cek status pembayaran -->
+                        <section>
+                            <button onclick="onManualCheckStatus()" id="check-status-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Cek Status Pembayaran</button>
+                        </section>
 
-                            <!-- Instructions -->
-                            <div class="bg-blue-50 p-4 rounded-lg mb-6">
-                                <h4 class="font-semibold text-blue-800 mb-2">Cara Pembayaran:</h4>
-                                <ol class="text-sm text-blue-700 space-y-1">
-                                    <li>1. Buka aplikasi mobile banking atau e-wallet Anda</li>
-                                    <li>2. Pilih menu "Scan QR" atau "QRIS"</li>
-                                    <li>3. Arahkan kamera ke QR code di sebelah kiri</li>
-                                    <li>4. Pastikan nominal pembayaran sesuai</li>
-                                    <li>5. Konfirmasi pembayaran</li>
-                                    <li>6. Halaman akan otomatis terupdate setelah pembayaran berhasil</li>
-                                </ol>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="space-y-3">
-                                <button onclick="onManualCheckStatus()" 
-                                        id="check-status-btn"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                                    Cek Status Pembayaran
-                                </button>
-                                
-                                <button onclick="cancelPayment()" 
-                                        id="cancel-btn"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                                    Batalkan Pembayaran
-                                </button>
-                                
-                                <a href="{{ route('home') }}" 
-                                   class="block w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded-lg text-center transition-colors">
-                                    Kembali ke Beranda
-                                </a>
-                            </div>
-                        </div>
                     </div>
             </div>
         </div>

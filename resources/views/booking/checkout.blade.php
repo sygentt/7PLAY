@@ -96,7 +96,7 @@
         <!-- Payment Options -->
         <div class="space-y-4">
             <!-- Voucher Selector -->
-            <div class="bg-gray-800/50 rounded-xl p-6">
+            <div class="bg-gray-800/50 rounded-xl p-6 text-gray-900 dark:text-white">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-3">
                         <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
@@ -106,10 +106,10 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-lg">Voucher</h3>
-                            <p class="text-sm text-gray-400">Pilih voucher untuk mendapatkan diskon</p>
+                            <p class="text-sm text-gray-400 dark:text-white">Pilih voucher untuk mendapatkan diskon</p>
                         </div>
                     </div>
-                    <button id="btn-load-vouchers" onclick="openVoucherSelector()" class="px-6 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium hover:bg-gray-600 transition-colors">
+                    <button id="btn-load-vouchers" onclick="openVoucherSelector()" class="px-6 py-2 bg-gray-700 text-gray-300 dark:text-white rounded-lg font-medium hover:bg-gray-600 transition-colors">
                         Pilih Voucher
                     </button>
                 </div>
@@ -202,13 +202,13 @@
 
 <!-- Voucher Modal -->
 <div id="voucher-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
-    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-lg w-full mx-4 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-2xl">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold">Pilih Voucher</h3>
-            <button onclick="closeVoucherModal()" class="text-gray-500 hover:text-gray-700">Tutup</button>
+            <button onclick="closeVoucherModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-100">Tutup</button>
         </div>
         <div id="voucher-list" class="space-y-3">
-            <div class="text-gray-500">Memuat voucher...</div>
+            <div class="text-gray-500 dark:text-white">Memuat voucher...</div>
         </div>
     </div>
     
@@ -467,11 +467,11 @@ async function openVoucherSelector() {
                 const v = uv.voucher;
                 const badge = v.type === 'percentage' ? `${v.value}%` : `Rp ${Number(v.value).toLocaleString('id-ID')}`;
                 const el = document.createElement('div');
-                el.className = 'border rounded-xl p-4 flex items-center justify-between hover:bg-gray-50';
+                el.className = 'border rounded-xl p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white';
                 el.innerHTML = `
                     <div>
                         <div class="font-semibold">${v.name}</div>
-                        <div class="text-xs text-gray-500">${badge} OFF</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-200">${badge} OFF</div>
                     </div>
                     <button class="px-4 py-2 bg-cinema-600 text-white rounded-lg text-sm">Pakai</button>
                 `;
