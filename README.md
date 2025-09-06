@@ -5,7 +5,7 @@
 Aplikasi pemesanan tiket bioskop berbasis Laravel 11. Fitur utama: reservasi kursi (TTL terpusat), pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin lengkap.
 
 ### Teknologi
-- **Backend**: Laravel 11, PHP 8.3, MySQL
+- **Backend**: Laravel 12, PHP 8.3, MySQL
 - **Frontend**: Blade, Tailwind CSS, Vite, Heroicons
 - **Pembayaran**: Midtrans Snap/QRIS
 - **Pekerjaan Latar**: Laravel Queue, Scheduler
