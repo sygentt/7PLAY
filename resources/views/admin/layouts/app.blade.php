@@ -336,52 +336,19 @@
                         </p>
                     </div>
                     
-                    <!-- Header Actions -->
-                    <div class="ml-4 flex items-center space-x-4">
-
-                        
-                        <!-- User Dropdown -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button type="button" 
-                                    class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                    x-on:click="open = !open">
-                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                    <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                                </div>
-                            </button>
-                            
-                            <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                 x-show="open" 
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                 x-on:click.outside="open = false"
-                                 style="display: none;">
-                                <!-- Profile Link -->
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <x-heroicon-o-user class="h-4 w-4 inline mr-2"/>
-                                    Profile
-                                </a>
-                                
-                                <!-- Settings Link -->
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <x-heroicon-o-cog-6-tooth class="h-4 w-4 inline mr-2"/>
-                                    Settings
-                                </a>
-                                
-                                <!-- Logout -->
-                                <form method="POST" action="{{ route('admin.logout') }}" class="block">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <x-heroicon-o-arrow-right-on-rectangle class="h-4 w-4 inline mr-2"/>
-                                        Logout
-                                    </button>
-                                </form>
-                            </div>
+                    <!-- Header Actions (no dropdown) -->
+                    <div class="ml-4 flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
                         </div>
+                        <span class="text-sm text-gray-700 hidden sm:inline">{{ Auth::user()->name }}</span>
+                        <form method="POST" action="{{ route('admin.logout') }}">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <x-heroicon-o-arrow-right-on-rectangle class="h-4 w-4 mr-1"/>
+                                Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

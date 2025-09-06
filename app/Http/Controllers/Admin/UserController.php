@@ -217,8 +217,12 @@ class UserController extends Controller
             $validated['password'] = bcrypt($validated['password']);
         }
 
-        $validated['is_admin'] = $request->has('is_admin');
-        $validated['is_active'] = $request->has('is_active');
+        // Pastikan membaca nilai dari select ("0" atau "1"), bukan presence check (has)
+        $validated['is_admin'] = (bool) ((int) $request->input('is_admin', $user->is_admin ? 1 : 0));
+        $validated['is_active'] = (bool) ((int) $request->input('is_active', $user->is_active ? 1 : 0));
+        // Pastikan membaca nilai dari select ("0" atau "1"), bukan presence check (has)
+        $validated['is_admin'] = (bool) ((int) $request->input('is_admin'));
+        $validated['is_active'] = (bool) ((int) $request->input('is_active'));
 
         $user->update($validated);
 

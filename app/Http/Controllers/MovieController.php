@@ -32,7 +32,7 @@ class MovieController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('genre', 'like', "%{$search}%")
                   ->orWhere('director', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                  ->orWhere('synopsis', 'like', "%{$search}%");
             });
         }
         

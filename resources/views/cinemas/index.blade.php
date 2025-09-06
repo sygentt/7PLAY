@@ -50,10 +50,10 @@
 
                 <!-- View Toggle -->
                 <div class="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
-                    <button class="px-4 py-2 rounded-lg bg-cinema-600 text-white font-medium transition-all duration-200">
+                    <button id="cinemas-grid-btn" class="px-4 py-2 rounded-lg bg-cinema-600 text-white font-medium transition-all duration-200">
                         <x-heroicon-o-squares-2x2 class="w-4 h-4" />
                     </button>
-                    <button class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-all duration-200">
+                    <button id="cinemas-list-btn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-all duration-200">
                         <x-heroicon-o-list-bullet class="w-4 h-4" />
                     </button>
                 </div>
@@ -61,10 +61,10 @@
         </div>
     </section>
 
-    <!-- Cinemas Grid -->
+    <!-- Cinemas Grid/List -->
     <section class="py-16 bg-gray-50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div id="cinemas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-container="grid">
                 
                 @foreach(($cinemas ?? []) as $cinema)
                     <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
@@ -180,12 +180,50 @@
                 @endif
             </div>
 
-            <!-- Load More Button -->
-            <div class="text-center mt-12">
-                <button class="px-8 py-3 bg-cinema-600 hover:bg-cinema-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    Muat Lebih Banyak
-                </button>
+            <!-- List view -->
+            <div id="cinemas-list" class="hidden space-y-6" data-container="list">
+                @foreach(($cinemas ?? []) as $cinema)
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <div class="flex p-6">
+                            <div class="relative w-40 h-24 flex-shrink-0 rounded-xl overflow-hidden">
+                                <img 
+                                    src="https://dummyimage.com/320x180/1f2937/ffffff&text={{ urlencode($cinema->brand . ' ' . $cinema->name) }}" 
+                                    alt="{{ $cinema->full_name }}"
+                                    class="w-full h-full object-cover"
+                                >
+                            </div>
+                            <div class="flex-1 ml-6">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $cinema->full_name }}</h3>
+                                        <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-2">
+                                            <x-heroicon-o-map-pin class="w-4 h-4" />
+                                            <span class="text-sm">{{ $cinema->city->name }}</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 mb-2">
+                                            @foreach($cinema['facilities'] ?? [] as $facility)
+                                                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg">{{ $facility }}</span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <a href="#" class="px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white font-semibold rounded-lg transition-colors duration-200">Lihat Jadwal</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
+
+            @if(($cinemas ?? null) && method_exists($cinemas, 'hasPages') && $cinemas->hasPages())
+                <div class="mt-12 flex justify-center">
+                    <button id="cinemas-load-more" data-next-url="{{ $cinemas->nextPageUrl() }}"
+                            class="px-8 py-3 bg-cinema-600 hover:bg-cinema-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        Muat Lebih Banyak
+                    </button>
+                </div>
+            @endif
         </div>
     </section>
 @endsection
@@ -195,21 +233,97 @@
     // Search functionality
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('input[placeholder="Cari bioskop atau lokasi..."]');
-        const citySelect = document.querySelector('select');
-        
+        const citySelect = document.getElementById('city-select');
+        const gridBtn = document.getElementById('cinemas-grid-btn');
+        const listBtn = document.getElementById('cinemas-list-btn');
+        const gridView = document.getElementById('cinemas-grid');
+        const listView = document.getElementById('cinemas-list');
+
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                // Implement search logic here
-                console.log('Searching for:', this.value);
+            searchInput.addEventListener('keydown', function(e){
+                if(e.key === 'Enter'){
+                    const params = new URLSearchParams({
+                        q: this.value,
+                        city_id: document.getElementById('city-select')?.value || ''
+                    });
+                    window.location = '{{ route('cinemas.index') }}?' + params.toString();
+                }
             });
         }
-        
+
         if (citySelect) {
             citySelect.addEventListener('change', function() {
-                // Implement filter logic here
-                console.log('Filter by city:', this.value);
+                const params = new URLSearchParams({
+                    q: searchInput?.value || '',
+                    city_id: this.value || ''
+                });
+                window.location = '{{ route('cinemas.index') }}?' + params.toString();
             });
         }
+
+        function setView(mode){
+            if(!gridView || !listView) return;
+            localStorage.setItem('cinemaViewMode', mode);
+            if(mode === 'grid'){
+                gridView.classList.remove('hidden');
+                listView.classList.add('hidden');
+                gridBtn?.classList.add('bg-cinema-600','text-white');
+                listBtn?.classList.remove('bg-cinema-600','text-white');
+            } else {
+                gridView.classList.add('hidden');
+                listView.classList.remove('hidden');
+                listBtn?.classList.add('bg-cinema-600','text-white');
+                gridBtn?.classList.remove('bg-cinema-600','text-white');
+            }
+        }
+        gridBtn?.addEventListener('click', () => setView('grid'));
+        listBtn?.addEventListener('click', () => setView('list'));
+        setView(localStorage.getItem('cinemaViewMode') || 'grid');
+
+        // Load more (AJAX)
+        const loadMoreBtn = document.getElementById('cinemas-load-more');
+        async function loadMore(){
+            if(!loadMoreBtn) return;
+            const nextUrl = loadMoreBtn.getAttribute('data-next-url');
+            if(!nextUrl){
+                loadMoreBtn.classList.add('hidden');
+                return;
+            }
+            const url = new URL(nextUrl);
+            url.searchParams.set('ajax','1');
+            try{
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Memuat...';
+                const resp = await fetch(url.toString(), {headers:{'X-Requested-With':'XMLHttpRequest'}});
+                const data = await resp.json();
+                if(data && (data.html_grid || data.html_list)){
+                    if(gridView && data.html_grid){
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html_grid;
+                        Array.from(temp.children).forEach(c => gridView.appendChild(c));
+                    }
+                    if(listView && data.html_list){
+                        const temp2 = document.createElement('div');
+                        temp2.innerHTML = data.html_list;
+                        Array.from(temp2.children).forEach(c => listView.appendChild(c));
+                    }
+                    if(data.has_more && data.next_page_url){
+                        loadMoreBtn.setAttribute('data-next-url', data.next_page_url);
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.textContent = 'Muat Lebih Banyak';
+                    } else {
+                        loadMoreBtn.classList.add('hidden');
+                    }
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+            }catch(e){
+                console.error(e);
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.textContent = 'Muat Lebih Banyak';
+            }
+        }
+        loadMoreBtn?.addEventListener('click', loadMore);
     });
 </script>
 @endpush

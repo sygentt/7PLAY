@@ -232,9 +232,9 @@
                                                 @endif
                                             </div>
                                             
-                                            @if($movie->description)
+                                            @if($movie->synopsis)
                                                 <p class="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
-                                                    {{ $movie->description }}
+                                                    {{ Str::limit($movie->synopsis, 160) }}
                                                 </p>
                                             @endif
                                             

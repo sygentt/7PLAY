@@ -67,6 +67,7 @@
                 <div class="hidden md:block relative">
                     <div class="relative">
                         <input 
+                            id="global-search-input"
                             type="text" 
                             placeholder="Cari film..." 
                             class="w-64 lg:w-80 pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500/50 focus:border-cinema-500 transition-all duration-200 text-sm"
@@ -163,6 +164,7 @@
             <div class="mb-6">
                 <div class="relative">
                     <input 
+                        id="global-search-input-mobile"
                         type="text" 
                         placeholder="Cari film..." 
                         class="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-500/50 focus:border-cinema-500 transition-all duration-200 text-sm"
@@ -248,6 +250,34 @@
 </script>
 
 <script>
+    // Global search handlers (desktop & mobile)
+    (function(){
+        function performSearch(value){
+            const q = (value || '').trim();
+            const url = new URL(window.location.origin + '{{ route('movies.index') }}'.replace(window.location.origin, ''));
+            if(q){
+                url.searchParams.set('search', q);
+            }
+            window.location.href = url.toString();
+        }
+
+        function attachEnterHandler(inputId){
+            const el = document.getElementById(inputId);
+            if(!el) return;
+            el.addEventListener('keydown', function(e){
+                if(e.key === 'Enter'){
+                    e.preventDefault();
+                    performSearch(el.value);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            attachEnterHandler('global-search-input');
+            attachEnterHandler('global-search-input-mobile');
+        });
+    })();
+
     // Fetch unread count and update badge
     async function refreshUnreadCount(){
         try{
