@@ -57,12 +57,12 @@ class RegisteredUserController extends Controller
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Registrasi berhasil! Selamat datang di 7PLAY.',
-                    'redirect' => route('home', absolute: false)
+                    'message' => 'Registrasi berhasil! Kami telah mengirim link verifikasi ke email Anda.',
+                    'redirect' => route('home', absolute: false) . '?verify_sent=1'
                 ]);
             }
 
-            return redirect()->route('home');
+            return redirect()->to(route('home', absolute: false) . '?verify_sent=1');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {

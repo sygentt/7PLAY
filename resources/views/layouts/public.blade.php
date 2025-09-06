@@ -118,6 +118,24 @@
     
     <!-- Additional Scripts -->
     @stack('scripts')
+    <script>
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('verified') === '1' && window.Toast) {
+                window.Toast.show('Email Anda berhasil diverifikasi. Selamat datang!', 'success', 5000);
+                // bersihkan query agar tidak muncul lagi saat back/refresh
+                const url = new URL(window.location.href);
+                url.searchParams.delete('verified');
+                window.history.replaceState({}, document.title, url.toString());
+            }
+            if (params.get('verify_sent') === '1' && window.Toast) {
+                window.Toast.show('Registrasi berhasil! Link verifikasi telah dikirim ke email Anda.', 'info', 6000);
+                const url = new URL(window.location.href);
+                url.searchParams.delete('verify_sent');
+                window.history.replaceState({}, document.title, url.toString());
+            }
+        })();
+    </script>
 </body>
 </html>
 
