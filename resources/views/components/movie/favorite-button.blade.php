@@ -6,6 +6,15 @@
 		if (loading) return;
 		loading = true;
 		try {
+			// Guard: jika belum login, buka modal auth
+			const isAuthenticated = document.querySelector('meta[name=\'user-authenticated\']')?.getAttribute('content') === 'true';
+			if (!isAuthenticated) {
+				if (typeof openAuthModal === 'function') {
+					openAuthModal('login');
+					loading = false;
+					return;
+				}
+			}
 			const payload = { movie_id: {{ (int) $movieId }} };
 			const response = await fetch('{{ route('favorites.toggle') }}', {
 				method: 'POST',

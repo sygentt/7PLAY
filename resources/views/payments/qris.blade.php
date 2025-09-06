@@ -1,14 +1,12 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pembayaran QRIS') }}
-        </h2>
-    </x-slot>
+@extends('layouts.public')
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+@section('title', 'Pembayaran QRIS - 7PLAY')
+
+@section('content')
+<div class="py-12">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
                     
                     <!-- Payment Status Alert -->
                     <div id="status-alert" class="mb-6 hidden">
@@ -126,10 +124,7 @@
                                         <span class="text-sm text-gray-600">Metode:</span>
                                         <span class="font-medium">QRIS</span>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600">Status:</span>
-                                        <span id="payment-status" class="font-medium capitalize">{{ $payment->status }}</span>
-                                    </div>
+                                    <!-- Status ditampilkan sebagai alert di atas, bukan label terpisah -->
                                     <div class="flex justify-between border-t pt-3">
                                         <span class="text-lg font-semibold">Total:</span>
                                         <span class="text-xl font-bold text-blue-600">{{ $payment->formatted_amount }}</span>
@@ -140,9 +135,10 @@
                             <!-- Order Items -->
                             <div class="mb-6">
                                 <h4 class="font-semibold mb-3">Detail Tiket:</h4>
-                                <div class="space-y-3">
-                                    @foreach($payment->order->orderItems as $item)
-                                        <div class="border border-gray-200 rounded-lg p-3">
+                                @php $itemsCount = $payment->order->orderItems->count(); @endphp
+                                <div class="space-y-3" id="payment-items">
+                                    @foreach($payment->order->orderItems as $index => $item)
+                                        <div class="border border-gray-200 rounded-lg p-3 {{ ($itemsCount > 3 && $index >= 2) ? 'hidden payment-item-extra' : '' }}">
                                             <div class="font-medium">{{ $payment->order->showtime?->movie?->title ?? 'Tiket' }}</div>
                                             <div class="text-sm text-gray-600">
                                                 {{ $payment->order->showtime?->cinemaHall?->cinema?->name }} - {{ $payment->order->showtime?->cinemaHall?->name }}
@@ -156,6 +152,17 @@
                                         </div>
                                     @endforeach
                                 </div>
+
+                                @if($itemsCount > 3)
+                                    <div class="text-center mt-3">
+                                        <button id="show-more-btn" class="text-cinema-600 hover:text-cinema-700 font-medium underline" onclick="togglePaymentItems()">
+                                            Tampilkan lebih banyak ({{ $itemsCount - 2 }})
+                                        </button>
+                                        <button id="show-less-btn" class="text-cinema-600 hover:text-cinema-700 font-medium underline hidden" onclick="togglePaymentItems()">
+                                            Tampilkan lebih sedikit
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Instructions -->
@@ -173,7 +180,7 @@
 
                             <!-- Action Buttons -->
                             <div class="space-y-3">
-                                <button onclick="checkPaymentStatus(true)" 
+                                <button onclick="onManualCheckStatus()" 
                                         id="check-status-btn"
                                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                                     Cek Status Pembayaran
@@ -192,12 +199,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
+@push('scripts')
+<script>
         let paymentStatusInterval;
         let countdownInterval;
         
@@ -209,23 +217,16 @@
 
         // Auto check payment status setiap 5 detik
         function startPaymentStatusCheck() {
-            checkPaymentStatus();
-            paymentStatusInterval = setInterval(checkPaymentStatus, 5000);
+            checkPaymentStatus(false);
+            paymentStatusInterval = setInterval(() => checkPaymentStatus(false), 5000);
         }
 
-        function checkPaymentStatus(showAlert = false) {
-            fetch(`{{ route('payment.qris.status', $payment) }}`)
+        function checkPaymentStatus(manual = false) {
+            return fetch(`{{ route('payment.qris.status', $payment) }}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (showAlert) {
-                        try {
-                            alert(JSON.stringify(data, null, 2));
-                        } catch (e) {
-                            alert('Tidak bisa stringify JSON.');
-                        }
-                    }
                     if (data.success) {
-                        updatePaymentStatus(data.status);
+                        // Status tidak lagi diupdate pada label, tampilkan melalui alert saja
                         if (data.qr_code_url) {
                             const img = document.getElementById('qr-code');
                             if (img) {
@@ -237,38 +238,36 @@
                         if (data.is_paid) {
                             clearInterval(paymentStatusInterval);
                             clearInterval(countdownInterval);
-                            showSuccessAlert('Pembayaran berhasil! Anda akan diarahkan ke halaman sukses...');
-                            setTimeout(() => {
-                                window.location.href = `{{ route('payment.success', $payment) }}`;
-                            }, 2000);
+                            if (manual) { alert('Pembayaran berhasil!'); }
+                            window.location.href = `{{ route('payment.success', $payment) }}`;
                         } else if (data.is_expired) {
                             clearInterval(paymentStatusInterval);
                             clearInterval(countdownInterval);
-                            showErrorAlert('Pembayaran telah kedaluwarsa.');
+                            if (manual) { alert('Pembayaran telah kedaluwarsa.'); }
                             document.getElementById('qr-code').style.opacity = '0.5';
+                        } else {
+                            if (manual) { alert(data.message || 'Menunggu pembayaran...'); }
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error checking payment status:', error);
-                    alert('Error checking payment status: ' + (error && error.message ? error.message : error));
+                    if (manual) { alert('Gagal mengecek status pembayaran.'); }
                 });
         }
 
-        function updatePaymentStatus(status) {
-            const statusElement = document.getElementById('payment-status');
-            statusElement.textContent = status;
-            
-            // Update warna berdasarkan status
-            statusElement.className = 'font-medium capitalize';
-            if (status === 'settlement') {
-                statusElement.classList.add('text-green-600');
-            } else if (status === 'pending') {
-                statusElement.classList.add('text-yellow-600');
-            } else {
-                statusElement.classList.add('text-red-600');
-            }
+        function onManualCheckStatus(){
+            const btn = document.getElementById('check-status-btn');
+            const original = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Mengecek status...';
+            checkPaymentStatus(true).finally(() => {
+                btn.disabled = false;
+                btn.textContent = original;
+            });
         }
+
+        // updatePaymentStatus dihapus; gunakan alert untuk memberi feedback status
 
         function startCountdown() {
             const expiryTime = new Date('{{ $payment->expiry_time }}').getTime();
@@ -354,5 +353,22 @@
             if (paymentStatusInterval) clearInterval(paymentStatusInterval);
             if (countdownInterval) clearInterval(countdownInterval);
         });
+
+        // Toggle show more/less for order items
+        function togglePaymentItems(){
+            const extras = document.querySelectorAll('.payment-item-extra');
+            const showMore = document.getElementById('show-more-btn');
+            const showLess = document.getElementById('show-less-btn');
+            const hidden = Array.from(extras).some(el => el.classList.contains('hidden'));
+            extras.forEach(el => el.classList.toggle('hidden'));
+            if(hidden){
+                if(showMore) showMore.classList.add('hidden');
+                if(showLess) showLess.classList.remove('hidden');
+            }else{
+                if(showMore) showMore.classList.remove('hidden');
+                if(showLess) showLess.classList.add('hidden');
+            }
+        }
     </script>
-</x-app-layout>
+@endpush
+@endsection

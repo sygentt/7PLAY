@@ -86,23 +86,12 @@
                 </div>
                 <div class="flex justify-between text-xl font-bold border-t border-gray-600 pt-2">
                     <span>Total</span>
-                    <span>Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                    <span data-total-amount>Rp{{ number_format($order->total_amount, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Timer -->
-        <div class="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mb-8">
-            <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L10 9.586V6z" clip-rule="evenodd"></path>
-                </svg>
-                <div>
-                    <div class="font-semibold text-red-400">Selesaikan pembayaran dalam</div>
-                    <div class="text-2xl font-bold text-red-300" id="countdown-timer">10:00</div>
-                </div>
-            </div>
-        </div>
+        <!-- Payment Timer dipindahkan ke halaman payment/qris -->
 
         <!-- Payment Options -->
         <div class="space-y-4">
@@ -127,14 +116,14 @@
 
                 <div id="voucher-selected" class="hidden mt-2 text-sm text-green-400"></div>
             </div>
-            <!-- Metode Pembayaran (popup) -->
+            <!-- Metode Pembayaran (pilih di checkout dan lanjut ke halaman QRIS) -->
             <div class="bg-gray-800/50 rounded-xl p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="font-bold text-lg">Metode Pembayaran</h3>
-                        <p class="text-sm text-gray-400">Pilih salah satu metode</p>
+                        <p class="text-sm text-gray-400">QRIS</p>
                     </div>
-                    <button class="px-6 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors" onclick="openPaymentModal()">Pilih</button>
+                    <button onclick="createQrisAndRedirect()" class="px-6 py-2 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-colors">Lanjutkan</button>
                 </div>
             </div>
         </div>
@@ -164,11 +153,7 @@
             </div>
         </div>
 
-        <!-- Payment Timer in Modal -->
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div class="text-red-700 font-semibold">Selesaikan dalam</div>
-            <div class="text-2xl font-bold text-red-600" id="modal-countdown-timer">10:00</div>
-        </div>
+        <!-- Timer di modal dihapus: timer hanya tampil di halaman payment/qris -->
 
         <!-- Action Buttons -->
         <div class="flex space-x-4">
@@ -233,35 +218,8 @@
 @push('scripts')
 <script>
 const order = @json($order);
-const expiresAt = new Date('{{ optional($order->expiry_date)->toIso8601String() ?? now()->addMinutes(10)->toIso8601String() }}');
-
-let countdownInterval;
 let paymentCheckInterval;
 let currentPaymentId = null;
-
-function startCountdown() {
-    countdownInterval = setInterval(() => {
-        const now = new Date();
-        const timeLeft = expiresAt - now;
-        
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            alert('Waktu pembayaran telah habis. Order akan dibatalkan.');
-            window.location.href = '{{ route('home') }}';
-            return;
-        }
-        
-        const minutes = Math.floor(timeLeft / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
-        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        document.getElementById('countdown-timer').textContent = timeString;
-        const modalTimer = document.getElementById('modal-countdown-timer');
-        if (modalTimer) {
-            modalTimer.textContent = timeString;
-        }
-    }, 1000);
-}
 
 async function selectPaymentMethod(method) {
     if (method === 'qris') {
@@ -386,19 +344,56 @@ async function createQrisAndOpen(){
     }
 }
 
+// Buat payment QRIS lalu redirect ke halaman payment/qris/{id}
+async function createQrisAndRedirect(){
+    try {
+        const response = await fetch('{{ route('payment.qris.create', $order) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+        const raw = await response.text();
+        let result; try { result = raw ? JSON.parse(raw) : {}; } catch (e) { result = { message: raw }; }
+        if (!response.ok || !result.success){
+            alert(result.message || 'Gagal membuat pembayaran');
+            return;
+        }
+        const paymentId = result.payment_id || (result.payment && result.payment.id);
+        if (!paymentId){
+            alert('Gagal mendapatkan ID pembayaran.');
+            return;
+        }
+        window.location.href = `{{ route('payment.qris.show', ':id') }}`.replace(':id', String(paymentId));
+    } catch (e) {
+        alert('Gagal membuat pembayaran');
+    }
+}
+
 function startPaymentStatusCheck(paymentId) {
     currentPaymentId = paymentId || currentPaymentId;
     paymentCheckInterval = setInterval(async () => {
         try {
             const response = await fetch(`/payment/qris/${paymentId}/status`);
             const result = await response.json();
-            
-            if (result.status === 'success' || result.status === 'settlement') {
+
+            // Consider paid when API marks is_paid or status is settlement/capture
+            if (result.is_paid || result.status === 'settlement' || result.status === 'capture') {
                 clearInterval(paymentCheckInterval);
                 clearInterval(countdownInterval);
                 alert('Pembayaran berhasil! Terima kasih atas pembelian tiket Anda.');
                 window.location.href = result.redirect_url || '{{ route('payment.success', ['payment' => ':paymentId']) }}'.replace(':paymentId', paymentId);
-            } else if (result.status === 'failed' || result.status === 'expired' || result.status === 'cancel') {
+            } else if (
+                result.status === 'failure' ||
+                result.status === 'failed' ||
+                result.status === 'expire' ||
+                result.status === 'expired' ||
+                result.status === 'cancel' ||
+                result.status === 'deny'
+            ) {
                 clearInterval(paymentCheckInterval);
                 alert('Pembayaran gagal atau kedaluwarsa.');
                 closeQRModal();
@@ -450,12 +445,11 @@ async function checkPaymentStatus() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    startCountdown();
+    // Timer dinonaktifkan di halaman checkout
 });
 
 // Cleanup intervals when page is unloaded
 window.addEventListener('beforeunload', function() {
-    if (countdownInterval) clearInterval(countdownInterval);
     if (paymentCheckInterval) clearInterval(paymentCheckInterval);
 });
 

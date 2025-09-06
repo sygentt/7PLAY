@@ -1,5 +1,25 @@
 @extends('layouts.public')
 
+@section('title', 'Pembayaran Berhasil - 7PLAY')
+
+@section('content')
+<div class="min-h-[60vh] flex items-center justify-center">
+    <div class="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl p-8 text-center border border-gray-100 dark:border-gray-700 mx-4">
+        <div class="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold mb-2">Pembayaran Berhasil</h1>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">Terima kasih! Pembayaran untuk pesanan Anda telah diterima.</p>
+        <a href="{{ route('home') }}" class="inline-block px-6 py-3 bg-cinema-600 text-white rounded-lg">Kembali ke Beranda</a>
+    </div>
+    
+</div>
+@endsection
+
+@extends('layouts.public')
+
 @section('title', 'Terima kasih! Pembayaran Berhasil - 7PLAY')
 
 @section('content')

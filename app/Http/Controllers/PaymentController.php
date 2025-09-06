@@ -129,7 +129,8 @@ class PaymentController extends Controller
             return redirect()->route('payment.success', $payment);
         }
 
-        return view('payments.qris', compact('payment'));
+        $current_page = 'checkout';
+        return view('payments.qris', compact('payment', 'current_page'));
     }
 
     /**

@@ -268,6 +268,9 @@
             refreshUnreadCount();
         }catch(e){/* ignore */}
     }
-    document.addEventListener('DOMContentLoaded', refreshUnreadCount);
+    document.addEventListener('DOMContentLoaded', function(){
+        const isAuthenticated = document.querySelector('meta[name="user-authenticated"]')?.content === 'true';
+        if (isAuthenticated) refreshUnreadCount();
+    });
 </script>
 

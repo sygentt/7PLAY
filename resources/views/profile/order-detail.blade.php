@@ -197,6 +197,13 @@
 
 					<!-- Action Buttons -->
 					<div class="mt-6 space-y-2">
+						@if($order->status === \App\Models\Order::STATUS_PENDING && !$order->isExpired())
+							<button onclick="resumePayment()" class="w-full inline-flex items-center justify-center px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg transition-colors">
+								<x-heroicon-o-currency-dollar class="w-4 h-4 mr-2" />
+								Lanjutkan Pembayaran
+							</button>
+						@endif
+
 						@if(in_array($order->status, ['confirmed', 'paid']) && $order->orderItems->where('showtime.show_time', '>', now())->count() > 0)
 							<a href="{{ route('profile.tickets.eticket', $order) }}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg transition-colors">
 								<x-heroicon-o-ticket class="w-4 h-4 mr-2" />
@@ -214,4 +221,35 @@
 			</div>
 		</div>
 	</section>
+@push('scripts')
+<script>
+async function resumePayment(){
+    try{
+        const resp = await fetch(`{{ route('payment.qris.create', $order) }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+        const raw = await resp.text();
+        let data; try { data = raw ? JSON.parse(raw) : {}; } catch(e) { data = { message: raw }; }
+        if(!resp.ok || !data.success){
+            alert(data.message || 'Gagal melanjutkan pembayaran');
+            return;
+        }
+        const paymentId = data.payment_id || (data.payment && data.payment.id);
+        if(!paymentId){
+            alert('ID pembayaran tidak ditemukan.');
+            return;
+        }
+        window.location.href = `{{ route('payment.qris.show', ':id') }}`.replace(':id', String(paymentId));
+    }catch(err){
+        alert('Terjadi kesalahan saat melanjutkan pembayaran');
+    }
+}
+</script>
+@endpush
 @endsection

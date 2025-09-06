@@ -37,7 +37,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'qris' => [
-        'validity_period_minutes' => 30, // 30 menit
+        'validity_period_minutes' => 10, // 10 menit sesuai requirement UI
         'currency' => 'IDR',
     ],
 
