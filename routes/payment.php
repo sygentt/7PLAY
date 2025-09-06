@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'active_user'])->group(function () {
     
     // Halaman pilihan metode pembayaran
     Route::get('/payment/methods/{order}', [PaymentController::class, 'showPaymentMethods'])

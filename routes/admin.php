@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\CheckinController;
 // use App\Http\Controllers\Admin\CinemaHallController;
 use Illuminate\Support\Facades\Route;
 
@@ -131,3 +132,6 @@ Route::prefix('reports')->name('admin.reports.')->group(function () {
     Route::get('/users', [ReportController::class, 'users'])->name('users');
     Route::get('/chart-data', [ReportController::class, 'getChartData'])->name('chart-data');
 });
+
+// Ticket Check-in
+Route::post('/checkin', [CheckinController::class, 'checkinByQr'])->name('admin.checkin');

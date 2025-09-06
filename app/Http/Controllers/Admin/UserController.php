@@ -174,11 +174,11 @@ class UserController extends Controller
         // User statistics
         $userStats = [
             'total_orders' => $user->orders()->count(),
-            'completed_orders' => $user->orders()->confirmed()->count(),
+            'completed_orders' => $user->orders()->completed()->count(),
             'cancelled_orders' => $user->orders()->cancelled()->count(),
             'pending_orders' => $user->orders()->pending()->count(),
             'total_spent' => $user->getTotalSpent(),
-            'avg_order_value' => $user->orders()->confirmed()->avg('total_amount') ?? 0,
+            'avg_order_value' => $user->orders()->completed()->avg('total_amount') ?? 0,
             'favorite_genre' => $user->getFavoriteGenre(),
             'last_order' => $user->orders()->latest()->first(),
         ];
@@ -353,7 +353,7 @@ class UserController extends Controller
                 ->groupBy('gender')
                 ->pluck('count', 'gender'),
             'top_spenders' => User::withSum(['orders as total_spent' => function ($q) {
-                    $q->confirmed();
+                    $q->completed();
                 }], 'total_amount')
                 ->orderByDesc('total_spent')
                 ->limit(10)

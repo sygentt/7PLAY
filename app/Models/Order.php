@@ -84,12 +84,11 @@ class Order extends Model
 
     /**
      * Get order's voucher
-     * TODO: Uncomment when Voucher model is created
      */
-    // public function voucher(): BelongsTo
-    // {
-    //     return $this->belongsTo(Voucher::class);
-    // }
+    public function voucher(): BelongsTo
+    {
+        return $this->belongsTo(Voucher::class);
+    }
 
     /**
      * Get order items
@@ -153,6 +152,14 @@ class Order extends Model
     public function scopeConfirmed($query)
     {
         return $query->where('status', self::STATUS_CONFIRMED);
+    }
+
+    /**
+     * Scope to get completed orders (paid or confirmed)
+     */
+    public function scopeCompleted($query)
+    {
+        return $query->whereIn('status', [self::STATUS_PAID, self::STATUS_CONFIRMED]);
     }
 
     /**

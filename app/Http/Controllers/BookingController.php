@@ -103,7 +103,7 @@ class BookingController extends Controller
                 'discount_amount' => 0,
                 'total_amount' => $subtotal,
                 'status' => Order::STATUS_PENDING,
-                'expiry_date' => now()->addMinutes(10), // batas waktu pembayaran
+                'expiry_date' => now()->addMinutes((int) config('booking.ttl_minutes', 10)), // batas waktu pembayaran
             ]);
 
             // Create order items (one per seat)
@@ -141,7 +141,7 @@ class BookingController extends Controller
                     [
                         'user_id' => Auth::id(),
                         'reserved_at' => now(),
-                        'expires_at' => now()->addMinutes(10),
+                        'expires_at' => now()->addMinutes((int) config('booking.ttl_minutes', 10)),
                         'status' => SeatReservation::STATUS_RESERVED,
                     ]
                 );

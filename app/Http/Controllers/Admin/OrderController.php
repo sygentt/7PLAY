@@ -139,8 +139,8 @@ class OrderController extends Controller
             'paid' => Order::paid()->count(),
             'confirmed' => Order::confirmed()->count(),
             'cancelled' => Order::cancelled()->count(),
-            'today_revenue' => Order::confirmed()->whereDate('created_at', Carbon::today())->sum('total_amount'),
-            'month_revenue' => Order::confirmed()->whereBetween('created_at', [
+            'today_revenue' => Order::completed()->whereDate('created_at', Carbon::today())->sum('total_amount'),
+            'month_revenue' => Order::completed()->whereBetween('created_at', [
                 Carbon::now()->startOfMonth(),
                 Carbon::now()->endOfMonth()
             ])->sum('total_amount'),

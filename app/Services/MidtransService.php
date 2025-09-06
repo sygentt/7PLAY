@@ -6,6 +6,9 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PointTransaction;
 use App\Models\UserPoint;
+use App\Models\SeatReservation;
+use App\Models\OrderItem;
+use App\Models\UserVoucher;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -101,7 +104,7 @@ class MidtransService
                 'payment_type' => 'qris',
                 'status' => $respArray['transaction_status'] ?? 'pending',
                 'reference_no' => $respArray['transaction_id'] ?? null,
-                'expiry_time' => now()->addMinutes((int) config('midtrans.qris.validity_period_minutes')),
+                'expiry_time' => now()->addMinutes((int) config('booking.ttl_minutes', (int) config('midtrans.qris.validity_period_minutes', 10))),
                 'customer_details' => $payload['customer_details'],
                 'item_details' => array_map(function ($i) {
                     return ['id' => $i['id'], 'price' => $i['price'], 'quantity' => 1, 'name' => $i['name']];
@@ -266,7 +269,12 @@ class MidtransService
         switch ($transaction_status) {
             case 'settlement':
                 if ($fraud_status === 'accept') {
-                    $order->update(['status' => 'paid']);
+                    // Mark order paid + fill payment fields and confirm seats
+                    try {
+                        $this->finalizeOrderOnSettlement($order, $payment, $notification);
+                    } catch (\Throwable $e) {
+                        Log::error('Finalize settlement failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
                     Log::info("Order {$order->id} marked as paid");
                     // Award points on settlement
                     try {
@@ -286,6 +294,11 @@ class MidtransService
             case 'expire':
             case 'failure':
                 $order->update(['status' => 'cancelled']);
+                try {
+                    $this->handleOrderOnCancelOrExpire($order);
+                } catch (\Throwable $e) {
+                    Log::error('Handle cancel/expire failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
                 Log::info("Order {$order->id} marked as cancelled due to payment {$transaction_status}");
                 break;
         }
@@ -329,7 +342,11 @@ class MidtransService
             $order = $payment->order;
             if ($order) {
                 if ($status === 'settlement') {
-                    $order->update(['status' => 'paid']);
+                    try {
+                        $this->finalizeOrderOnSettlement($order, $payment, null);
+                    } catch (\Throwable $e) {
+                        Log::error('Finalize settlement (polling) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
                     // Award points here as well (polling path), idempotent inside awardPointsForOrder
                     try {
                         $this->awardPointsForOrder((int) $order->user_id, (int) round($order->total_amount), (string) $order->id);
@@ -338,6 +355,11 @@ class MidtransService
                     }
                 } elseif (in_array($status, ['deny','cancel','expire','failure'])) {
                     $order->update(['status' => 'cancelled']);
+                    try {
+                        $this->handleOrderOnCancelOrExpire($order);
+                    } catch (\Throwable $e) {
+                        Log::error('Handle cancel/expire (polling) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                    }
                 }
             }
             return ['status' => 'success', 'payment_status' => $status, 'data' => $resp];
@@ -385,9 +407,18 @@ class MidtransService
             // Update order status juga
             $order = $payment->order;
             if ($order && $new_status === 'settlement') {
-                $order->update(['status' => 'paid']);
+                try {
+                    $this->finalizeOrderOnSettlement($order, $payment, null);
+                } catch (\Throwable $e) {
+                    Log::error('Finalize settlement (status check) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
             } elseif ($order && in_array($new_status, ['failure', 'cancel', 'expire'])) {
                 $order->update(['status' => 'cancelled']);
+                try {
+                    $this->handleOrderOnCancelOrExpire($order);
+                } catch (\Throwable $e) {
+                    Log::error('Handle cancel/expire (status check) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
             }
         }
     }
@@ -445,5 +476,89 @@ class MidtransService
             'description' => 'Poin dari order #' . $order_id,
             'order_id' => $order_id,
         ]);
+    }
+
+    /**
+     * Finalize order on settlement: fill payment fields, confirm seat reservations, mark voucher used.
+     */
+    private function finalizeOrderOnSettlement(Order $order, Payment $payment, ?Notification $notification): void
+    {
+        // Update order payment fields and status
+        $payment_method = $payment->payment_method ?? ($notification->payment_type ?? null);
+        $payment_reference = $payment->reference_no
+            ?? ($payment->raw_response['transaction_id'] ?? null)
+            ?? ($notification->transaction_id ?? null);
+
+        $order->update([
+            'status' => Order::STATUS_PAID,
+            'payment_method' => $payment_method,
+            'payment_reference' => $payment_reference,
+            'payment_date' => now(),
+            'payment_data' => array_merge((array) ($order->payment_data ?? []), [
+                'payment_id' => $payment->id,
+                'external_id' => $payment->external_id,
+                'settlement_time' => $payment->settlement_time?->toISOString(),
+            ]),
+        ]);
+
+        // Confirm seat reservations for this order's seats
+        $seatIds = $order->orderItems()->pluck('seat_id')->all();
+        if (!empty($seatIds)) {
+            SeatReservation::query()
+                ->where('showtime_id', $order->showtime_id)
+                ->whereIn('seat_id', $seatIds)
+                ->whereIn('status', [SeatReservation::STATUS_RESERVED, SeatReservation::STATUS_EXPIRED])
+                ->update(['status' => SeatReservation::STATUS_CONFIRMED]);
+        }
+
+        // Mark user voucher as used if applicable
+        if (!empty($order->voucher_id)) {
+            $userVoucher = UserVoucher::query()
+                ->where('user_id', $order->user_id)
+                ->where('voucher_id', $order->voucher_id)
+                ->where('is_used', false)
+                ->orderBy('redeemed_at')
+                ->orderBy('id')
+                ->first();
+            if ($userVoucher) {
+                $userVoucher->update([
+                    'is_used' => true,
+                    'used_at' => now(),
+                    'order_id' => $order->id,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Handle seat and voucher rollback when order is cancelled or expired.
+     */
+    private function handleOrderOnCancelOrExpire(Order $order): void
+    {
+        // Cancel order items
+        $order->orderItems()->update(['status' => OrderItem::STATUS_CANCELLED]);
+
+        // Release seat reservations (mark as expired)
+        $seatIds = $order->orderItems()->pluck('seat_id')->all();
+        if (!empty($seatIds)) {
+            SeatReservation::query()
+                ->where('showtime_id', $order->showtime_id)
+                ->whereIn('seat_id', $seatIds)
+                ->whereIn('status', [SeatReservation::STATUS_RESERVED, SeatReservation::STATUS_CONFIRMED])
+                ->update(['status' => SeatReservation::STATUS_EXPIRED]);
+        }
+
+        // Restore voucher usage if it was marked used by this order
+        $usedVoucher = UserVoucher::query()
+            ->where('order_id', $order->id)
+            ->where('is_used', true)
+            ->first();
+        if ($usedVoucher) {
+            $usedVoucher->update([
+                'is_used' => false,
+                'used_at' => null,
+                'order_id' => null,
+            ]);
+        }
     }
 }

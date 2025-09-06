@@ -27,19 +27,19 @@ class ReportController extends Controller
 
         // Key Performance Indicators
         $kpis = [
-            'total_revenue' => Order::confirmed()
+            'total_revenue' => Order::completed()
                 ->whereBetween('created_at', [$dateFrom, $dateTo])
                 ->sum('total_amount'),
             
             'total_orders' => Order::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
             
-            'total_tickets' => Order::confirmed()
+            'total_tickets' => Order::completed()
                 ->whereBetween('created_at', [$dateFrom, $dateTo])
                 ->withCount('orderItems')
                 ->get()
                 ->sum('order_items_count'),
             
-            'avg_order_value' => Order::confirmed()
+            'avg_order_value' => Order::completed()
                 ->whereBetween('created_at', [$dateFrom, $dateTo])
                 ->avg('total_amount') ?? 0,
             
@@ -58,8 +58,8 @@ class ReportController extends Controller
 
         $growth = [
             'revenue_growth' => $this->calculateGrowth(
-                Order::confirmed()->whereBetween('created_at', [$dateFrom, $dateTo])->sum('total_amount'),
-                Order::confirmed()->whereBetween('created_at', [$previousPeriodStart, $previousPeriodEnd])->sum('total_amount')
+                Order::completed()->whereBetween('created_at', [$dateFrom, $dateTo])->sum('total_amount'),
+                Order::completed()->whereBetween('created_at', [$previousPeriodStart, $previousPeriodEnd])->sum('total_amount')
             ),
             'orders_growth' => $this->calculateGrowth(
                 Order::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
@@ -91,7 +91,7 @@ class ReportController extends Controller
         $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
 
         // Daily revenue trend
-        $dailyRevenue = Order::confirmed()
+        $dailyRevenue = Order::completed()
             ->selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue, COUNT(*) as orders')
             ->whereBetween('created_at', [$dateFrom, $dateTo])
             ->groupBy('date')
@@ -99,7 +99,7 @@ class ReportController extends Controller
             ->get();
 
         // Revenue by payment method
-        $paymentMethodRevenue = Order::confirmed()
+        $paymentMethodRevenue = Order::completed()
             ->selectRaw('payment_method, SUM(total_amount) as revenue, COUNT(*) as orders')
             ->whereBetween('created_at', [$dateFrom, $dateTo])
             ->whereNotNull('payment_method')
@@ -108,7 +108,7 @@ class ReportController extends Controller
             ->get();
 
         // Revenue by city
-        $cityRevenue = Order::confirmed()
+        $cityRevenue = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('cinema_halls', 'showtimes.cinema_hall_id', '=', 'cinema_halls.id')
             ->join('cinemas', 'cinema_halls.cinema_id', '=', 'cinemas.id')
@@ -120,7 +120,7 @@ class ReportController extends Controller
             ->get();
 
         // Revenue by cinema
-        $cinemaRevenue = Order::confirmed()
+        $cinemaRevenue = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('cinema_halls', 'showtimes.cinema_hall_id', '=', 'cinema_halls.id')
             ->join('cinemas', 'cinema_halls.cinema_id', '=', 'cinemas.id')
@@ -143,7 +143,7 @@ class ReportController extends Controller
         $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
 
         // Top performing movies
-        $topMovies = Order::confirmed()
+        $topMovies = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.title, movies.genre, movies.rating, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold, AVG(orders.total_amount) as avg_ticket_price')
@@ -154,7 +154,7 @@ class ReportController extends Controller
             ->get();
 
         // Movie performance by genre
-        $genrePerformance = Order::confirmed()
+        $genrePerformance = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.genre, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold')
@@ -165,7 +165,7 @@ class ReportController extends Controller
             ->get();
 
         // Movie ratings performance
-        $ratingPerformance = Order::confirmed()
+        $ratingPerformance = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.rating, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold')
@@ -178,7 +178,7 @@ class ReportController extends Controller
         $showtimeUtilization = Showtime::with(['movie', 'cinemaHall.cinema'])
             ->withCount(['orderItems' => function ($query) use ($dateFrom, $dateTo) {
                 $query->whereHas('order', function ($q) use ($dateFrom, $dateTo) {
-                    $q->confirmed()->whereBetween('created_at', [$dateFrom, $dateTo]);
+                    $q->completed()->whereBetween('created_at', [$dateFrom, $dateTo]);
                 });
             }])
             ->whereBetween('show_date', [$dateFrom, $dateTo])
@@ -219,7 +219,7 @@ class ReportController extends Controller
 
         // Top customers by spending
         $topCustomers = User::withSum(['orders as total_spent' => function ($q) use ($dateFrom, $dateTo) {
-                $q->confirmed()->whereBetween('created_at', [$dateFrom, $dateTo]);
+                $q->completed()->whereBetween('created_at', [$dateFrom, $dateTo]);
             }], 'total_amount')
             ->withCount(['orders as total_orders' => function ($q) use ($dateFrom, $dateTo) {
                 $q->whereBetween('created_at', [$dateFrom, $dateTo]);

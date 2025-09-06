@@ -36,10 +36,10 @@ class AdminController extends Controller
             ->get();
 
         // Revenue stats
-        $today_revenue = \App\Models\Order::confirmed()
+        $today_revenue = \App\Models\Order::completed()
             ->whereDate('created_at', today())
             ->sum('total_amount');
-        $monthly_revenue = \App\Models\Order::confirmed()
+        $monthly_revenue = \App\Models\Order::completed()
             ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->sum('total_amount');
 
@@ -67,15 +67,20 @@ class AdminController extends Controller
      */
     public function getDashboardStats(): JsonResponse
     {
+        $total_orders = \App\Models\Order::count();
+        $total_movies = \App\Models\Movie::count();
+        $today_revenue = \App\Models\Order::completed()->whereDate('created_at', today())->sum('total_amount');
+        $monthly_revenue = \App\Models\Order::completed()->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('total_amount');
+
         return response()->json([
             'total_users' => User::count(),
             'total_cities' => City::count(),
             'total_cinemas' => Cinema::count(),
             'active_cinemas' => Cinema::active()->count(),
-            'total_orders' => 0, // Order::count(),
-            'total_movies' => 0, // Movie::count(),
-            'today_revenue' => 0, // Order::whereDate('created_at', today())->sum('total_amount'),
-            'monthly_revenue' => 0, // Order::whereMonth('created_at', now()->month)->sum('total_amount'),
+            'total_orders' => $total_orders,
+            'total_movies' => $total_movies,
+            'today_revenue' => (float) $today_revenue,
+            'monthly_revenue' => (float) $monthly_revenue,
         ]);
     }
 }

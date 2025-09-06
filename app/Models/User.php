@@ -69,10 +69,10 @@ class User extends Authenticatable implements MustVerifyEmail
      * Get the user's point account.
      * TODO: Uncomment when UserPoints model is created
      */
-    // public function user_points(): HasOne
-    // {
-    //     return $this->hasOne(UserPoints::class);
-    // }
+    public function user_points(): HasOne
+    {
+        return $this->hasOne(UserPoint::class);
+    }
 
     /**
      * Get the user's settings.
@@ -95,19 +95,19 @@ class User extends Authenticatable implements MustVerifyEmail
      * Get all vouchers owned by the user.
      * TODO: Uncomment when UserVouchers model is created
      */
-    // public function vouchers(): HasMany
-    // {
-    //     return $this->hasMany(UserVouchers::class);
-    // }
+    public function vouchers(): HasMany
+    {
+        return $this->hasMany(UserVoucher::class);
+    }
 
     /**
      * Get all point transactions for the user.
      * TODO: Uncomment when PointTransactions model is created
      */
-    // public function point_transactions(): HasMany
-    // {
-    //     return $this->hasMany(PointTransactions::class);
-    // }
+    public function point_transactions(): HasMany
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
 
     /**
      * Get all seat reservations made by the user.
@@ -191,8 +191,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getMembershipLevelAttribute(): string
     {
-        // return $this->user_points?->membership_level ?? 'bronze';
-        return 'bronze'; // Default for now
+        return $this->user_points?->membership_level ?? 'bronze';
     }
 
     /**
@@ -201,8 +200,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getTotalPointsAttribute(): int
     {
-        // return $this->user_points?->total_points ?? 0;
-        return 0; // Default for now
+        return $this->user_points?->total_points ?? 0;
     }
 
     /**

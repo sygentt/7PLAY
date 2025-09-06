@@ -88,14 +88,15 @@ class SeatReservation extends Model
     /**
      * Create reservation with default expiry time
      */
-    public static function createReservation($userId, $showtimeId, $seatId, $minutes = 15): self
+    public static function createReservation($userId, $showtimeId, $seatId, $minutes = null): self
     {
+        $ttl = $minutes ?? (int) config('booking.ttl_minutes', 10);
         return self::create([
             'user_id' => $userId,
             'showtime_id' => $showtimeId,
             'seat_id' => $seatId,
             'reserved_at' => now(),
-            'expires_at' => now()->addMinutes($minutes),
+            'expires_at' => now()->addMinutes($ttl),
             'status' => self::STATUS_RESERVED,
         ]);
     }
@@ -103,10 +104,11 @@ class SeatReservation extends Model
     /**
      * Extend reservation expiry time
      */
-    public function extend($minutes = 15): bool
+    public function extend($minutes = null): bool
     {
         if ($this->status === self::STATUS_RESERVED) {
-            $this->update(['expires_at' => now()->addMinutes($minutes)]);
+            $ttl = $minutes ?? (int) config('booking.ttl_minutes', 10);
+            $this->update(['expires_at' => now()->addMinutes($ttl)]);
             return true;
         }
         return false;
