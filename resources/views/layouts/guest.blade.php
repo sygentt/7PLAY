@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', '7PLAY') }} - {{ $title ?? 'Masuk' }}</title>
+        <title>{{ config('app.name', '7PLAY') }} - @yield('title', isset($title) ? $title : 'Autentikasi')</title>
         <meta name="description" content="Platform pemesanan tiket bioskop online terpercaya di Indonesia. Booking tiket film favorit Anda dengan mudah dan aman.">
 
         <!-- Fonts -->

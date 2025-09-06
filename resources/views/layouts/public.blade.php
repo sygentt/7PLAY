@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="user-authenticated" content="{{ auth()->check() ? 'true' : 'false' }}">
 
-    <title>{{ config('app.name', '7PLAY') }} - @yield('title', 'Platform Pemesanan')</title>
+    <title>@yield('title', config('app.name', '7PLAY') . ' - Platform Pemesanan Tiket Bioskop')</title>
     <meta name="description" content="@yield('description', 'Platform pemesanan tiket bioskop online terpercaya di Indonesia. Booking tiket film favorit Anda dengan mudah dan aman.')">
     
     <!-- SEO Meta Tags -->
