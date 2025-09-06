@@ -2,7 +2,7 @@
 
 ## 7PLAY Cinema Booking
 
-Aplikasi pemesanan tiket bioskop berbasis Laravel 11. Fitur utama: reservasi kursi (TTL terpusat), pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin lengkap.
+Aplikasi pemesanan tiket bioskop berbasis Laravel 12. Fitur utama: reservasi kursi (TTL terpusat), pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin lengkap.
 
 ### Teknologi
 - **Backend**: Laravel 12, PHP 8.3, MySQL
