@@ -33,14 +33,19 @@ Route::get('/cinemas', function () {
     return Cinema::active()->with('city:id,name')->select('id','name','city_id')->paginate(50);
 });
 
-Route::get('/showtimes/{movie}', function (Movie $movie) {
+Route::get('/movies/{movie}/showtimes', function (Movie $movie) {
     $showtimes = Showtime::where('movie_id', $movie->id)
-        ->whereDate('show_date', '>=', now()->toDateString())
+        ->active()
+        ->upcoming()
         ->with(['cinemaHall.cinema.city'])
         ->orderBy('show_date')
         ->orderBy('show_time')
         ->get();
-    return ['movie' => $movie->only(['id','title']), 'showtimes' => $showtimes];
+
+    return [
+        'movie' => $movie->only(['id', 'title']),
+        'showtimes' => $showtimes,
+    ];
 });
 
 Route::get('/seats/availability/{showtime}', function (Showtime $showtime) {

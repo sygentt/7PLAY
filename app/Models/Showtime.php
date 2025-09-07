@@ -124,7 +124,13 @@ class Showtime extends Model
      */
     public function scopeUpcoming($query)
     {
-        return $query->whereDate('show_date', '>=', Carbon::today());
+        return $query->where(function ($q) {
+            $q->whereDate('show_date', '>', Carbon::today())
+              ->orWhere(function ($subQuery) {
+                  $subQuery->whereDate('show_date', Carbon::today())
+                           ->whereTime('show_time', '>=', Carbon::now()->format('H:i'));
+              });
+        });
     }
 
     /**

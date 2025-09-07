@@ -85,7 +85,7 @@
 									<div class="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-300">
 										<p><strong>Bioskop:</strong> {{ $item->showtime->cinemaHall->cinema->name }}</p>
 										<p><strong>Studio:</strong> {{ $item->showtime->cinemaHall->name }}</p>
-										<p><strong>Waktu Tayang:</strong> {{ $item->showtime->show_time->format('d F Y, H:i') }}</p>
+										<p><strong>Waktu Tayang:</strong> {{ $item->showtime->show_date->format('d F Y') }}, {{ $item->showtime->show_time->format('H:i') }}</p>
 										<p><strong>Kursi:</strong> {{ $item->seat->row_label }}{{ $item->seat->seat_number }} ({{ ucfirst($item->seat->type) }})</p>
 									</div>
 								</div>

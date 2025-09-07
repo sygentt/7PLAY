@@ -60,7 +60,7 @@
 											{{ $item->showtime->cinemaHall->cinema->name }} - {{ $item->showtime->cinemaHall->name }}
 										</p>
 										<p class="text-sm text-gray-500 dark:text-gray-400">
-											{{ $item->showtime->show_time->format('d F Y, H:i') }}
+											{{ $item->showtime->show_date->format('d F Y') }}, {{ $item->showtime->show_time->format('H:i') }}
 										</p>
 										<p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
 											1 tiket • Rp {{ number_format($item->price, 0, ',', '.') }}

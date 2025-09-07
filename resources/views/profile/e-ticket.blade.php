@@ -43,7 +43,7 @@
 							<div class="flex items-center">
 								<span class="text-gray-300 w-20 text-sm">Tanggal</span>
 								<span class="text-white font-semibold text-xl">
-									{{ $order->orderItems->first()->showtime->show_time->format('D, d M Y') }}
+									{{ $order->orderItems->first()->showtime->show_date->format('D, d M Y') }}
 								</span>
 							</div>
 

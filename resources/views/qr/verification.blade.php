@@ -59,7 +59,7 @@
 								<div>
 									<span class="text-gray-500 dark:text-gray-400 block">Tanggal & Waktu Tayang:</span>
 									<p class="font-semibold text-gray-900 dark:text-gray-100">
-										{{ $order->orderItems->first()->showtime->show_time->format('l, d F Y') }}
+										{{ $order->orderItems->first()->showtime->show_date->format('l, d F Y') }}
 									</p>
 									<p class="font-semibold text-gray-900 dark:text-gray-100">
 										{{ $order->orderItems->first()->showtime->show_time->format('H:i') }} WIB

@@ -13,9 +13,9 @@
         <div class="p-8">
             <!-- Header -->
             <div class="mb-6">
-                <!-- Cinema XXI Logo placeholder -->
+                <!-- Brand placeholder (filled by JS) -->
                 <div class="flex items-center mb-4">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">Cinema XXI</div>
+                    <div id="modal-brand-name" class="text-2xl font-bold text-gray-900 dark:text-white"></div>
                 </div>
                 
                 <!-- Movie Info -->

@@ -136,6 +136,12 @@ class SeatCountModal {
             titleElement.textContent = showtime.movie.title || 'Movie Title';
         }
 
+        // Update brand name
+        const brandElement = document.getElementById('modal-brand-name');
+        if (brandElement && showtime.cinema) {
+            brandElement.textContent = showtime.cinema.brand || showtime.cinema.full_name || '';
+        }
+
         // Update cinema info
         const cinemaElement = document.getElementById('modal-cinema-info');
         if (cinemaElement && showtime.cinema) {

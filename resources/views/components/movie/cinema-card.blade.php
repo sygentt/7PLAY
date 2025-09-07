@@ -19,7 +19,10 @@
 
     <!-- Showtimes -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        @forelse($showtimes as $showtime)
+        @php
+            $availableShowtimes = $showtimes->filter(fn($s) => $s->isUpcoming());
+        @endphp
+        @forelse($availableShowtimes as $showtime)
             <button
                 @auth
                     onclick="openSeatCountModal({{ $showtime->id }})"
