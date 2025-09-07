@@ -35,13 +35,13 @@
                             </h1>
 
                             <!-- Meta Info -->
-                            <div class="flex flex-wrap items-center gap-4 text-gray-300 mb-6">
-                                <span class="flex items-center space-x-1">
-                                    <x-heroicon-o-calendar-days class="w-4 h-4" />
+                            <div class="flex flex-wrap items-center gap-3 text-gray-100 mb-6">
+                                <span class="inline-flex items-center space-x-2 px-3 py-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-full text-white text-sm">
+                                    <x-heroicon-o-calendar-days class="w-4 h-4 text-white/90" />
                                     <span>{{ date('Y', strtotime($movie['release_date'])) }}</span>
                                 </span>
-                                <span class="flex items-center space-x-1">
-                                    <x-heroicon-o-clock class="w-4 h-4" />
+                                <span class="inline-flex items-center space-x-2 px-3 py-1 bg-black/40 backdrop-blur-sm border border-white/10 rounded-full text-white text-sm">
+                                    <x-heroicon-o-clock class="w-4 h-4 text-white/90" />
                                     <span>{{ $movie['duration'] }}</span>
                                 </span>
                                 @if($movie['rating'])
@@ -50,13 +50,13 @@
                                     <span>{{ $movie['rating'] }}/10</span>
                                 </span>
                                 @endif
-                                <span class="px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-sm">
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-sm text-white font-medium">
                                     {{ $movie['genre'] }}
                                 </span>
                             </div>
 
                             <!-- Description -->
-                            <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                            <p class="text-lg text-white mb-8 leading-relaxed">
                                 {{ $movie['description'] }}
                             </p>
 
