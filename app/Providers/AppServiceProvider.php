@@ -25,9 +25,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Locale is set via SetLocaleFromUser middleware
         // Force HTTPS in local environment
-        // if(config('app.env') === 'local') {
-        //     URL::forceScheme('https');
-        // }
+        if(config('app.env') === 'local') {
+            URL::forceScheme('https');
+        }
 
         // Hook: when DB notification created, optionally send email push if data[send_email]=true
         DbNotification::created(function (DbNotification $n) {

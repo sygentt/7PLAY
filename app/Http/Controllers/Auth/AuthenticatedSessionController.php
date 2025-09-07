@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
                 ]);
             }
 
-            return redirect()->route('home');
+            return redirect()->intended(route('home'));
             
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->wantsJson() || $request->ajax()) {
