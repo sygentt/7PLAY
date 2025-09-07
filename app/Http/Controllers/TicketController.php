@@ -22,7 +22,7 @@ class TicketController extends Controller
             }])
             ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_PAID])
             ->whereHas('orderItems.showtime', function ($query) {
-                $query->where('show_time', '>=', now());
+                $query->upcoming();
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'active_page');
@@ -34,7 +34,7 @@ class TicketController extends Controller
             }])
             ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_PAID])
             ->whereHas('orderItems.showtime', function ($query) {
-                $query->where('show_time', '<', now());
+                $query->past();
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'expired_page');
