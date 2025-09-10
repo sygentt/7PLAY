@@ -119,6 +119,11 @@
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                 @endif
                                 
+                                <!-- Favorite Button (overlay) -->
+                                <div class="absolute top-3 right-3 z-10">
+                                    <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                                </div>
+
                                 <!-- Overlay -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <div class="absolute bottom-4 left-4 right-4">
@@ -157,12 +162,6 @@
                                     @endif
                                 </div>
                             </div>
-                            
-                            @auth
-                            <div class="mt-3 flex justify-end">
-                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
-                            </div>
-                            @endauth
                             
                         @auth
                             </a>
@@ -205,6 +204,11 @@
                                              alt="{{ $movie->title }}" 
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                     @endif
+
+                                    <!-- Favorite Button (overlay) -->
+                                    <div class="absolute top-2 right-2 z-10">
+                                        <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                                    </div>
                                 </div>
                                 
                                 <!-- Movie Details -->
@@ -259,12 +263,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            @auth
-                            <div class="px-6 pb-4 -mt-4 flex justify-end">
-                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
-                            </div>
-                            @endauth
                             
                         @auth
                             </a>
