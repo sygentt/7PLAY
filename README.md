@@ -1,14 +1,14 @@
-<p align="center"><img src="https://raw.githubusercontent.com/sygentt/7PLAY/refs/heads/main/logo.svg?token=GHSAT0AAAAAADHMVW3J4CI47L5HCAGECWCM2GC5VLA" width="200" alt="7PLAY"></a></p>
+<p align="center"><img src="logo.svg" width="200" alt="7PLAY"></p>
 
 ## 7PLAY Cinema Booking
 
-Aplikasi pemesanan tiket bioskop berbasis Laravel 12. Fitur utama: reservasi kursi (TTL terpusat), pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin lengkap.
+Platform pemesanan tiket bioskop berbasis Laravel 12 dengan Tailwind CSS 4. Fitur utama: reservasi kursi dengan TTL terpusat, pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin.
 
 ### Teknologi
 - **Backend**: Laravel 12, PHP 8.3, MySQL
-- **Frontend**: Blade, Tailwind CSS, Vite, Heroicons
+- **Frontend**: Blade, Tailwind CSS 4, Vite, Heroicons
 - **Pembayaran**: Midtrans Snap/QRIS
-- **Pekerjaan Latar**: Laravel Queue, Scheduler
+- **Background Jobs**: Laravel Queue & Scheduler
 
 ---
 
@@ -17,31 +17,66 @@ Aplikasi pemesanan tiket bioskop berbasis Laravel 12. Fitur utama: reservasi kur
 - MySQL 8 / MariaDB 10.6+
 - Composer 2+
 - Node.js 18+ dan npm 9+
-- Opsional: Ngrok untuk pengujian webhook
+- Opsional: Ngrok untuk webhook Midtrans
 
-## Instalasi Cepat
+## Instalasi
+1) Siapkan file lingkungan
 ```bash
 cp .env.example .env
+```
+
+2) Pasang dependensi PHP & aplikasi
+```bash
 composer install
 php artisan key:generate
 php artisan migrate --seed
+php artisan storage:link
+```
+
+3) Pasang dependensi frontend
+```bash
 npm ci
 ```
 
-> Jika menggunakan Windows/Laragon, jalankan perintah di atas pada terminal Laragon. Jalankan juga `php artisan storage:link` bila membutuhkan akses ke berkas di `storage/app/public`.
+4) Jalankan aplikasi (mode pengembangan)
+```bash
+php artisan serve
+npm run dev
+```
 
-## Menjalankan Aplikasi
-- Backend: `php artisan serve`
-- Frontend Dev (Vite): `npm run dev`
-- Frontend Prod Build: `npm run build`
-
-Jika dibuka melalui ngrok, gunakan build produksi (`npm run build`) agar tidak ada Vite dev server lintas-origin.
+> Untuk akses via ngrok/host publik, gunakan build produksi `npm run build` agar menghindari pembatasan Vite dev server lintas-origin.
 
 ---
 
-## Konfigurasi Lingkungan (.env)
-Tambahkan variabel berikut sesuai kebutuhan:
+## Penggunaan
 
+### Alur Booking
+1. Pilih film dan tanggal, kemudian pilih kursi pada showtime.
+2. Sistem membuat reservasi kursi sesuai `BOOKING_TTL_MINUTES`.
+3. Checkout dan bayar via Midtrans. Status order diperbarui melalui webhook.
+4. E-ticket dikirim via email (diproses queue).
+5. Check-in menggunakan QR token sekali pakai.
+
+### Menjalankan Queue & Scheduler
+```bash
+php artisan queue:work --queue=default --tries=3 --backoff=5
+php artisan schedule:work
+# Cron alternatif: * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
+```
+
+Job terjadwal utama: `ExpireSeatReservationsJob`, `CancelExpiredOrdersJob`, `ShowtimeReminderJob`.
+
+### Rute Penting
+- **Publik**: `/`, `/movies`, `/movies/{movie}`, `/cinemas`, `/qr/{token}`
+- **Auth/Profil**: `/booking/*`, `/points`, `/vouchers`, `/profile`
+- **Admin** (`/admin`): kota, bioskop, film, showtime, pesanan, pengguna, voucher, notifikasi, laporan
+- **API ringkas**: `GET /api/movies`, `GET /api/cinemas`, `GET /api/showtimes/{movie}`, `GET /api/seats/availability/{showtime}`, `GET /api/orders/{order}/status`
+
+---
+
+## Konfigurasi
+
+### Variabel .env
 ```dotenv
 APP_URL=http://localhost:8000
 
@@ -52,7 +87,7 @@ DB_DATABASE=7play
 DB_USERNAME=root
 DB_PASSWORD=
 
-# Booking TTL (menit) dipakai untuk seluruh alur reservasi/pembayaran
+# Booking TTL (menit) untuk alur reservasi/pembayaran
 BOOKING_TTL_MINUTES=10
 
 # MIDTRANS (Sandbox)
@@ -74,108 +109,58 @@ MAIL_FROM_ADDRESS=no-reply@7play.local
 MAIL_FROM_NAME="7PLAY"
 ```
 
-- **TTL Booking** diatur di `config/booking.php` (kunci: `ttl_minutes`).
-- **Webhook Midtrans**: `APP_URL/api/midtrans/notification`. Lihat juga `MIDTRANS_SETUP.md`.
+- TTL Booking juga tersedia di `config/booking.php`.
+- Webhook Midtrans: `APP_URL/api/midtrans/notification` (lihat `MIDTRANS_SETUP.md`).
 
----
-
-## Data Seeder & Kredensial
-Seeder default akan membuat data contoh kota, bioskop, studio, kursi, film, jadwal, order, dan pengguna admin.
-
-- **Admin**: `admin@7play.com` / `admin123`
-- **Super Admin**: `superadmin@7play.com` / `superadmin123`
-- **User Uji**: `test@example.com` (password acak dari factory; buat sendiri via register bila perlu)
-
-Jalankan ulang seeder bila dibutuhkan:
-
+### Tailwind 4
+Proyek ini dikonfigurasi dengan Tailwind via Vite. Pastikan `tailwindcss` pada `package.json` menggunakan versi 4.x. Jika masih 3.x, upgrade dengan:
 ```bash
-php artisan migrate:fresh --seed
+npm i -D tailwindcss@^4 @tailwindcss/vite@^4 postcss autoprefixer
 ```
+Konfigurasi opsional tersedia di `tailwind.config.js` (pastikan path Blade sudah tercakup).
 
 ---
 
-## Alur Booking & Pembayaran (Ringkas)
-1. Pengguna memilih film dan tanggal, lalu memilih kursi pada showtime.
-2. Sistem membuat reservasi kursi dengan batas waktu sesuai `BOOKING_TTL_MINUTES`.
-3. Pengguna checkout dan membayar via Midtrans (QRIS). Status order diperbarui via webhook.
-4. Saat pembayaran selesai, e-ticket dikirim ke email (diproses oleh queue).
-5. Check-in di pintu masuk dengan QR token sekali-pakai.
+## Arsitektur
 
-> Worker queue wajib aktif agar email e-ticket dan proses async berjalan.
+### Struktur Direktori Kunci
+- `app/Models` — Model Eloquent seperti `Movie`, `Cinema`, `Showtime`, `Order`, `Seat`, dll.
+- `app/Http/Controllers` — Controller publik, auth, admin, dan webhook Midtrans.
+- `app/Jobs` — Worker untuk email e-ticket, TTL, reminder, pembatalan order expired.
+- `app/Services/MidtransService.php` — Abstraksi pemanggilan API Midtrans.
+- `config/booking.php`, `config/midtrans.php`, `config/points.php` — Konfigurasi domain.
+- `resources/views/components` — Komponen Blade reusable untuk semua UI.
+- `routes/web.php`, `routes/admin.php`, `routes/api.php`, `routes/payment.php` — Definisi rute.
 
-### Menjalankan Queue & Scheduler
-```bash
-php artisan queue:work --queue=default --tries=3 --backoff=5
-php artisan schedule:work
-# Alternatif cron: * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
-```
+### Pola & Prinsip
+- TTL reservasi terpusat via `config/booking.php`, digunakan pada alur reservasi dan pembayaran.
+- Event-driven untuk proses async (email e-ticket, reminder) melalui Queue.
+- Validasi & Form Request pada endpoint sensitif.
 
-Job terjadwal: `ExpireSeatReservationsJob`, `CancelExpiredOrdersJob`, `ShowtimeReminderJob`.
-
----
-
-## Rute Penting
-
-### Publik (tanpa login)
-- `/` — Beranda (film unggulan, daftar kini tayang/akan tayang)
-- `/movies` — Daftar film (pencarian: `search`, urut: `sort`)
-- `/movies/{movie}` — Detail film + showtimes
-- `/cinemas` — Daftar bioskop
-- `/qr/{token}` — Verifikasi QR e-ticket
-
-### Autentikasi & Profil (auth + verified + active_user)
-- `/booking/select-seats/{showtime}` — Pilih kursi
-- `/booking/reserve-seats` — Reservasi kursi (POST)
-- `/booking/checkout/{order}` — Checkout
-- `/booking/checkout/{order}/vouchers` — Daftar voucher
-- `/booking/checkout/{order}/apply-voucher` — Terapkan voucher (POST)
-- `/points` — Poin & penukaran voucher
-- `/vouchers` — Voucher milik pengguna
-- `/profile` — Edit profil, notifikasi, tiket, riwayat pesanan, favorit, pengaturan
-
-### Admin Panel
-Panel admin tersedia di prefix `/admin` dan meliputi modul:
-- Kota (`admin.cities.*`)
-- Bioskop (`admin.cinemas.*`)
-- Film (`admin.movies.*`)
-- Jadwal (`admin.showtimes.*`)
-- Pesanan (`admin.orders.*`)
-- Pengguna (`admin.users.*`)
-- Voucher (`admin.vouchers.*`)
-- Notifikasi (`admin.notifications.*`)
-- Laporan (`admin.reports.*`)
-
-Pastikan login sebagai admin (`is_admin = true`).
-
-### API (ringkas)
-- `GET /api/movies` — Daftar film aktif (paginate)
-- `GET /api/cinemas` — Daftar bioskop aktif (paginate)
-- `GET /api/showtimes/{movie}` — Jadwal film (≥ hari ini)
-- `GET /api/seats/availability/{showtime}` — Kursi tidak tersedia
-- `GET /api/orders/{order}/status` — Status order (auth:sanctum)
-
----
-
-## Komponen UI & Placeholder Gambar
-- Halaman dibangun dengan komponen Blade yang reusable di `resources/views/components`.
-- Placeholder gambar menggunakan `dummyimage.com` dengan teks dan ukuran yang dapat dikustom:
-
+### Komponen UI & Placeholder Gambar
+- Semua halaman dirakit dari komponen di `resources/views/components` untuk reusability.
+- Gunakan placeholder `dummyimage.com` dengan teks/ukuran kustom:
 ```html
 <img src="https://dummyimage.com/300x450/374151/ffffff?text={{ urlencode($movie->title) }}" alt="{{ $movie->title }}">
 ```
 
 ---
 
-## Keamanan Webhook Midtrans
-Aktifkan salah satu atau keduanya untuk keamanan callback:
-- **Callback Token**: tetapkan `MIDTRANS_CALLBACK_TOKEN` dan verifikasi pada endpoint.
-- **IP Allowlist**: tetapkan `MIDTRANS_ALLOWED_IPS` dengan daftar IP Midtrans.
+## Pengembangan
 
-Detail langkah integrasi tersedia di `MIDTRANS_SETUP.md`.
+### Perintah Harian
+- Jalankan server: `php artisan serve`
+- Jalankan Vite: `npm run dev`
+- Build produksi: `npm run build`
+
+### Kualitas Kode
+- Gunakan Laravel Pint: `vendor/bin/pint`
+- Ikuti konvensi Laravel dan praktik keamanan standar.
 
 ---
 
 ## Testing
+Jalankan semua pengujian:
 ```bash
 php artisan test
 ```
@@ -183,14 +168,18 @@ Tersedia pengujian fitur (auth, booking, profil) dan unit.
 
 ---
 
-## Troubleshooting
-- **Asset tidak tampil saat dibuka via ngrok**: gunakan `npm run build` alih-alih dev server.
-- **Email tidak terkirim**: ganti `MAIL_MAILER=log` ke SMTP yang valid.
-- **Pembayaran tidak update**: pastikan webhook Midtrans mengarah ke `APP_URL/api/midtrans/notification` dan queue berjalan.
-- **Kursi tidak kembali tersedia**: periksa `BOOKING_TTL_MINUTES` dan jalankan scheduler.
+## Kontribusi
+
+1) Fork repositori ini dan buat branch fitur: `feat/nama-fitur`
+2) Jalankan linting & tes sebelum commit: `vendor/bin/pint && php artisan test`
+3) Buat Pull Request dengan deskripsi perubahan, langkah uji, dan catatan kompatibilitas
+
+Pedoman singkat:
+- Ikuti standar commit konvensional (opsional namun disarankan)
+- Tambahkan pengujian untuk fitur/bugfix yang signifikan
+- Perubahan UI sebaiknya berupa komponen Blade reusable dalam `resources/views/components`
 
 ---
 
 ## Lisensi
-Proyek ini berlisensi MIT.
-
+Berbasis lisensi MIT. Lihat berkas `LICENSE`.
