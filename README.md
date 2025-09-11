@@ -99,7 +99,7 @@ php artisan storage:link
 - Frontend Dev (Vite): `npm run dev`
 - Build Produksi: `npm run build`
 
-Atau gunakan skrip terintegrasi dengan proses paralel (server + queue + scheduler + vite):
+Atau gunakan skrip terintegrasi dengan proses paralel (server + queue + vite):
 ```bash
 composer dev
 ```
@@ -222,10 +222,6 @@ php artisan schedule:work
 Contoh konfigurasi Supervisor & cron tersedia di `docs/SETUP.md`.
 
 Pekerjaan terjadwal utama: `ExpireSeatReservationsJob`, `CancelExpiredOrdersJob`, `ShowtimeReminderJob`.
-
-Email sudah dikirim melalui queue secara default:
-- `App\Mail\EticketMail` mengimplementasi `ShouldQueue` dan dikirim via `Mail::to(...)->queue()` pada job terkait
-- `App\Mail\GenericNotificationMail` (baru) menggantikan `Mail::raw` sinkron pada `AppServiceProvider`, juga dikirim via queue
 
 ---
 
