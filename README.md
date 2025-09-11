@@ -17,7 +17,7 @@ Platform pemesanan tiket bioskop berbasis Laravel 12 dengan Tailwind CSS 4. Fitu
 - MySQL 8 / MariaDB 10.6+
 - Composer 2+
 - Node.js 18+ dan npm 9+
-- Opsional: Ngrok untuk webhook Midtrans
+- Opsional: Ngrok
 
 ## Instalasi
 1) Siapkan file lingkungan
