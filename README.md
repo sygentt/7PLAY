@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/sygentt/7PLAY/refs/heads/main/logo.svg?token=GHSAT0AAAAAADHMVW3IYVNJHARXDZERYZAI2F3YQ6A" width="200" alt="7PLAY"></a></p>
+<p align="center"><img src="https://raw.githubusercontent.com/sygentt/7PLAY/refs/heads/main/logo.svg?token=GHSAT0AAAAAADHMVW3J4CI47L5HCAGECWCM2GC5VLA" width="200" alt="7PLAY"></a></p>
 
 ## 7PLAY Cinema Booking
 
