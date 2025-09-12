@@ -23,13 +23,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Locale is set via SetLocaleFromUser middleware
-        // Force HTTPS in local environment
+        // Locale diatur melalui middleware SetLocaleFromUser
+        // Paksa skema HTTPS saat lingkungan local
         if(config('app.env') === 'local') {
             URL::forceScheme('https');
         }
 
-        // Hook: when DB notification created, optionally send email push if data[send_email]=true
+        // Ketika notifikasi database dibuat, kirim email jika data[send_email] bernilai true
         DbNotification::created(function (DbNotification $n) {
             try {
                 $data = $n->data ?? [];

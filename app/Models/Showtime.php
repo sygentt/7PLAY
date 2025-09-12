@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class Showtime extends Model
 {
     /**
-     * The attributes that are mass assignable.
+     * Daftar atribut yang boleh diisi mass-assignment.
      */
     protected $fillable = [
         'movie_id',
@@ -23,7 +23,7 @@ class Showtime extends Model
     ];
 
     /**
-     * The attributes that should be cast.
+     * Konversi tipe untuk atribut tertentu.
      */
     protected $casts = [
         'show_date' => 'date',
@@ -34,7 +34,7 @@ class Showtime extends Model
     ];
 
     /**
-     * The attributes that should be mutated to dates.
+     * Atribut yang diperlakukan sebagai tanggal.
      */
     protected $dates = [
         'show_date',
@@ -44,7 +44,7 @@ class Showtime extends Model
     ];
 
     /**
-     * Get showtime's movie
+     * Relasi ke film.
      */
     public function movie(): BelongsTo
     {
@@ -52,7 +52,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get showtime's cinema hall
+     * Relasi ke studio/bioskop (cinema hall).
      */
     public function cinemaHall(): BelongsTo
     {
@@ -60,7 +60,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get showtime's seat reservations
+     * Relasi ke reservasi kursi untuk jadwal ini.
      */
     public function seatReservations(): HasMany
     {
@@ -68,7 +68,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get active showtimes only
+     * Scope: hanya jadwal yang aktif.
      */
     public function scopeActive($query)
     {
@@ -76,7 +76,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes by movie
+     * Scope: filter berdasarkan film.
      */
     public function scopeByMovie($query, $movieId)
     {
@@ -84,7 +84,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes by cinema hall
+     * Scope: filter berdasarkan studio/bioskop (cinema hall).
      */
     public function scopeByCinemaHall($query, $cinemaHallId)
     {
@@ -92,7 +92,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes by cinema
+     * Scope: filter berdasarkan bioskop.
      */
     public function scopeByCinema($query, $cinemaId)
     {
@@ -102,7 +102,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes by city
+     * Scope: filter berdasarkan kota.
      */
     public function scopeByCity($query, $cityId)
     {
@@ -112,7 +112,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes by date
+     * Scope: filter berdasarkan tanggal pemutaran.
      */
     public function scopeByDate($query, $date)
     {
@@ -120,7 +120,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes from today
+     * Scope: jadwal dari hari ini dan seterusnya.
      */
     public function scopeUpcoming($query)
     {
@@ -134,7 +134,7 @@ class Showtime extends Model
     }
 
     /**
-     * Scope to get showtimes that have started
+     * Scope: jadwal yang sudah dimulai/terlewat.
      */
     public function scopePast($query)
     {
@@ -148,7 +148,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get formatted show date and time
+     * Format gabungan tanggal dan jam pemutaran.
      */
     public function getFormattedDateTime(): string
     {
@@ -156,7 +156,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get formatted show date
+     * Format tanggal pemutaran.
      */
     public function getFormattedDate(): string
     {
@@ -164,7 +164,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get formatted show time
+     * Format jam pemutaran.
      */
     public function getFormattedTime(): string
     {
@@ -172,7 +172,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get formatted price
+     * Format harga dalam rupiah.
      */
     public function getFormattedPrice(): string
     {
@@ -180,7 +180,7 @@ class Showtime extends Model
     }
 
     /**
-     * Check if showtime has passed
+     * Periksa apakah jadwal sudah lewat.
      */
     public function hasPassed(): bool
     {
@@ -189,7 +189,7 @@ class Showtime extends Model
     }
 
     /**
-     * Check if showtime is today
+     * Periksa apakah jadwal adalah hari ini.
      */
     public function isToday(): bool
     {
@@ -197,7 +197,7 @@ class Showtime extends Model
     }
 
     /**
-     * Check if showtime is upcoming (not started)
+     * Periksa apakah jadwal masih akan datang.
      */
     public function isUpcoming(): bool
     {
@@ -205,7 +205,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get occupied seats count
+     * Jumlah kursi yang sudah terisi.
      */
     public function getOccupiedSeatsCount(): int
     {
@@ -213,7 +213,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get available seats count
+     * Jumlah kursi yang masih tersedia.
      */
     public function getAvailableSeatsCount(): int
     {
@@ -221,7 +221,7 @@ class Showtime extends Model
     }
 
     /**
-     * Check if showtime is fully booked
+     * Periksa apakah jadwal sudah penuh.
      */
     public function isFullyBooked(): bool
     {
@@ -229,7 +229,7 @@ class Showtime extends Model
     }
 
     /**
-     * Get booking status with color class
+     * Status ketersediaan kursi beserta kelas warna.
      */
     public function getBookingStatus(): array
     {

@@ -25,11 +25,11 @@ class MidtransService
     }
 
     /**
-     * Konfigurasi Midtrans
+     * Set konfigurasi Midtrans untuk Core API.
      */
     private function configureMidtrans(): void
     {
-        // Set konfigurasi dasar Midtrans (Core API)
+        // Terapkan konfigurasi dasar Midtrans (Core API)
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
@@ -37,7 +37,7 @@ class MidtransService
     }
 
     /**
-     * Buat pembayaran QRIS untuk order
+     * Buat pembayaran QRIS untuk sebuah pesanan.
      */
     public function createQrisPayment(Order $order): Payment
     {
@@ -45,7 +45,7 @@ class MidtransService
             $externalId = '7play-' . $order->id . '-' . time();
             $grossAmount = (int) round($order->total_amount);
 
-            // Hitung ulang item_details agar sesuai dengan gross_amount (subtotal - discount)
+            // Susun item_details agar sesuai dengan gross_amount (subtotal - diskon)
             $itemDetails = array_map(function ($item) use ($order) {
                 return [
                     'id' => 'ticket-' . $item->id,
@@ -55,7 +55,7 @@ class MidtransService
                 ];
             }, $order->orderItems->all());
 
-            // Tambahkan item diskon sebagai item negatif jika ada diskon
+            // Tambahkan item diskon sebagai nilai negatif jika tersedia
             $discountAmount = (int) round(max(0, (float) $order->discount_amount));
             if ($discountAmount > 0) {
                 $itemDetails[] = [
@@ -84,7 +84,7 @@ class MidtransService
             $resp = CoreApi::charge($payload);
             $respArray = json_decode(json_encode($resp), true);
             
-            // Debug log untuk melihat response dari Midtrans
+            // Catat response Midtrans untuk kebutuhan debug
             Log::info('Midtrans QRIS Charge Response', [
                 'order_id' => $order->id,
                 'external_id' => $externalId,
@@ -121,11 +121,11 @@ class MidtransService
                 }
             }
             if (!$qrUrl && isset($respArray['qr_string'])) {
-                // Fallback: render QR locally via public QR service
+                // Alternatif: render QR secara lokal melalui layanan QR publik
                 $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode((string) $respArray['qr_string']);
             }
 
-            // Log hasil QR URL yang didapat
+            // Catat hasil URL QR yang diperoleh
             Log::info('QR URL Processing Result', [
                 'order_id' => $order->id,
                 'qr_url_from_resp' => $respArray['qr_url'] ?? 'NULL',
@@ -137,13 +137,13 @@ class MidtransService
 
             if ($qrUrl) {
                 $payment->update(['qr_code_url' => $qrUrl]);
-                Log::info('Payment QR URL Updated', ['payment_id' => $payment->id, 'qr_url' => $qrUrl]);
+                Log::info('Payment QR URL diperbarui', ['payment_id' => $payment->id, 'qr_url' => $qrUrl]);
             }
 
             return $payment;
 
         } catch (Exception $e) {
-            Log::error('Error creating QRIS payment', [
+            Log::error('Gagal membuat pembayaran QRIS', [
                 'order_id' => $order->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -154,7 +154,7 @@ class MidtransService
     }
 
     /**
-     * Format item details untuk Midtrans
+     * Format daftar item untuk Midtrans.
      */
     private function formatOrderItems(Order $order): array
     {
@@ -184,7 +184,7 @@ class MidtransService
     }
 
     /**
-     * Format customer details untuk Midtrans
+     * Format detail pelanggan untuk Midtrans.
      */
     private function formatCustomerDetails(Order $order): array
     {
@@ -199,7 +199,7 @@ class MidtransService
     }
 
     /**
-     * Handle webhook notification dari Midtrans
+     * Tangani webhook notifikasi dari Midtrans.
      */
     public function handleNotification(): array
     {
@@ -213,7 +213,7 @@ class MidtransService
                 'payment_type' => $notification->payment_type
             ]);
 
-            // Optional security checks: callback token & IP allowlist
+            // Validasi opsional: token callback dan daftar IP yang diizinkan
             try {
                 $this->assertValidWebhookRequest();
             } catch (\Throwable $sec) {
@@ -228,7 +228,7 @@ class MidtransService
                 throw new Exception("Payment tidak ditemukan untuk order_id: {$notification->order_id}");
             }
 
-            // Update status payment berdasarkan notification
+            // Perbarui status payment berdasarkan notifikasi
             $this->updatePaymentStatus($payment, $notification);
 
             return [
@@ -238,7 +238,7 @@ class MidtransService
             ];
 
         } catch (Exception $e) {
-            Log::error('Error handling Midtrans notification', [
+            Log::error('Terjadi kesalahan saat memproses notifikasi Midtrans', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -251,14 +251,14 @@ class MidtransService
     }
 
     /**
-     * Update status payment berdasarkan notification
+     * Perbarui status payment berdasarkan notifikasi.
      */
     private function updatePaymentStatus(Payment $payment, Notification $notification): void
     {
         $transaction_status = $notification->transaction_status;
         $fraud_status = $notification->fraud_status;
 
-        // Update payment data
+        // Perbarui data payment
         $payment->update([
             'status' => $transaction_status,
             'fraud_status' => $fraud_status,
@@ -268,7 +268,7 @@ class MidtransService
             ])
         ]);
 
-        // Update order status berdasarkan payment status
+        // Perbarui status order berdasarkan status payment
         $order = $payment->order;
         if (!$order) {
             return;
@@ -277,20 +277,20 @@ class MidtransService
         switch ($transaction_status) {
             case 'settlement':
                 if ($fraud_status === 'accept') {
-                    // Mark order paid + fill payment fields and confirm seats
+                    // Tandai order sebagai dibayar, isi data pembayaran, dan konfirmasi kursi
                     try {
                         $this->finalizeOrderOnSettlement($order, $payment, $notification);
                     } catch (\Throwable $e) {
                         Log::error('Finalize settlement failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                     }
-                    // Queue e-ticket email
+                    // Antrikan email e-ticket
                     try {
                         \App\Jobs\SendEticketEmailJob::dispatch((int) $order->id)->onQueue('default');
                     } catch (\Throwable $e) {
                         Log::error('Queue Eticket email failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                     }
                     Log::info("Order {$order->id} marked as paid");
-                    // Award points on settlement
+                    // Berikan poin setelah settlement
                     try {
                         $this->awardPointsForOrder($order->user_id, (int) round($order->total_amount), (string) $order->id);
                     } catch (Exception $e) {
@@ -319,7 +319,7 @@ class MidtransService
     }
 
     /**
-     * Check status payment dari Midtrans
+     * Periksa status payment ke Midtrans.
      */
     public function checkPaymentStatus(Payment $payment): array
     {
@@ -327,7 +327,7 @@ class MidtransService
             $resp = Transaction::status($payment->external_id);
             $respArray = json_decode(json_encode($resp), true);
             $status = $resp->transaction_status ?? 'pending';
-            // Merge raw response safely without casting non-arrays directly
+            // Gabungkan raw response dengan aman tanpa memaksa tipe non-array
             $existing_raw = is_array($payment->raw_response) ? $payment->raw_response : [];
             $resp_array = is_array($respArray) ? $respArray : [];
 
@@ -336,7 +336,7 @@ class MidtransService
                 'settlement_time' => $status === 'settlement' ? now() : null,
                 'raw_response' => array_merge($existing_raw, ['status_check_' . time() => $resp_array]),
             ]);
-            // Update/derive QR URL when available in status response
+            // Perbarui/ambil QR URL jika tersedia pada response status
             if (empty($payment->qr_code_url)) {
                 $qrUrl = $respArray['qr_url'] ?? null;
                 if (!$qrUrl && !empty($respArray['actions']) && is_array($respArray['actions'])) {
@@ -361,7 +361,7 @@ class MidtransService
                     } catch (\Throwable $e) {
                         Log::error('Finalize settlement (polling) failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                     }
-                    // Award points here as well (polling path), idempotent inside awardPointsForOrder
+                    // Berikan poin juga di jalur polling (idempoten di awardPointsForOrder)
                     try {
                         $this->awardPointsForOrder((int) $order->user_id, (int) round($order->total_amount), (string) $order->id);
                     } catch (Exception $e) {
@@ -379,7 +379,7 @@ class MidtransService
             return ['status' => 'success', 'payment_status' => $status, 'data' => $resp];
 
         } catch (Exception $e) {
-            Log::error('Error checking payment status', [
+            Log::error('Gagal memeriksa status pembayaran', [
                 'payment_id' => $payment->id,
                 'external_id' => $payment->external_id,
                 'error' => $e->getMessage()
@@ -393,7 +393,7 @@ class MidtransService
     }
 
     /**
-     * Update payment dari hasil status check
+     * Perbarui payment dari hasil pemeriksaan status.
      */
     private function updatePaymentFromStatusCheck(Payment $payment, $response): void
     {
@@ -418,7 +418,7 @@ class MidtransService
                 ])
             ]);
 
-            // Update order status juga
+            // Perbarui status order juga
             $order = $payment->order;
             if ($order && $new_status === 'settlement') {
                 try {
@@ -438,7 +438,7 @@ class MidtransService
     }
 
     /**
-     * Award points to a user based on order amount and membership level.
+     * Berikan poin ke pengguna berdasarkan nominal order dan level member.
      */
     private function awardPointsForOrder(int $user_id, int $amount_idr, string $order_id): void
     {
@@ -451,7 +451,7 @@ class MidtransService
             'membership_level' => 'bronze',
         ]);
 
-        // Idempotency: if there is already a transaction for this order, skip
+        // Idempoten: jika transaksi untuk order ini sudah ada, lewati
         $already = PointTransaction::where('user_id', $user_id)
             ->where('order_id', $order_id)
             ->where('type', 'earned')
@@ -464,12 +464,12 @@ class MidtransService
         $mult = (float) (config('points.multipliers.' . $user_points->membership_level, 1.0));
         $earned = (int) max(1, round($base_points * $mult));
 
-        // Update totals
+        // Perbarui total poin dan order
         $user_points->increment('total_points', $earned);
         $user_points->increment('total_orders');
         $user_points->update(['last_order_date' => now()]);
 
-        // Upgrade membership level based on thresholds
+        // Naikkan level member berdasarkan ambang batas
         $thresholds = config('points.thresholds', []);
         $total = $user_points->fresh()->total_points;
         $new_level = $user_points->membership_level;
@@ -482,7 +482,7 @@ class MidtransService
             $user_points->update(['membership_level' => $new_level]);
         }
 
-        // Record transaction
+        // Catat transaksi poin
         PointTransaction::create([
             'user_id' => $user_id,
             'type' => 'earned',
@@ -493,7 +493,7 @@ class MidtransService
     }
 
     /**
-     * Validate Midtrans webhook request by callback token or source IP.
+     * Validasi webhook Midtrans via token callback atau IP sumber.
      */
     private function assertValidWebhookRequest(): void
     {
@@ -503,7 +503,7 @@ class MidtransService
         $request = request();
         $remote_ip = $request->ip();
 
-        // Prefer callback token via header X-Callback-Token (custom) or query param
+        // Utamakan token callback melalui header X-Callback-Token (custom) atau query param
         $header_token = $request->header('X-Callback-Token', $request->query('callback_token'));
         if (!empty($callback_token)) {
             if (!hash_equals($callback_token, (string) $header_token)) {
@@ -512,7 +512,7 @@ class MidtransService
             return; // token passes, skip IP check
         }
 
-        // If allowlist configured, enforce it
+        // Jika daftar IP diatur, wajibkan pemeriksaan ini
         if (!empty($allowed_ips)) {
             if (!in_array($remote_ip, $allowed_ips, true)) {
                 throw new \RuntimeException('IP not allowed: ' . $remote_ip);
@@ -521,11 +521,11 @@ class MidtransService
     }
 
     /**
-     * Finalize order on settlement: fill payment fields, confirm seat reservations, mark voucher used.
+     * Finalisasi order saat settlement: isi data pembayaran, konfirmasi kursi, tandai voucher terpakai.
      */
     private function finalizeOrderOnSettlement(Order $order, Payment $payment, ?Notification $notification): void
     {
-        // Update order payment fields and status
+        // Perbarui kolom pembayaran order dan statusnya
         $payment_method = $payment->payment_method ?? ($notification->payment_type ?? null);
         $payment_reference = $payment->reference_no
             ?? ($payment->raw_response['transaction_id'] ?? null)
@@ -543,7 +543,7 @@ class MidtransService
             ]),
         ]);
 
-        // Confirm seat reservations for this order's seats
+        // Konfirmasi reservasi kursi pada order ini
         $seatIds = $order->orderItems()->pluck('seat_id')->all();
         if (!empty($seatIds)) {
             SeatReservation::query()
@@ -553,7 +553,7 @@ class MidtransService
                 ->update(['status' => SeatReservation::STATUS_CONFIRMED]);
         }
 
-        // Mark user voucher as used if applicable
+        // Tandai voucher pengguna sebagai terpakai jika ada
         if (!empty($order->voucher_id)) {
             $userVoucher = UserVoucher::query()
                 ->where('user_id', $order->user_id)
@@ -573,14 +573,14 @@ class MidtransService
     }
 
     /**
-     * Handle seat and voucher rollback when order is cancelled or expired.
+     * Lakukan rollback kursi dan voucher saat order dibatalkan atau kedaluwarsa.
      */
     private function handleOrderOnCancelOrExpire(Order $order): void
     {
-        // Cancel order items
+        // Batalkan item pada order
         $order->orderItems()->update(['status' => OrderItem::STATUS_CANCELLED]);
 
-        // Release seat reservations (mark as expired)
+        // Lepaskan reservasi kursi (tandai sebagai kedaluwarsa)
         $seatIds = $order->orderItems()->pluck('seat_id')->all();
         if (!empty($seatIds)) {
             SeatReservation::query()
@@ -590,7 +590,7 @@ class MidtransService
                 ->update(['status' => SeatReservation::STATUS_EXPIRED]);
         }
 
-        // Restore voucher usage if it was marked used by this order
+        // Pulihkan penggunaan voucher jika sebelumnya ditandai terpakai oleh order ini
         $usedVoucher = UserVoucher::query()
             ->where('order_id', $order->id)
             ->where('is_used', true)

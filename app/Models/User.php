@@ -66,8 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get the user's point account.
-     * TODO: Uncomment when UserPoints model is created
+     * Relasi ke akun poin milik pengguna.
      */
     public function user_points(): HasOne
     {
@@ -83,8 +82,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get the user's preferences.
-     * TODO: Uncomment when UserPreferences model is created
+     * Relasi ke preferensi pengguna (belum diaktifkan).
      */
     // public function preferences(): HasOne
     // {
@@ -92,8 +90,7 @@ class User extends Authenticatable implements MustVerifyEmail
     // }
 
     /**
-     * Get all vouchers owned by the user.
-     * TODO: Uncomment when UserVouchers model is created
+     * Relasi ke voucher yang dimiliki pengguna.
      */
     public function vouchers(): HasMany
     {
@@ -101,8 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get all point transactions for the user.
-     * TODO: Uncomment when PointTransactions model is created
+     * Relasi ke riwayat transaksi poin pengguna.
      */
     public function point_transactions(): HasMany
     {
@@ -186,8 +182,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get user's current membership level.
-     * TODO: Update when UserPoints model is created
+     * Akses atribut: level keanggotaan saat ini.
      */
     public function getMembershipLevelAttribute(): string
     {
@@ -195,8 +190,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get user's total points.
-     * TODO: Update when UserPoints model is created
+     * Akses atribut: total poin pengguna.
      */
     public function getTotalPointsAttribute(): int
     {
@@ -204,8 +198,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Check if user has sufficient points.
-     * TODO: Update when UserPoints model is created
+     * Periksa apakah poin pengguna mencukupi.
      */
     public function hasSufficientPoints(int $required_points): bool
     {

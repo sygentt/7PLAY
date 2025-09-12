@@ -9,13 +9,13 @@ use Illuminate\View\View;
 class TicketController extends Controller
 {
 /**
-     * Display user's tickets (active and expired).
+     * Tampilkan tiket milik pengguna (aktif dan kedaluwarsa).
      */
     public function index(Request $request)
     {
         $user = $request->user();
 
-        // Active tickets (paid/confirmed orders with upcoming showtimes)
+        // Tiket aktif: pesanan berstatus dibayar/dikonfirmasi dengan jadwal mendatang
         $activeTickets = $user->orders()
             ->with(['orderItems.showtime' => function ($query) {
                 $query->with(['movie', 'cinemaHall.cinema']);
@@ -27,7 +27,7 @@ class TicketController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10, ['*'], 'active_page');
 
-        // Expired tickets (paid/confirmed orders with past showtimes)
+        // Tiket kedaluwarsa: pesanan berstatus dibayar/dikonfirmasi dengan jadwal yang sudah lewat
         $expiredTickets = $user->orders()
             ->with(['orderItems.showtime' => function ($query) {
                 $query->with(['movie', 'cinemaHall.cinema']);
@@ -43,23 +43,23 @@ class TicketController extends Controller
     }
 
     /**
-     * Display e-ticket for specific order.
+     * Tampilkan e-ticket untuk pesanan tertentu.
      */
     public function showEticket(Request $request, Order $order): View
     {
         $user = $request->user();
         
-        // Ensure user can only view their own e-tickets
+        // Pastikan pengguna hanya bisa melihat e-ticket miliknya sendiri
         if ($order->user_id !== $user->id) {
             abort(403, 'Unauthorized');
         }
         
-        // Ensure order is paid or confirmed
+        // Pastikan pesanan sudah dibayar atau dikonfirmasi
         if (!in_array($order->status, [Order::STATUS_PAID, Order::STATUS_CONFIRMED])) {
             abort(404, 'E-ticket not available for this order');
         }
         
-        // Load order with all related data
+        // Muat pesanan beserta relasi yang dibutuhkan
         $order->load([
             'orderItems.seat',
             'orderItems.showtime' => function ($query) {
