@@ -2,22 +2,9 @@
 
 ## 7PLAY Cinema Booking
 
-Platform pemesanan tiket bioskop berbasis Laravel 12 dengan Tailwind CSS 4. Fitur utama: reservasi kursi dengan TTL terpusat, pembayaran Midtrans (QRIS), voucher & poin loyalti, e-ticket via email, check-in QR sekali pakai, serta dashboard admin.
-
-### Teknologi
-- **Backend**: Laravel 12, PHP 8.3, MySQL
-- **Frontend**: Blade, Tailwind CSS 4, Vite, Heroicons
-- **Pembayaran**: Midtrans Snap/QRIS
-- **Background Jobs**: Laravel Queue & Scheduler
+Platform pemesanan tiket bioskop berbasis Laravel 12 dengan Tailwind CSS 4.
 
 ---
-
-## Persyaratan
-- PHP 8.2+ (disarankan 8.3)
-- MySQL 8 / MariaDB 10.6+
-- Composer 2+
-- Node.js 18+ dan npm 9+
-- Opsional: Ngrok
 
 ## Instalasi
 1) Siapkan file lingkungan
@@ -74,53 +61,6 @@ Job terjadwal utama: `ExpireSeatReservationsJob`, `CancelExpiredOrdersJob`, `Sho
 
 ---
 
-## Konfigurasi
-
-### Variabel .env
-```dotenv
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=7play
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Booking TTL (menit) untuk alur reservasi/pembayaran
-BOOKING_TTL_MINUTES=10
-
-# MIDTRANS (Sandbox)
-MIDTRANS_IS_PRODUCTION=false
-MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx
-MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxx
-MIDTRANS_MERCHANT_ID=YOUR_SANDBOX_MERCHANT_ID
-MIDTRANS_CALLBACK_TOKEN=
-MIDTRANS_ALLOWED_IPS=
-
-# Email (untuk e-ticket)
-MAIL_MAILER=log
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS=no-reply@7play.local
-MAIL_FROM_NAME="7PLAY"
-```
-
-- TTL Booking juga tersedia di `config/booking.php`.
-- Webhook Midtrans: `APP_URL/api/midtrans/notification` (lihat `MIDTRANS_SETUP.md`).
-
-### Tailwind 4
-Proyek ini dikonfigurasi dengan Tailwind via Vite. Pastikan `tailwindcss` pada `package.json` menggunakan versi 4.x. Jika masih 3.x, upgrade dengan:
-```bash
-npm i -D tailwindcss@^4 @tailwindcss/vite@^4 postcss autoprefixer
-```
-Konfigurasi opsional tersedia di `tailwind.config.js` (pastikan path Blade sudah tercakup).
-
----
-
 ## Arsitektur
 
 ### Struktur Direktori Kunci
@@ -138,7 +78,7 @@ Konfigurasi opsional tersedia di `tailwind.config.js` (pastikan path Blade sudah
 - Validasi & Form Request pada endpoint sensitif.
 
 ### Komponen UI & Placeholder Gambar
-- Semua halaman dirakit dari komponen di `resources/views/components` untuk reusability.
+- Semua halaman dirakit dari komponen di `resources/views/components` agar reusable.
 - Gunakan placeholder `dummyimage.com` dengan teks/ukuran kustom:
 ```html
 <img src="https://dummyimage.com/300x450/374151/ffffff?text={{ urlencode($movie->title) }}" alt="{{ $movie->title }}">
@@ -146,40 +86,40 @@ Konfigurasi opsional tersedia di `tailwind.config.js` (pastikan path Blade sudah
 
 ---
 
-## Pengembangan
-
-### Perintah Harian
-- Jalankan server: `php artisan serve`
-- Jalankan Vite: `npm run dev`
-- Build produksi: `npm run build`
-
-### Kualitas Kode
-- Gunakan Laravel Pint: `vendor/bin/pint`
-- Ikuti konvensi Laravel dan praktik keamanan standar.
-
----
-
-## Testing
-Jalankan semua pengujian:
-```bash
-php artisan test
-```
-Tersedia pengujian fitur (auth, booking, profil) dan unit.
-
----
-
 ## Kontribusi
 
-1) Fork repositori ini dan buat branch fitur: `feat/nama-fitur`
-2) Jalankan linting & tes sebelum commit: `vendor/bin/pint && php artisan test`
-3) Buat Pull Request dengan deskripsi perubahan, langkah uji, dan catatan kompatibilitas
+Berikut daftar kontribusi dalam pembuatan high fidelity desain Figma 7PLAY:
 
-Pedoman singkat:
-- Ikuti standar commit konvensional (opsional namun disarankan)
-- Tambahkan pengujian untuk fitur/bugfix yang signifikan
-- Perubahan UI sebaiknya berupa komponen Blade reusable dalam `resources/views/components`
+- Popup Login: Andre
+- Popup Register: Andre
+- Main Page: Ellycia, Malvin
+- Points: Ellycia
+- Profil: Ellycia, Malvin
+- Detail Film: Ellycia
+- Daftar Bioskop: Ellycia, Andre
+- Daftar Film: Ellycia, Andre
+- Forgot Password: Ellycia
+- Reset Password: Ellycia
+- Riwayat Pesanan: Ellycia
+- Detail Pesanan: Ellycia
+- E-ticket: Malvin
+- Payment: Malvin
+- info-ticket: Malvin
+- e-ticket: Malvin
+- payment: Malvin
+- select-seat: Malvin
+- payment-success: Malvin
+- checkout-details: Malvin
+- Select-Voucher-PopUp: Malvin
+- my-vouchers: Malvin
+- Notification: Andre
+- Favorites: Andre
+- Settings: Andre
+- tiket-saya: Andre
+
+Untuk websitenya, dibuat Malvin dengan bantuan AI.
 
 ---
 
 ## Lisensi
-Berbasis lisensi MIT. Lihat berkas `LICENSE`.
+Proyek ini dirilis di bawah lisensi MIT. Lihat berkas `LICENSE`.
