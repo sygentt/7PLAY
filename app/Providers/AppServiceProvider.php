@@ -24,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Locale diatur melalui middleware SetLocaleFromUser
-        // Paksa skema HTTPS saat lingkungan local
-        if(config('app.env') === 'local') {
+        // Paksa skema HTTPS hanya saat environment production
+        if(config('app.env') === 'production') {
             URL::forceScheme('https');
         }
 
