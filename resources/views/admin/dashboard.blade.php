@@ -128,20 +128,20 @@
                 </div>
             </div>
 
-            <!-- Total Revenue -->
+            <!-- New Users This Month -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Total Revenue</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">Rp {{ number_format($total_revenue ?? 0, 0, ',', '.') }}</p>
+                        <p class="text-sm font-medium text-gray-500">New Users This Month</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($new_users_this_month ?? 0) }}</p>
                         <p class="text-xs text-emerald-600 font-medium mt-1">
-                            <x-heroicon-m-currency-dollar class="h-3 w-3 inline mr-1"/>
-                            All time earnings
+                            <x-heroicon-m-user-plus class="h-3 w-3 inline mr-1"/>
+                            Joined in {{ now()->translatedFormat('F Y') }}
                         </p>
                     </div>
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                            <x-heroicon-s-currency-dollar class="h-6 w-6 text-emerald-600"/>
+                            <x-heroicon-s-user-plus class="h-6 w-6 text-emerald-600"/>
                         </div>
                     </div>
                 </div>

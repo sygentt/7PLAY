@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\City;
 use App\Models\Cinema;
-// use App\Models\Order;
-// use App\Models\Movie;
+use App\Models\Movie;
+use App\Models\Order;
+use App\Models\Showtime;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
@@ -25,21 +26,25 @@ class AdminController extends Controller
         $total_cinemas = Cinema::count();
         $active_cinemas = Cinema::active()->count();
 
-        // Real counts from existing models
-        $total_orders = \App\Models\Order::count();
-        $total_movies = \App\Models\Movie::count();
+        $total_orders = Order::count();
+        $total_movies = Movie::count();
+        $active_showtimes = Showtime::active()->upcoming()->count();
+        $today_bookings = Order::completed()
+            ->whereDate('created_at', today())
+            ->count();
+        $new_users_this_month = User::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
 
         // Recent orders
-        $recent_orders = \App\Models\Order::with(['user', 'showtime.movie'])
+        $recent_orders = Order::with(['user', 'showtime.movie'])
             ->orderByDesc('created_at')
             ->take(5)
             ->get();
 
         // Revenue stats
-        $today_revenue = \App\Models\Order::completed()
+        $today_revenue = Order::completed()
             ->whereDate('created_at', today())
             ->sum('total_amount');
-        $monthly_revenue = \App\Models\Order::completed()
+        $monthly_revenue = Order::completed()
             ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->sum('total_amount');
 
@@ -54,6 +59,9 @@ class AdminController extends Controller
             'active_cinemas',
             'total_orders',
             'total_movies',
+            'active_showtimes',
+            'today_bookings',
+            'new_users_this_month',
             'recent_orders',
             'recent_cities',
             'recent_cinemas',
@@ -67,10 +75,15 @@ class AdminController extends Controller
      */
     public function getDashboardStats(): JsonResponse
     {
-        $total_orders = \App\Models\Order::count();
-        $total_movies = \App\Models\Movie::count();
-        $today_revenue = \App\Models\Order::completed()->whereDate('created_at', today())->sum('total_amount');
-        $monthly_revenue = \App\Models\Order::completed()->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('total_amount');
+        $total_orders = Order::count();
+        $total_movies = Movie::count();
+        $today_revenue = Order::completed()->whereDate('created_at', today())->sum('total_amount');
+        $monthly_revenue = Order::completed()->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('total_amount');
+        $active_showtimes = Showtime::active()->upcoming()->count();
+        $today_bookings = Order::completed()
+            ->whereDate('created_at', today())
+            ->count();
+        $new_users_this_month = User::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count();
 
         return response()->json([
             'total_users' => User::count(),
@@ -79,6 +92,9 @@ class AdminController extends Controller
             'active_cinemas' => Cinema::active()->count(),
             'total_orders' => $total_orders,
             'total_movies' => $total_movies,
+            'active_showtimes' => $active_showtimes,
+            'today_bookings' => $today_bookings,
+            'new_users_this_month' => $new_users_this_month,
             'today_revenue' => (float) $today_revenue,
             'monthly_revenue' => (float) $monthly_revenue,
         ]);
