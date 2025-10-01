@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             MovieSeeder::class,
             ShowtimeSeeder::class,
             OrderSeeder::class,
+            VoucherSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }
