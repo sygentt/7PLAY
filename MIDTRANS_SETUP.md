@@ -8,9 +8,9 @@ Tambahkan konfigurasi berikut ke file `.env` Anda:
 # Midtrans Configuration
 # Set MIDTRANS_IS_PRODUCTION=true untuk production environment
 MIDTRANS_IS_PRODUCTION=false
-MIDTRANS_SERVER_KEY=Mid-server-pSaqAaMhFYK7A9J15DU6VKQs
-MIDTRANS_CLIENT_KEY=Mid-client-i5PF_vLGtwjdWEke
-MIDTRANS_MERCHANT_ID=G434349515
+MIDTRANS_SERVER_KEY=<your-midtrans-server-key>
+MIDTRANS_CLIENT_KEY=<your-midtrans-client-key>
+MIDTRANS_MERCHANT_ID=<your-midtrans-merchant-id>
 ```
 
 ## Cara Setup
