@@ -102,24 +102,6 @@
                     </button>
                 </div>
             </form>
-
-            <!-- Demo Credentials Info -->
-            <div class="mt-6 border-t border-gray-200 pt-6">
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <x-heroicon-m-information-circle class="h-5 w-5 text-blue-400"/>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-blue-800">Demo Credentials</h3>
-                            <div class="mt-2 text-sm text-blue-700 space-y-1">
-                                <p><strong>Email:</strong> admin@7play.com</p>
-                                <p><strong>Password:</strong> admin123</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Back to Site -->
