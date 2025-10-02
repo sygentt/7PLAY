@@ -18,7 +18,7 @@ Platform pemesanan tiket bioskop berbasis Laravel 12 dengan Tailwind CSS 4. Sist
 ### 1. Clone & Setup Environment
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/sygentt/7PLAY.git
 cd 7PLAY
 
 # Copy environment file
