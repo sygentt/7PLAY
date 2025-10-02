@@ -445,7 +445,3 @@ php artisan queue:retry all
 ## 📄 Lisensi
 
 Proyek ini dirilis di bawah lisensi **MIT**. Lihat berkas [LICENSE](LICENSE) untuk detail lengkap.
-
----
-
-<p align="center">Made with ❤️ by 7PLAY Team</p>
