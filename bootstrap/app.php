@@ -42,6 +42,14 @@ return Application::configure(basePath: dirname(__DIR__))
             // 'set_locale' removed with language settings feature
         ]);
         
+        // Redirect guests to appropriate login page
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('admin') || $request->is('admin/*')) {
+                return route('admin.login');
+            }
+            return route('login');
+        });
+        
         // Trust reverse proxies (e.g., ngrok) so signed URLs and scheme/host are detected correctly
         $middleware->trustProxies(
             at: '*',

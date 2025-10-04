@@ -1,144 +1,101 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Login - 7PLAY</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('storage/logo.svg') }}">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+<x-guest-layout>
+    <x-slot name="title">Admin Login</x-slot>
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full space-y-8 p-6">
-        <!-- Logo and Title -->
-        <div class="text-center">
-            <div class="mx-auto h-20 w-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <x-heroicon-s-film class="h-10 w-10 text-white"/>
-            </div>
-            <h2 class="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-                7PLAY Admin
-            </h2>
-            <p class="mt-2 text-sm text-gray-600">
-                Masuk ke dashboard admin
-            </p>
-        </div>
-
-        <!-- Login Form -->
-        <div class="bg-white py-8 px-6 shadow-lg rounded-xl">
-            <form class="space-y-6" action="{{ route('admin.login') }}" method="POST">
-                @csrf
-                
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">
-                        Email Admin
-                    </label>
-                    <div class="mt-2 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <x-heroicon-m-envelope class="h-5 w-5 text-gray-400"/>
-                        </div>
-                        <input id="email" 
-                               name="email" 
-                               type="email" 
-                               autocomplete="email" 
-                               required 
-                               value="{{ old('email') }}"
-                               class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm sm:leading-6 @error('email') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                               placeholder="admin@7play.com">
-                    </div>
-                    @error('email')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label for="password" class="block text-sm font-medium leading-6 text-gray-900">
-                        Password
-                    </label>
-                    <div class="mt-2 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <x-heroicon-m-lock-closed class="h-5 w-5 text-gray-400"/>
-                        </div>
-                        <input id="password" 
-                               name="password" 
-                               type="password" 
-                               autocomplete="current-password" 
-                               required 
-                               class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm sm:leading-6 @error('password') border-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                               placeholder="••••••••">
-                    </div>
-                    @error('password')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Remember Me -->
-                <div class="flex items-center">
-                    <input id="remember" 
-                           name="remember" 
-                           type="checkbox" 
-                           {{ old('remember') ? 'checked' : '' }}
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="remember" class="ml-2 block text-sm text-gray-900">
-                        Ingat saya
-                    </label>
-                </div>
-
-                <!-- Submit Button -->
-                <div>
-                    <button type="submit" 
-                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
-                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                            <x-heroicon-m-shield-check class="h-5 w-5 text-blue-300 group-hover:text-blue-200"/>
-                        </span>
-                        Masuk Admin
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Back to Site -->
-        <div class="text-center">
-            <a href="{{ route('home') }}" 
-               class="inline-flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                <x-heroicon-m-arrow-left class="h-4 w-4 mr-2"/>
-                Kembali ke Situs Utama
-            </a>
-        </div>
+    <!-- Header -->
+    <div class="mb-8 text-center">
+        <h2 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
+            Admin Panel Login
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400">
+            Welcome back, please login to your account.
+        </p>
     </div>
 
-    <!-- Flash Messages -->
-    @if (session('success'))
-        <div x-data="{ show: true }" 
-             x-show="show" 
-             x-transition 
-             x-init="setTimeout(() => show = false, 5000)"
-             class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
-            <div class="flex items-center">
-                <x-heroicon-s-check-circle class="h-5 w-5 mr-2"/>
-                {{ session('success') }}
-            </div>
+    <!-- Session Status -->
+    <x-ui.auth-session-status class="mb-6" :status="session('status')" />
+
+    <!-- Display General Errors -->
+    @if ($errors->any() && !$errors->has('email') && !$errors->has('password'))
+        <div
+            class="mb-4 rounded-lg border border-red-200 bg-red-100 p-4 text-sm font-medium text-red-600 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-400">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    @if (session('error'))
-        <div x-data="{ show: true }" 
-             x-show="show" 
-             x-transition 
-             x-init="setTimeout(() => show = false, 5000)"
-             class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-            <div class="flex items-center">
-                <x-heroicon-s-x-circle class="h-5 w-5 mr-2"/>
-                {{ session('error') }}
+    <form method="POST" action="{{ route('admin.login') }}" class="space-y-6">
+        @csrf
+
+        <!-- Email Address -->
+        <div class="space-y-2">
+            <label for="email" class="block text-sm font-semibold text-gray-900 dark:text-white">
+                Alamat Email
+            </label>
+            <div class="relative">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                    autocomplete="username"
+                    class="@if ($errors->has('email')) border-red-500 @else border-gray-200 dark:border-gray-600 @endif w-full rounded-xl border bg-white/50 px-4 py-3 text-gray-900 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-cinema-500 dark:bg-gray-800/50 dark:text-white dark:placeholder-gray-400"
+                    placeholder="nama@email.com" />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <x-heroicon-o-envelope class="h-5 w-5 text-gray-400" />
+                </div>
             </div>
+            <x-form.input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-500" />
         </div>
-    @endif
-</body>
-</html>
+
+        <!-- Password -->
+        <div class="space-y-2">
+            <label for="password" class="block text-sm font-semibold text-gray-900 dark:text-white">
+                Kata Sandi
+            </label>
+            <div class="relative">
+                <input id="password" type="password" name="password" required autocomplete="current-password"
+                    class="@if ($errors->has('password')) border-red-500 @else border-gray-200 dark:border-gray-600 @endif w-full rounded-xl border bg-white/50 px-4 py-3 text-gray-900 placeholder-gray-500 backdrop-blur-sm transition-all duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-cinema-500 dark:bg-gray-800/50 dark:text-white dark:placeholder-gray-400"
+                    placeholder="••••••••" />
+                <button type="button" onclick="togglePassword()"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <x-heroicon-o-eye id="eye-open" class="h-5 w-5" />
+                    <x-heroicon-o-eye-slash id="eye-closed" class="hidden h-5 w-5" />
+                </button>
+            </div>
+            <x-form.input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-500" />
+        </div>
+
+        <!-- Remember Me -->
+        <div class="flex items-center justify-between">
+            <label for="remember_me" class="flex items-center">
+                <input id="remember_me" type="checkbox" name="remember"
+                    class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-cinema-600 focus:ring-2 focus:ring-cinema-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-cinema-600">
+                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Ingat saya</span>
+            </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+            class="w-full transform rounded-xl bg-button-gradient px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-[1.02] hover:bg-button-gradient-hover hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-cinema-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+            Login
+        </button>
+    </form>
+
+    <!-- Password Toggle Script -->
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            }
+        }
+    </script>
+</x-guest-layout>
