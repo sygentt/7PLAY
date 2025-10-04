@@ -250,89 +250,136 @@
             @endif
 
             <!-- Order Timeline -->
-            <div class="bg-white shadow rounded-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">Timeline Order</h2>
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                        <x-heroicon-o-clock class="w-5 h-5 mr-2 text-gray-600" />
+                        Timeline Order
+                    </h2>
                 </div>
                 <div class="p-6">
                     <div class="flow-root">
-                        <ul class="-mb-8">
-                            <li class="relative pb-8">
-                                <div class="relative flex space-x-3">
-                                    <div>
-                                        <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
-                                            <x-heroicon-o-shopping-cart class="w-4 h-4 text-white" />
+                        <ul class="space-y-6">
+                            <!-- Order Created -->
+                            <li class="relative">
+                                @if($order->payment_date || $order->status === 'confirmed' || $order->status === 'cancelled')
+                                    <span class="absolute top-10 left-5 -ml-px h-full w-0.5 bg-gray-300" aria-hidden="true"></span>
+                                @endif
+                                <div class="relative flex items-start space-x-4">
+                                    <div class="relative">
+                                        <span class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center ring-4 ring-white shadow-md">
+                                            <x-heroicon-o-shopping-cart class="w-5 h-5 text-white" />
                                         </span>
                                     </div>
-                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                        <div>
-                                            <p class="text-sm text-gray-500">Order dibuat</p>
-                                        </div>
-                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                            {{ $order->created_at->format('d M Y H:i') }}
+                                    <div class="min-w-0 flex-1 pt-1">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900">Order dibuat</p>
+                                                <p class="text-xs text-gray-500 mt-0.5">Order berhasil dibuat oleh customer</p>
+                                            </div>
+                                            <div class="text-right ml-4 flex-shrink-0">
+                                                <p class="text-sm font-medium text-gray-900">
+                                                    {{ $order->created_at->format('d M Y') }}
+                                                </p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ $order->created_at->format('H:i') }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="absolute top-0 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
                             </li>
 
+                            <!-- Payment Success -->
                             @if($order->payment_date)
-                                <li class="relative pb-8">
-                                    <div class="relative flex space-x-3">
-                                        <div>
-                                            <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
-                                                <x-heroicon-o-credit-card class="w-4 h-4 text-white" />
+                                <li class="relative">
+                                    @if($order->status === 'confirmed' || $order->status === 'cancelled')
+                                        <span class="absolute top-10 left-5 -ml-px h-full w-0.5 bg-gray-300" aria-hidden="true"></span>
+                                    @endif
+                                    <div class="relative flex items-start space-x-4">
+                                        <div class="relative">
+                                            <span class="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center ring-4 ring-white shadow-md">
+                                                <x-heroicon-o-credit-card class="w-5 h-5 text-white" />
                                             </span>
                                         </div>
-                                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Pembayaran berhasil</p>
-                                            </div>
-                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                                {{ $order->payment_date->format('d M Y H:i') }}
+                                        <div class="min-w-0 flex-1 pt-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-900">Pembayaran berhasil</p>
+                                                    <p class="text-xs text-gray-500 mt-0.5">Pembayaran telah diterima</p>
+                                                </div>
+                                                <div class="text-right ml-4 flex-shrink-0">
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        {{ $order->payment_date->format('d M Y') }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">
+                                                        {{ $order->payment_date->format('H:i') }}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    @if($order->status !== 'paid')
-                                        <div class="absolute top-0 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
-                                    @endif
                                 </li>
                             @endif
 
+                            <!-- Order Confirmed -->
                             @if($order->status === 'confirmed')
                                 <li class="relative">
-                                    <div class="relative flex space-x-3">
-                                        <div>
-                                            <span class="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center ring-8 ring-white">
-                                                <x-heroicon-o-check-circle class="w-4 h-4 text-white" />
+                                    <div class="relative flex items-start space-x-4">
+                                        <div class="relative">
+                                            <span class="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center ring-4 ring-white shadow-md">
+                                                <x-heroicon-o-check-circle class="w-5 h-5 text-white" />
                                             </span>
                                         </div>
-                                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Order dikonfirmasi</p>
-                                            </div>
-                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                                {{ $order->updated_at->format('d M Y H:i') }}
+                                        <div class="min-w-0 flex-1 pt-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-900">Order dikonfirmasi</p>
+                                                    <p class="text-xs text-gray-500 mt-0.5">Tiket siap digunakan</p>
+                                                </div>
+                                                <div class="text-right ml-4 flex-shrink-0">
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        {{ $order->updated_at->format('d M Y') }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">
+                                                        {{ $order->updated_at->format('H:i') }}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </li>
                             @endif
 
+                            <!-- Order Cancelled -->
                             @if($order->status === 'cancelled')
                                 <li class="relative">
-                                    <div class="relative flex space-x-3">
-                                        <div>
-                                            <span class="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center ring-8 ring-white">
-                                                <x-heroicon-o-x-circle class="w-4 h-4 text-white" />
+                                    <div class="relative flex items-start space-x-4">
+                                        <div class="relative">
+                                            <span class="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center ring-4 ring-white shadow-md">
+                                                <x-heroicon-o-x-circle class="w-5 h-5 text-white" />
                                             </span>
                                         </div>
-                                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                            <div>
-                                                <p class="text-sm text-gray-500">Order dibatalkan</p>
-                                            </div>
-                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                                {{ $order->updated_at->format('d M Y H:i') }}
+                                        <div class="min-w-0 flex-1 pt-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <p class="text-sm font-semibold text-gray-900">Order dibatalkan</p>
+                                                    <p class="text-xs text-gray-500 mt-0.5">
+                                                        @if($order->cancelled_by)
+                                                            Dibatalkan oleh {{ $order->cancelled_by === 'system' ? 'sistem' : 'customer' }}
+                                                        @else
+                                                            Order telah dibatalkan
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                                <div class="text-right ml-4 flex-shrink-0">
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        {{ $order->updated_at->format('d M Y') }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">
+                                                        {{ $order->updated_at->format('H:i') }}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
