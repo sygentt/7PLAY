@@ -135,6 +135,16 @@
                 window.history.replaceState({}, document.title, url.toString());
             }
         })();
+        
+        // Auto-open auth modal if redirected from login or register page
+        @if(session('auth_modal'))
+            document.addEventListener('DOMContentLoaded', function() {
+                const modalType = '{{ session('auth_modal') }}';
+                setTimeout(function() {
+                    openAuthModal(modalType);
+                }, 300);
+            });
+        @endif
     </script>
 </body>
 </html>
