@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'E-Tiket #' . $order->order_number . ' - ' . config('app.name', '7PLAY'))
+@section('title', 'E-Tiket #' . $orderItem->order->order_number . ' - ' . config('app.name', '7PLAY'))
 
 @section('content')
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900 py-8">
@@ -21,13 +21,13 @@
 					<!-- Movie Poster -->
 					<div class="flex-shrink-0">
 						<div class="w-32 h-48 bg-gray-700 rounded-xl overflow-hidden shadow-xl">
-							@if($order->orderItems->first()->showtime->movie->poster_url)
-								<img src="{{ $order->orderItems->first()->showtime->movie->poster_url }}" 
-									 alt="{{ $order->orderItems->first()->showtime->movie->title }}" 
+							@if($orderItem->showtime->movie->poster_url)
+								<img src="{{ $orderItem->showtime->movie->poster_url }}" 
+									 alt="{{ $orderItem->showtime->movie->title }}" 
 									 class="w-full h-full object-cover">
 							@else
-								<img src="https://dummyimage.com/128x192/4B5563/FFFFFF&text={{ urlencode($order->orderItems->first()->showtime->movie->title) }}" 
-									 alt="{{ $order->orderItems->first()->showtime->movie->title }}" 
+								<img src="https://dummyimage.com/128x192/4B5563/FFFFFF&text={{ urlencode($orderItem->showtime->movie->title) }}" 
+									 alt="{{ $orderItem->showtime->movie->title }}" 
 									 class="w-full h-full object-cover">
 							@endif
 						</div>
@@ -36,29 +36,29 @@
 					<!-- Movie Info -->
 					<div class="flex-1">
 						<h1 class="text-3xl font-bold text-gold-400 mb-6">
-							{{ $order->orderItems->first()->showtime->movie->title }}
+							{{ $orderItem->showtime->movie->title }}
 						</h1>
 
 						<div class="space-y-4">
 							<div class="flex items-center">
 								<span class="text-gray-300 w-20 text-sm">Tanggal</span>
 								<span class="text-white font-semibold text-xl">
-									{{ $order->orderItems->first()->showtime->show_date->format('D, d M Y') }}
+									{{ $orderItem->showtime->show_date->format('D, d M Y') }}
 								</span>
 							</div>
 
 							<div class="flex items-center">
 								<span class="text-gray-300 w-20 text-sm">Jam</span>
 								<span class="text-white font-semibold text-xl">
-									{{ $order->orderItems->first()->showtime->show_time->format('H:i') }}
+									{{ $orderItem->showtime->show_time->format('H:i') }}
 								</span>
 							</div>
 
 							<div class="flex items-start">
 								<span class="text-gray-300 w-20 text-sm">Bioskop</span>
 								<div class="text-white font-semibold text-lg leading-tight">
-									{{ strtoupper($order->orderItems->first()->showtime->cinemaHall->cinema->name) }}<br>
-									<span class="text-base">{{ $order->orderItems->first()->showtime->cinemaHall->name }}</span>
+									{{ strtoupper($orderItem->showtime->cinemaHall->cinema->name) }}<br>
+									<span class="text-base">{{ $orderItem->showtime->cinemaHall->name }}</span>
 								</div>
 							</div>
 						</div>
@@ -66,53 +66,51 @@
 				</div>
 			</div>
 
-			<!-- Ticket Info Section (Gold Background) -->
-			<div class="bg-gradient-to-r from-gold-400 to-gold-500 text-gray-900 p-8">
-				<div class="flex items-center justify-between">
-					<!-- Left Section -->
-					<div class="space-y-4">
-						<div>
-							<h3 class="text-lg font-semibold mb-2">Jumlah Tiket</h3>
-							<div class="text-2xl font-bold">
-								{{ $order->getTicketCount() }} Orang
-							</div>
-							<div class="text-lg font-medium">
-								@foreach($order->orderItems as $item)
-									{{ $item->seat->row_label }}{{ $item->seat->seat_number }}@if(!$loop->last), @endif
-								@endforeach
-							</div>
+		<!-- Ticket Info Section (Gold Background) -->
+		<div class="bg-gradient-to-r from-gold-400 to-gold-500 text-gray-900 p-8">
+			<div class="flex items-center justify-between">
+				<!-- Left Section -->
+				<div class="space-y-4">
+					<div>
+						<h3 class="text-lg font-semibold mb-2">Nomor Kursi</h3>
+						<div class="text-4xl font-bold">
+							{{ $orderItem->seat->getLabel() }}
 						</div>
-
-						<div>
-							<h3 class="text-lg font-semibold mb-2">Kode Transaksi</h3>
-							<div class="text-3xl font-bold tracking-wider">
-								{{ substr($order->order_number, -5) }}
-							</div>
+						<div class="text-lg font-medium mt-2">
+							{{ ucfirst($orderItem->seat->type) }}
 						</div>
 					</div>
 
-					<!-- QR Code Section -->
-					<div class="text-center">
-						<div class="bg-white p-4 rounded-xl shadow-lg">
-							<canvas id="qrcode" class="w-24 h-24 mx-auto" width="96" height="96"></canvas>
-						</div>
-						<div class="bg-cinema-900 text-white px-4 py-2 rounded-lg text-sm font-semibold mt-2">
-							Kode QR
+					<div>
+						<h3 class="text-lg font-semibold mb-2">Kode Transaksi</h3>
+						<div class="text-3xl font-bold tracking-wider">
+							{{ substr($orderItem->order->order_number, -5) }}
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<!-- Dotted Separator -->
-			<div class="border-t-2 border-dashed border-gray-300"></div>
-
-			<!-- Order Number Section -->
-			<div class="bg-gray-50 p-6 text-center">
-				<div class="text-gray-600 text-sm mb-1">NOMOR ORDER:</div>
-				<div class="text-gray-900 text-xl font-mono font-bold tracking-wider">
-					{{ $order->order_number }}
+				<!-- QR Code Section -->
+				<div class="text-center">
+					<div class="bg-white p-4 rounded-xl shadow-lg">
+						<canvas id="qrcode" class="w-24 h-24 mx-auto" width="96" height="96"></canvas>
+					</div>
+					<div class="bg-cinema-900 text-white px-4 py-2 rounded-lg text-sm font-semibold mt-2">
+						Kode QR
+					</div>
 				</div>
 			</div>
+		</div>
+
+		<!-- Dotted Separator -->
+		<div class="border-t-2 border-dashed border-gray-300"></div>
+
+		<!-- Order Number Section -->
+		<div class="bg-gray-50 p-6 text-center">
+			<div class="text-gray-600 text-sm mb-1">NOMOR ORDER:</div>
+			<div class="text-gray-900 text-xl font-mono font-bold tracking-wider">
+				{{ $orderItem->order->order_number }}
+			</div>
+		</div>
 		</div>
 
 		<!-- Action Buttons -->
@@ -129,7 +127,7 @@
 <!-- QR Code Generation -->
 <script>
 	document.addEventListener('DOMContentLoaded', function() {
-		const qrCodeUrl = '{{ $order->getQrVerificationUrl() }}';
+		const qrCodeUrl = '{{ $orderItem->order->getQrVerificationUrl() }}' + '?seat={{ $orderItem->seat_id }}';
 		const canvas = document.getElementById('qrcode');
 		
 		console.log('QR URL:', qrCodeUrl);

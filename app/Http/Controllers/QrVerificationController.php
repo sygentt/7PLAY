@@ -29,7 +29,10 @@ class QrVerificationController extends Controller
             'user'
         ]);
 
-        return view('qr.verification', compact('order'));
+        // Get specific seat ID if provided (for individual seat verification)
+        $seatId = $request->query('seat');
+
+        return view('qr.verification', compact('order', 'seatId'));
     }
 }
 

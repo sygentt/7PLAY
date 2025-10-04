@@ -2,6 +2,31 @@
 
 @section('title', 'Poin & Voucher - 7PLAY')
 
+@push('styles')
+<style>
+    /* Custom scrollbar styling */
+    .voucher-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .voucher-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .voucher-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    .voucher-scroll::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    .dark .voucher-scroll::-webkit-scrollbar-thumb {
+        background: #475569;
+    }
+    .dark .voucher-scroll::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-black py-10">
     <div class="max-w-6xl mx-auto px-4">
@@ -33,7 +58,7 @@
             <!-- Available Vouchers -->
             <div class="lg:col-span-2">
                 <h2 class="text-xl font-semibold mb-4">Tukar Poin dengan Voucher</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="voucher-scroll grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[440px] overflow-y-auto pr-2">
                     @forelse($available_vouchers as $voucher)
                         <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                             <div>
@@ -49,13 +74,26 @@
                                 @endif
                             </div>
                             <div class="mt-4 flex items-center justify-between">
-                                <div class="text-sm text-gray-700 dark:text-gray-300">
-                                    <span class="font-semibold">{{ $voucher->points_required ?? 0 }}</span> poin diperlukan
-                                </div>
-                                <button 
-                                    class="px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg text-sm"
-                                    onclick="redeemVoucher({{ $voucher->id }})"
-                                >Tukar</button>
+                                @if(($voucher->points_required ?? 0) === 0)
+                                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-md bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold">
+                                            <x-heroicon-o-gift class="w-4 h-4 mr-1" />
+                                            Gratis
+                                        </span>
+                                    </div>
+                                    <button 
+                                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium"
+                                        onclick="redeemVoucher({{ $voucher->id }})"
+                                    >Klaim</button>
+                                @else
+                                    <div class="text-sm text-gray-700 dark:text-gray-300">
+                                        <span class="font-semibold">{{ $voucher->points_required }}</span> poin diperlukan
+                                    </div>
+                                    <button 
+                                        class="px-4 py-2 bg-cinema-600 hover:bg-cinema-700 text-white rounded-lg text-sm"
+                                        onclick="redeemVoucher({{ $voucher->id }})"
+                                    >Tukar</button>
+                                @endif
                             </div>
                         </div>
                     @empty
@@ -67,9 +105,9 @@
             <!-- My Vouchers -->
             <div>
                 <h2 class="text-xl font-semibold mb-4">Voucher Saya</h2>
-                <div class="space-y-3" id="my-vouchers-list">
+                <div class="voucher-scroll space-y-3 max-h-[320px] overflow-y-auto pr-2" id="my-vouchers-list">
                     @forelse($user_vouchers as $uv)
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 my-voucher-item {{ $loop->index >= 2 ? 'hidden' : '' }}">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-bold">{{ $uv->voucher->name }}</div>
@@ -89,16 +127,11 @@
                         <div class="text-gray-500">Belum ada voucher yang ditukar</div>
                     @endforelse
                 </div>
-                @if($user_vouchers->count() > 2)
-                    <div class="mt-3">
-                        <button type="button" id="btn-more-vouchers" class="text-sm text-cinema-600 dark:text-cinema-400 hover:underline" onclick="toggleShowMore('my-voucher-item','btn-more-vouchers')">Tampilkan lainnya</button>
-                    </div>
-                @endif
 
                 <h2 class="text-xl font-semibold mt-8 mb-4">Riwayat Poin</h2>
-                <div class="space-y-3" id="point-history-list">
+                <div class="voucher-scroll space-y-3 max-h-[180px] overflow-y-auto pr-2" id="point-history-list">
                     @forelse($transactions as $tx)
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between point-history-item {{ $loop->index >= 2 ? 'hidden' : '' }}">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between">
                             <div>
                                 <div class="font-medium text-sm">{{ ucfirst($tx->type) }}</div>
                                 <div class="text-xs text-gray-500">{{ $tx->description }}</div>
@@ -111,11 +144,6 @@
                         <div class="text-gray-500">Belum ada transaksi poin</div>
                     @endforelse
                 </div>
-                @if($transactions->count() > 2)
-                    <div class="mt-3">
-                        <button type="button" id="btn-more-points" class="text-sm text-cinema-600 dark:text-cinema-400 hover:underline" onclick="toggleShowMore('point-history-item','btn-more-points')">Tampilkan lainnya</button>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -136,38 +164,20 @@ async function redeemVoucher(voucherId) {
         });
         const data = await resp.json();
         if (!resp.ok || !data.success) {
-            alert(data.message || 'Gagal menukar voucher');
+            alert(data.message || 'Gagal mengklaim voucher');
             return;
         }
-        alert('Berhasil menukar voucher! Sisa poin: ' + data.remaining_points);
+        // Show appropriate message based on points spent
+        const pointsSpent = data.points_spent || 0;
+        if (pointsSpent === 0) {
+            alert('Berhasil mengklaim voucher gratis!');
+        } else {
+            alert('Berhasil menukar voucher! Sisa poin: ' + data.remaining_points);
+        }
         window.location.reload();
     } catch (e) {
         console.error(e);
         alert('Terjadi kesalahan.');
-    }
-}
-
-function toggleShowMore(itemClass, btnId) {
-    const items = document.querySelectorAll('.' + itemClass);
-    let anyHidden = false;
-    items.forEach((el, idx) => {
-        if (idx >= 2 && el.classList.contains('hidden')) anyHidden = true;
-    });
-
-    const show = anyHidden;
-    items.forEach((el, idx) => {
-        if (idx >= 2) {
-            if (show) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-    });
-
-    const btn = document.getElementById(btnId);
-    if (btn) {
-        btn.textContent = show ? 'Tampilkan lebih sedikit' : 'Tampilkan lainnya';
     }
 }
 </script>

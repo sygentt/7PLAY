@@ -22,10 +22,17 @@ class PointsController extends Controller
             'membership_level' => 'bronze',
         ]);
 
+        // Ambil ID voucher yang sudah dimiliki user
+        $claimed_voucher_ids = UserVoucher::where('user_id', $user->id)
+            ->pluck('voucher_id')
+            ->toArray();
+
+        // Hanya tampilkan voucher yang belum diklaim user
         $available_vouchers = Voucher::query()
             ->where('is_active', true)
             ->where('valid_from', '<=', now())
             ->where('valid_until', '>=', now())
+            ->whereNotIn('id', $claimed_voucher_ids)
             ->orderBy('points_required')
             ->get();
 
@@ -60,26 +67,29 @@ class PointsController extends Controller
             ]);
 
             $required = (int) ($voucher->points_required ?? 0);
-            if ($required <= 0) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Voucher tidak bisa ditukar dengan poin'], 400);
-            }
-            if ($user_points->total_points < $required) {
+            
+            // Cek apakah ini voucher gratis (0 poin)
+            $is_free_voucher = $required === 0;
+            
+            // Jika bukan voucher gratis, validasi poin user
+            if (!$is_free_voucher && $user_points->total_points < $required) {
                 DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Poin Anda tidak cukup'], 400);
             }
 
-            // Kurangi poin
-            $user_points->decrement('total_points', $required);
+            // Kurangi poin jika bukan voucher gratis
+            if (!$is_free_voucher) {
+                $user_points->decrement('total_points', $required);
 
-            // Catat transaksi poin
-            PointTransaction::create([
-                'user_id' => $user->id,
-                'type' => 'spent',
-                'points' => $required,
-                'description' => 'Tukar voucher: ' . $voucher->name,
-                'voucher_id' => $voucher->id,
-            ]);
+                // Catat transaksi poin
+                PointTransaction::create([
+                    'user_id' => $user->id,
+                    'type' => 'spent',
+                    'points' => $required,
+                    'description' => 'Tukar voucher: ' . $voucher->name,
+                    'voucher_id' => $voucher->id,
+                ]);
+            }
 
             // Buat user_voucher
             $user_voucher = UserVoucher::create([
@@ -89,15 +99,14 @@ class PointsController extends Controller
                 'is_used' => false,
             ]);
 
-            // Tidak ada lagi usage_limit/used_count pada voucher (single-use via user_vouchers)
-
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Voucher berhasil ditukar',
+                'message' => $is_free_voucher ? 'Voucher berhasil diklaim' : 'Voucher berhasil ditukar',
                 'user_voucher' => $user_voucher->load('voucher'),
                 'remaining_points' => $user_points->fresh()->total_points,
+                'points_spent' => $required,
             ]);
 
         } catch (Exception $e) {

@@ -17,7 +17,7 @@ class TicketController extends Controller
 
         // Tiket aktif: pesanan berstatus dibayar/dikonfirmasi dengan jadwal mendatang
         $activeTickets = $user->orders()
-            ->with(['orderItems.showtime' => function ($query) {
+            ->with(['orderItems.seat', 'orderItems.showtime' => function ($query) {
                 $query->with(['movie', 'cinemaHall.cinema']);
             }])
             ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_PAID])
@@ -43,32 +43,32 @@ class TicketController extends Controller
     }
 
     /**
-     * Tampilkan e-ticket untuk pesanan tertentu.
+     * Tampilkan e-ticket untuk order item tertentu (per kursi).
      */
-    public function showEticket(Request $request, Order $order): View
+    public function showEticket(Request $request, $orderItem): View
     {
         $user = $request->user();
         
+        // Load OrderItem with relations
+        $orderItem = \App\Models\OrderItem::with([
+            'seat',
+            'order.user',
+            'showtime' => function ($query) {
+                $query->with(['movie', 'cinemaHall.cinema.city']);
+            }
+        ])->findOrFail($orderItem);
+        
         // Pastikan pengguna hanya bisa melihat e-ticket miliknya sendiri
-        if ($order->user_id !== $user->id) {
+        if ($orderItem->order->user_id !== $user->id) {
             abort(403, 'Unauthorized');
         }
         
         // Pastikan pesanan sudah dibayar atau dikonfirmasi
-        if (!in_array($order->status, [Order::STATUS_PAID, Order::STATUS_CONFIRMED])) {
+        if (!in_array($orderItem->order->status, [Order::STATUS_PAID, Order::STATUS_CONFIRMED])) {
             abort(404, 'E-ticket not available for this order');
         }
-        
-        // Muat pesanan beserta relasi yang dibutuhkan
-        $order->load([
-            'orderItems.seat',
-            'orderItems.showtime' => function ($query) {
-                $query->with(['movie', 'cinemaHall.cinema.city']);
-            },
-            'user'
-        ]);
 
-        return view('profile.e-ticket', compact('order'));
+        return view('profile.e-ticket', compact('orderItem'));
     }
 }
 

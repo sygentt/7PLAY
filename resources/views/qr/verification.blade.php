@@ -81,27 +81,59 @@
 							<div class="space-y-4">
 								<div>
 									<span class="text-gray-500 dark:text-gray-400 block">Kursi:</span>
-									@foreach($order->orderItems as $item)
-										<div class="flex items-center gap-2 mt-1">
-											<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cinema-100 text-cinema-800">
-												{{ $item->seat->row_label }}{{ $item->seat->seat_number }}
-											</span>
-											<span class="text-gray-500 text-xs">({{ ucfirst($item->seat->type) }})</span>
-										</div>
-									@endforeach
+									@if(isset($seatId) && $seatId)
+										@php
+											$specificItem = $order->orderItems->firstWhere('seat_id', $seatId);
+										@endphp
+										@if($specificItem)
+											<div class="flex items-center gap-2 mt-1">
+												<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-cinema-100 text-cinema-800 dark:bg-cinema-900/30 dark:text-cinema-300">
+													{{ $specificItem->seat->getLabel() }}
+												</span>
+												<span class="text-gray-500 dark:text-gray-400 text-xs">({{ ucfirst($specificItem->seat->type) }})</span>
+											</div>
+											<p class="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center">
+												<x-heroicon-o-information-circle class="w-3.5 h-3.5 mr-1" />
+												E-Tiket untuk kursi ini saja
+											</p>
+										@endif
+									@else
+										@foreach($order->orderItems as $item)
+											<div class="flex items-center gap-2 mt-1">
+												<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cinema-100 text-cinema-800">
+													{{ $item->seat->getLabel() }}
+												</span>
+												<span class="text-gray-500 text-xs">({{ ucfirst($item->seat->type) }})</span>
+											</div>
+										@endforeach
+									@endif
 								</div>
 
 								<div>
 									<span class="text-gray-500 dark:text-gray-400 block">Total Tiket:</span>
 									<p class="font-semibold text-gray-900 dark:text-gray-100">
-										{{ $order->getTicketCount() }} tiket
+										@if(isset($seatId) && $seatId)
+											1 tiket
+										@else
+											{{ $order->getTicketCount() }} tiket
+										@endif
 									</p>
 								</div>
 
 								<div>
-									<span class="text-gray-500 dark:text-gray-400 block">Total Harga:</span>
+									<span class="text-gray-500 dark:text-gray-400 block">
+										@if(isset($seatId) && $seatId)
+											Harga Tiket:
+										@else
+											Total Harga:
+										@endif
+									</span>
 									<p class="font-semibold text-gray-900 dark:text-gray-100">
-										Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+										@if(isset($seatId) && $seatId && isset($specificItem))
+											Rp {{ number_format($specificItem->price, 0, ',', '.') }}
+										@else
+											Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+										@endif
 									</p>
 								</div>
 							</div>
