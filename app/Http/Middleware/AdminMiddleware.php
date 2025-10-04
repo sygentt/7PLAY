@@ -25,11 +25,14 @@ class AdminMiddleware
 
         // Check if user is admin
         if (!$user->is_admin) {
-            Auth::logout();
-            return redirect()->route('admin.login')->with('error', 'Akses ditolak. Anda tidak memiliki hak akses admin.');
+            // Don't logout, just redirect to home with error toast
+            return redirect()->route('home')->with('toast', [
+                'message' => 'Anda bukan admin!',
+                'type' => 'error'
+            ]);
         }
 
-        // Check if user is active
+        // Check if user is active (only for admin users)
         if (!$user->is_active) {
             Auth::logout();
             return redirect()->route('admin.login')->with('error', 'Akun Anda tidak aktif. Hubungi administrator.');

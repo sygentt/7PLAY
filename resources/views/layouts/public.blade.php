@@ -145,6 +145,22 @@
                 }, 300);
             });
         @endif
+        
+        // Show toast notification from session flash
+        @if(session('toast'))
+            document.addEventListener('DOMContentLoaded', function() {
+                @php
+                    $toast = session('toast');
+                    $message = is_array($toast) ? ($toast['message'] ?? '') : $toast;
+                    $type = is_array($toast) ? ($toast['type'] ?? 'info') : 'info';
+                @endphp
+                setTimeout(function() {
+                    if (window.Toast) {
+                        window.Toast.show('{{ addslashes($message) }}', '{{ $type }}', 5000);
+                    }
+                }, 300);
+            });
+        @endif
     </script>
 </body>
 </html>
