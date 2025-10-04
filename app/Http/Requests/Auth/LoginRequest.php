@@ -49,6 +49,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check if user is active after successful authentication
+        $user = Auth::user();
+        if ($user && !$user->is_active) {
+            Auth::logout();
+            
+            throw ValidationException::withMessages([
+                'email' => 'Akun anda tidak aktif.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

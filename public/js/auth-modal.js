@@ -206,6 +206,16 @@ class AuthModal {
                 
                 if (result.message) {
                     this.showErrorMessage(result.message, 'login');
+                    
+                    // Show toast for inactive account
+                    if (result.message.includes('tidak aktif')) {
+                        this.close();
+                        setTimeout(() => {
+                            if (window.Toast) {
+                                window.Toast.show(result.message, 'error', 5000);
+                            }
+                        }, 400);
+                    }
                 }
             }
         } catch (error) {
