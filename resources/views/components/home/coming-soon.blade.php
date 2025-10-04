@@ -33,11 +33,7 @@
             <div class="swiper-wrapper pb-8">
                 @foreach($coming_soon as $movie)
                 <div class="swiper-slide">
-                    @auth
-                        <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
-                    @else
-                        <div onclick="openAuthModal('login')" class="group cursor-pointer block">
-                    @endauth
+                    <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
                         <!-- Movie Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700 h-full flex flex-col">
                             
@@ -48,15 +44,6 @@
                                     alt="{{ $movie['title'] }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 >
-                                
-                                <!-- Overlay -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div class="absolute bottom-4 left-4 right-4">
-                                        <div class="w-full py-3 bg-gold-600 hover:bg-gold-700 text-white font-semibold rounded-xl transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 text-center">
-                                            Lihat Detail
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Coming Soon Badge -->
                                 <div class="absolute top-4 left-4 px-3 py-1 bg-gold-600 rounded-full text-white text-sm font-medium shadow-lg">
@@ -121,11 +108,7 @@
                                 </div>
                             </div>
                         </div>
-                    @auth
-                        </a>
-                    @else
-                        </div>
-                    @endauth
+                    </a>
                 </div>
                 @endforeach
             </div>

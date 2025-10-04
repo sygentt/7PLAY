@@ -33,11 +33,7 @@
             <div class="swiper-wrapper pb-8">
                 @foreach($now_playing as $movie)
                 <div class="swiper-slide">
-                    @auth
-                        <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
-                    @else
-                        <div onclick="openAuthModal('login')" class="group cursor-pointer block">
-                    @endauth
+                    <a href="{{ route('movies.show', $movie['id']) }}" class="group cursor-pointer block">
                         <!-- Movie Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700 h-full flex flex-col">
                             
@@ -48,15 +44,6 @@
                                     alt="{{ $movie['title'] }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 >
-                                
-                                <!-- Overlay -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div class="absolute bottom-4 left-4 right-4">
-                                        <div class="w-full py-3 bg-cinema-600 hover:bg-cinema-700 text-white font-semibold rounded-xl transition-colors duration-200 transform translate-y-4 group-hover:translate-y-0 text-center">
-                                            Beli Tiket
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Rating Badge -->
                                 @if($movie['rating'])
@@ -100,7 +87,7 @@
                                 <!-- Action Buttons -->
                                 <div class="flex space-x-3 mt-auto">
                                     <div class="flex-1 py-2.5 px-4 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl transition-all duration-200 text-sm text-center">
-                                        Beli Tiket
+                                        Lihat Detail
                                     </div>
                                     <div class="p-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-xl transition-colors duration-200">
                                         <x-heroicon-o-heart class="w-5 h-5" />
@@ -111,11 +98,7 @@
                                 </div>
                             </div>
                         </div>
-                    @auth
-                        </a>
-                    @else
-                        </div>
-                    @endauth
+                    </a>
                 </div>
                 @endforeach
             </div>
