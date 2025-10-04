@@ -12,12 +12,14 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    // Standalone pages (untuk fallback ketika middleware auth redirect ke login)
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    // Redirect login and register pages to home with popup
+    Route::get('login', function () {
+        return redirect()->route('home')->with('auth_modal', 'login');
+    })->name('login');
 
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    Route::get('register', function () {
+        return redirect()->route('home')->with('auth_modal', 'register');
+    })->name('register');
 
     // Modal-based authentication - no standalone pages needed
     Route::post('register', [RegisteredUserController::class, 'store']);
