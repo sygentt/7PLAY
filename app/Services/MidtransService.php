@@ -469,18 +469,8 @@ class MidtransService
         $user_points->increment('total_orders');
         $user_points->update(['last_order_date' => now()]);
 
-        // Naikkan level member berdasarkan ambang batas
-        $thresholds = config('points.thresholds', []);
-        $total = $user_points->fresh()->total_points;
-        $new_level = $user_points->membership_level;
-        if (isset($thresholds['diamond']) && $total >= (int) $thresholds['diamond']) {
-            $new_level = 'diamond';
-        } elseif (isset($thresholds['silver']) && $total >= (int) $thresholds['silver']) {
-            $new_level = 'silver';
-        }
-        if ($new_level !== $user_points->membership_level) {
-            $user_points->update(['membership_level' => $new_level]);
-        }
+        // Update membership level based on new points total
+        $user_points->fresh()->updateMembershipLevel();
 
         // Catat transaksi poin
         PointTransaction::create([

@@ -89,6 +89,9 @@ class PointsController extends Controller
                     'description' => 'Tukar voucher: ' . $voucher->name,
                     'voucher_id' => $voucher->id,
                 ]);
+
+                // Update membership level based on new points total
+                $user_points->fresh()->updateMembershipLevel();
             }
 
             // Buat user_voucher

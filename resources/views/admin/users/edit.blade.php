@@ -35,6 +35,19 @@
             <p class="mt-1 text-sm text-gray-600">Update informasi user {{ $user->name }}</p>
         </div>
 
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+        @endif
+
         <!-- Form -->
         <div class="bg-white shadow rounded-lg">
             <form action="{{ route('admin.users.update', $user) }}" method="POST" class="divide-y divide-gray-200">
@@ -208,42 +221,6 @@
                     </div>
                 </div>
 
-                <!-- User Statistics -->
-                @if($user->orders()->count() > 0)
-                <div class="px-6 py-6 bg-gray-50">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Statistik User</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-lg border">
-                            <div class="flex items-center">
-                                <x-heroicon-m-shopping-bag class="h-5 w-5 text-blue-500 mr-2"/>
-                                <div>
-                                    <p class="text-sm text-gray-600">Total Orders</p>
-                                    <p class="text-lg font-semibold">{{ $user->orders()->count() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border">
-                            <div class="flex items-center">
-                                <x-heroicon-m-currency-dollar class="h-5 w-5 text-green-500 mr-2"/>
-                                <div>
-                                    <p class="text-sm text-gray-600">Total Spent</p>
-                                    <p class="text-lg font-semibold">Rp {{ number_format($user->orders()->whereIn('status', ['confirmed', 'paid'])->sum('total_amount'), 0, ',', '.') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border">
-                            <div class="flex items-center">
-                                <x-heroicon-m-calendar class="h-5 w-5 text-purple-500 mr-2"/>
-                                <div>
-                                    <p class="text-sm text-gray-600">Member Since</p>
-                                    <p class="text-lg font-semibold">{{ $user->created_at->format('M Y') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
-
                 <!-- Warning Box -->
                 <div class="px-6 py-4 bg-yellow-50">
                     <div class="flex">
@@ -278,6 +255,148 @@
                 </div>
             </form>
         </div>
+
+        <!-- User Points Management (Separate Form) -->
+        <div class="bg-white shadow rounded-lg mt-6">
+            <div class="px-6 py-6 bg-blue-50">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Manajemen Poin User</h3>
+                    
+                    <!-- Current Points Display -->
+                    <div class="bg-white p-4 rounded-lg border border-blue-200 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Poin Saat Ini</p>
+                                <p class="text-3xl font-bold text-blue-600">{{ number_format($user_points->total_points) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">Membership Level: <span class="font-semibold">{{ ucfirst($user_points->membership_level) }}</span></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600">Total Orders</p>
+                                <p class="text-xl font-semibold text-gray-900">{{ number_format($user_points->total_orders) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Points Adjustment Form -->
+                    <div class="bg-white p-5 rounded-lg border">
+                        <h4 class="text-md font-semibold text-gray-900 mb-4 flex items-center">
+                            <x-heroicon-m-cog class="h-5 w-5 mr-2 text-blue-500"/>
+                            Sesuaikan Poin User
+                        </h4>
+                        
+                        <form action="{{ route('admin.users.update-points', $user) }}" method="POST" class="space-y-4">
+                            @csrf
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Action Type -->
+                                <div>
+                                    <label for="points_action" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Aksi <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="points_action" 
+                                            id="points_action" 
+                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                            required>
+                                        <option value="">Pilih Aksi</option>
+                                        <option value="add">Tambah Poin</option>
+                                        <option value="subtract">Kurangi Poin</option>
+                                    </select>
+                                </div>
+
+                                <!-- Points Amount -->
+                                <div>
+                                    <label for="points_amount" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Jumlah Poin <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           name="points_amount" 
+                                           id="points_amount" 
+                                           min="1"
+                                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                           placeholder="Contoh: 100"
+                                           required>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label for="points_description" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Keterangan <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" 
+                                       name="points_description" 
+                                       id="points_description" 
+                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       placeholder="Contoh: Bonus poin promo"
+                                       required>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Keterangan akan dicatat dalam riwayat transaksi poin user
+                                </p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex justify-end">
+                                <button type="submit" 
+                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <x-heroicon-m-check class="mr-2 h-4 w-4"/>
+                                    Terapkan Perubahan Poin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex">
+                            <x-heroicon-m-information-circle class="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0"/>
+                            <div class="text-xs text-yellow-800">
+                                <p class="font-semibold mb-1">Catatan:</p>
+                                <ul class="list-disc pl-4 space-y-1">
+                                    <li>Perubahan poin akan tercatat dalam riwayat transaksi</li>
+                                    <li>Pastikan jumlah poin yang dikurangi tidak melebihi saldo saat ini</li>
+                                    <li>Setiap perubahan akan ditandai sebagai "oleh admin" dalam sistem</li>
+                                </ul>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Statistics -->
+        @if($user->orders()->count() > 0)
+        <div class="bg-white shadow rounded-lg mt-6">
+            <div class="px-6 py-6 bg-gray-50">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Statistik User</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-lg border">
+                            <div class="flex items-center">
+                                <x-heroicon-m-shopping-bag class="h-5 w-5 text-blue-500 mr-2"/>
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Orders</p>
+                                    <p class="text-lg font-semibold">{{ $user->orders()->count() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <div class="flex items-center">
+                                <x-heroicon-m-currency-dollar class="h-5 w-5 text-green-500 mr-2"/>
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Spent</p>
+                                    <p class="text-lg font-semibold">Rp {{ number_format($user->orders()->whereIn('status', ['confirmed', 'paid'])->sum('total_amount'), 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border">
+                            <div class="flex items-center">
+                                <x-heroicon-m-calendar class="h-5 w-5 text-purple-500 mr-2"/>
+                                <div>
+                                    <p class="text-sm text-gray-600">Member Since</p>
+                                    <p class="text-lg font-semibold">{{ $user->created_at->format('M Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection

@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\UserPoint;
+use App\Models\PointTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Exception;
 
 class UserController extends Controller
 {
@@ -191,7 +195,14 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        // Load user points data
+        $user_points = UserPoint::firstOrCreate(['user_id' => $user->id], [
+            'total_points' => 0,
+            'total_orders' => 0,
+            'membership_level' => 'bronze',
+        ]);
+        
+        return view('admin.users.edit', compact('user', 'user_points'));
     }
 
     /**
@@ -237,6 +248,66 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.index')
             ->with('success', "User '{$user->name}' berhasil diperbarui.");
+    }
+
+    /**
+     * Update user points.
+     */
+    public function updatePoints(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'points_action' => ['required', 'in:add,subtract'],
+            'points_amount' => ['required', 'integer', 'min:1'],
+            'points_description' => ['required', 'string', 'max:255'],
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user_points = UserPoint::lockForUpdate()->firstOrCreate(['user_id' => $user->id], [
+                'total_points' => 0,
+                'total_orders' => 0,
+                'membership_level' => 'bronze',
+            ]);
+
+            $amount = $validated['points_amount'];
+            $action = $validated['points_action'];
+
+            // Validate if subtracting points
+            if ($action === 'subtract' && $user_points->total_points < $amount) {
+                DB::rollBack();
+                return back()->with('error', 'Poin tidak mencukupi untuk dikurangi.');
+            }
+
+            // Update points
+            if ($action === 'add') {
+                $user_points->increment('total_points', $amount);
+                $transaction_type = 'earned';
+            } else {
+                $user_points->decrement('total_points', $amount);
+                $transaction_type = 'spent';
+            }
+
+            // Create transaction record
+            PointTransaction::create([
+                'user_id' => $user->id,
+                'type' => $transaction_type,
+                'points' => $amount,
+                'description' => $validated['points_description'] . ' (oleh admin)',
+            ]);
+
+            // Update membership level based on new points total
+            $user_points->fresh()->updateMembershipLevel();
+
+            DB::commit();
+
+            $new_level = $user_points->fresh()->membership_level;
+            return back()->with('success', "Poin user '{$user->name}' berhasil diperbarui. Membership level: " . ucfirst($new_level));
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui poin: ' . $e->getMessage());
+        }
     }
 
     /**

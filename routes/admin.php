@@ -101,6 +101,7 @@ Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus
 Route::patch('users/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('admin.users.verify-email');
 Route::patch('users/{user}/unverify-email', [UserController::class, 'unverifyEmail'])->name('admin.users.unverify-email');
 Route::patch('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset-password');
+Route::post('users/{user}/update-points', [UserController::class, 'updatePoints'])->name('admin.users.update-points');
 
 // Vouchers Management
 Route::resource('vouchers', VoucherController::class)->names([

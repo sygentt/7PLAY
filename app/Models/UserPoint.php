@@ -29,6 +29,63 @@ class UserPoint extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Update membership level based on total points
+     */
+    public function updateMembershipLevel(): void
+    {
+        $level = $this->calculateMembershipLevel($this->total_points);
+        
+        if ($this->membership_level !== $level) {
+            $this->membership_level = $level;
+            $this->save();
+        }
+    }
+
+    /**
+     * Calculate membership level based on points
+     */
+    public static function calculateMembershipLevel(int $points): string
+    {
+        if ($points >= 10000) {
+            return 'platinum';
+        } elseif ($points >= 5000) {
+            return 'gold';
+        } elseif ($points >= 2000) {
+            return 'silver';
+        } else {
+            return 'bronze';
+        }
+    }
+
+    /**
+     * Get membership level name in Indonesian
+     */
+    public function getMembershipLevelNameAttribute(): string
+    {
+        return match($this->membership_level) {
+            'platinum' => 'Platinum',
+            'gold' => 'Gold',
+            'silver' => 'Silver',
+            'bronze' => 'Bronze',
+            default => 'Bronze',
+        };
+    }
+
+    /**
+     * Get membership level color for UI
+     */
+    public function getMembershipLevelColorAttribute(): string
+    {
+        return match($this->membership_level) {
+            'platinum' => 'text-purple-600',
+            'gold' => 'text-yellow-600',
+            'silver' => 'text-gray-600',
+            'bronze' => 'text-orange-600',
+            default => 'text-gray-600',
+        };
+    }
 }
 
 
