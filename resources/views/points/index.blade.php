@@ -58,7 +58,7 @@
             <!-- Available Vouchers -->
             <div class="lg:col-span-2">
                 <h2 class="text-xl font-semibold mb-4">Tukar Poin dengan Voucher</h2>
-                <div class="voucher-scroll grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[440px] overflow-y-auto pr-2">
+                <div class="voucher-scroll grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[470px] overflow-y-auto pr-2">
                     @forelse($available_vouchers as $voucher)
                         <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                             <div>
@@ -105,7 +105,7 @@
             <!-- My Vouchers -->
             <div>
                 <h2 class="text-xl font-semibold mb-4">Voucher Saya</h2>
-                <div class="voucher-scroll space-y-3 max-h-[320px] overflow-y-auto pr-2" id="my-vouchers-list">
+                <div class="voucher-scroll space-y-3 max-h-[180px] overflow-y-auto pr-2" id="my-vouchers-list">
                     @forelse($user_vouchers as $uv)
                         <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between">
@@ -129,7 +129,7 @@
                 </div>
 
                 <h2 class="text-xl font-semibold mt-8 mb-4">Riwayat Poin</h2>
-                <div class="voucher-scroll space-y-3 max-h-[180px] overflow-y-auto pr-2" id="point-history-list">
+                <div class="voucher-scroll space-y-3 max-h-[160px] overflow-y-auto pr-2" id="point-history-list">
                     @forelse($transactions as $tx)
                         <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between">
                             <div>
