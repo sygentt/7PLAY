@@ -164,13 +164,13 @@
                 @foreach($movies as $movie)
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                         <!-- Movie Poster -->
-                        <div class="aspect-w-2 aspect-h-3 bg-gray-200 rounded-t-lg overflow-hidden">
+                        <div class="relative bg-gray-200 rounded-t-lg overflow-hidden h-80">
                             @if($movie->poster_url)
                                 <img src="{{ $movie->poster_url }}" 
                                      alt="{{ $movie->title }}"
                                      class="w-full h-full object-cover">
                             @else
-                                <div class="flex items-center justify-center h-48 bg-gray-100">
+                                <div class="flex items-center justify-center h-full bg-gray-100">
                                     <x-heroicon-o-film class="w-12 h-12 text-gray-400" />
                                 </div>
                             @endif
@@ -217,29 +217,38 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('admin.movies.show', $movie) }}" 
-                                   class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <x-heroicon-o-eye class="w-4 h-4 mr-1" />
-                                    Detail
-                                </a>
-                                <a href="{{ route('admin.movies.edit', $movie) }}" 
-                                   class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <x-heroicon-o-pencil-square class="w-4 h-4 mr-1" />
-                                    Edit
-                                </a>
-                                <button onclick="toggleStatus({{ $movie->id }}, '{{ $movie->title }}')"
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    @if($movie->is_active)
-                                        <x-heroicon-o-eye-slash class="w-4 h-4" />
-                                    @else
-                                        <x-heroicon-o-eye class="w-4 h-4" />
-                                    @endif
-                                </button>
-                                <button onclick="deleteMovie({{ $movie->id }}, '{{ $movie->title }}')"
-                                        class="inline-flex items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    <x-heroicon-o-trash class="w-4 h-4" />
-                                </button>
+                            <div class="flex flex-col gap-2">
+                                <!-- First Row: Detail & Edit -->
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('admin.movies.show', $movie) }}" 
+                                       class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                        <x-heroicon-o-eye class="w-4 h-4 mr-1.5" />
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('admin.movies.edit', $movie) }}" 
+                                       class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                        <x-heroicon-o-pencil-square class="w-4 h-4 mr-1.5" />
+                                        Edit
+                                    </a>
+                                </div>
+                                <!-- Second Row: Toggle Status & Delete -->
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleStatus({{ $movie->id }}, '{{ $movie->title }}')"
+                                            class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                        @if($movie->is_active)
+                                            <x-heroicon-o-eye-slash class="w-4 h-4 mr-1.5" />
+                                            Nonaktifkan
+                                        @else
+                                            <x-heroicon-o-eye class="w-4 h-4 mr-1.5" />
+                                            Aktifkan
+                                        @endif
+                                    </button>
+                                    <button onclick="deleteMovie({{ $movie->id }}, '{{ $movie->title }}')"
+                                            class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-red-300 text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
+                                        <x-heroicon-o-trash class="w-4 h-4 mr-1.5" />
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
