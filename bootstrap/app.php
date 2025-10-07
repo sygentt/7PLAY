@@ -21,8 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('admin')
                 ->middleware(['web'])
                 ->group(function () {
+                    // Admin login routes - no guest middleware to allow redirect logic in controller
+                    Route::get('/login', [App\Http\Controllers\Admin\AdminAuthController::class, 'showLoginForm'])->name('admin.login');
                     Route::middleware(['guest'])->group(function () {
-                        Route::get('/login', [App\Http\Controllers\Admin\AdminAuthController::class, 'showLoginForm'])->name('admin.login');
                         Route::post('/login', [App\Http\Controllers\Admin\AdminAuthController::class, 'login']);
                     });
                     Route::post('/logout', [App\Http\Controllers\Admin\AdminAuthController::class, 'logout'])->name('admin.logout');

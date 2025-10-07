@@ -13,7 +13,7 @@ class AdminAuthController extends Controller
     /**
      * Show the admin login form.
      */
-    public function showLoginForm(): View
+    public function showLoginForm(): View|RedirectResponse
     {
         // Redirect if already authenticated admin
         if (Auth::check() && Auth::user()->is_admin) {
