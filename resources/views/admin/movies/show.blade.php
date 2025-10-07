@@ -303,7 +303,7 @@
                     </h2>
                 </div>
                 <div class="p-6 text-center">
-                    <x-heroicon-o-calendar-x class="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <x-heroicon-o-calendar class="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Jadwal Tayang</h3>
                     <p class="text-gray-600 mb-4">Film ini belum memiliki jadwal tayang di bioskop manapun.</p>
                     <a href="#" 
