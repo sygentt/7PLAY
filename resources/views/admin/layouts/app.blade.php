@@ -142,21 +142,6 @@
                         Reports
                     </a>
                 </nav>
-
-                <!-- User Info at Bottom -->
-                <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                            </div>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-700 truncate">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -294,21 +279,6 @@
                                 Reports
                             </a>
                         </nav>
-                    </div>
-                    
-                    <!-- Mobile User Info -->
-                    <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                    <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                                </div>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
