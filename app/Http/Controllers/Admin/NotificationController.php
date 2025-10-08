@@ -36,9 +36,62 @@ class NotificationController extends Controller
             }
         }
 
-        $notifications = $query->orderByDesc('created_at')->paginate(10)->appends($request->query());
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date('date_from'));
+        }
 
-        return view('admin.notifications.index', compact('notifications'));
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date('date_to'));
+        }
+
+        if ($request->filled('date_filter')) {
+            switch ($request->string('date_filter')->toString()) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'this_week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'this_month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', now()->subMonth()->month)
+                          ->whereYear('created_at', now()->subMonth()->year);
+                    break;
+            }
+        }
+
+        $sort = $request->get('sort', 'created_at');
+        $sortDirection = 'desc';
+        
+        switch ($sort) {
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'type':
+                $query->orderBy('type', 'asc');
+                break;
+            default:
+                $query->orderBy('created_at', $sortDirection);
+        }
+
+        $notifications = $query->paginate(10)->appends($request->query());
+
+        // Calculate statistics
+        $stats = [
+            'total' => Notification::count(),
+            'unread' => Notification::where('is_read', false)->count(),
+            'read' => Notification::where('is_read', true)->count(),
+            'order' => Notification::where('type', 'order')->count(),
+            'movie' => Notification::where('type', 'movie')->count(),
+            'system' => Notification::where('type', 'system')->count(),
+            'promo' => Notification::where('type', 'promo')->count(),
+            'today' => Notification::whereDate('created_at', today())->count(),
+        ];
+
+        return view('admin.notifications.index', compact('notifications', 'stats'));
     }
 
     public function create(): View
