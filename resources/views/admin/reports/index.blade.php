@@ -263,59 +263,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Quick Insights -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <x-heroicon-o-light-bulb class="w-5 h-5 text-yellow-500" />
-            Wawasan Cepat
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            @if($insights['top_movie'])
-                <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div class="flex items-start gap-2 mb-2">
-                        <x-heroicon-o-trophy class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                        <p class="text-sm font-medium text-blue-800">Film Terbaik</p>
-                    </div>
-                    <p class="text-lg font-bold text-blue-900 mb-1">{{ $insights['top_movie']['title'] }}</p>
-                    <p class="text-sm text-blue-600">Rp {{ number_format($insights['top_movie']['revenue'], 0, ',', '.') }}</p>
-                </div>
-            @endif
-
-            @if($insights['top_cinema'])
-                <div class="p-4 bg-green-50 rounded-lg border border-green-200">
-                    <div class="flex items-start gap-2 mb-2">
-                        <x-heroicon-o-building-office class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <p class="text-sm font-medium text-green-800">Cinema Terbaik</p>
-                    </div>
-                    <p class="text-lg font-bold text-green-900 mb-1">{{ $insights['top_cinema']['name'] }}</p>
-                    <p class="text-sm text-green-600">Rp {{ number_format($insights['top_cinema']['revenue'], 0, ',', '.') }}</p>
-                </div>
-            @endif
-
-            @if($insights['peak_day'])
-                <div class="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <div class="flex items-start gap-2 mb-2">
-                        <x-heroicon-o-calendar-days class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                        <p class="text-sm font-medium text-purple-800">Hari Puncak</p>
-                    </div>
-                    <p class="text-lg font-bold text-purple-900 mb-1">{{ $insights['peak_day']['date'] }}</p>
-                    <p class="text-sm text-purple-600">Rp {{ number_format($insights['peak_day']['revenue'], 0, ',', '.') }}</p>
-                </div>
-            @endif
-
-            @if($insights['busiest_time'])
-                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <div class="flex items-start gap-2 mb-2">
-                        <x-heroicon-o-clock class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <p class="text-sm font-medium text-yellow-800">Jam Tersibuk</p>
-                    </div>
-                    <p class="text-lg font-bold text-yellow-900 mb-1">{{ $insights['busiest_time']['hour'] }}</p>
-                    <p class="text-sm text-yellow-600">{{ $insights['busiest_time']['orders'] }} pesanan</p>
-                </div>
-            @endif
-        </div>
-    </div>
 </div>
 @endsection
 
