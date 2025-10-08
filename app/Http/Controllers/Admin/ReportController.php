@@ -22,61 +22,70 @@ class ReportController extends Controller
      */
     public function index(Request $request): View
     {
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
+        // Parse dates for query (with time)
+        $dateFromQuery = $request->input('date_from') 
+            ? Carbon::parse($request->input('date_from'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+        $dateToQuery = $request->input('date_to') 
+            ? Carbon::parse($request->input('date_to'))->endOfDay() 
+            : Carbon::now()->endOfMonth();
+        
+        // Format dates for input fields (Y-m-d only)
+        $dateFrom = $dateFromQuery->format('Y-m-d');
+        $dateTo = $dateToQuery->format('Y-m-d');
 
         // Key Performance Indicators
         $kpis = [
             'total_revenue' => Order::completed()
-                ->whereBetween('created_at', [$dateFrom, $dateTo])
+                ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
                 ->sum('total_amount'),
             
-            'total_orders' => Order::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+            'total_orders' => Order::whereBetween('created_at', [$dateFromQuery, $dateToQuery])->count(),
             
             'total_tickets' => Order::completed()
-                ->whereBetween('created_at', [$dateFrom, $dateTo])
+                ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
                 ->withCount('orderItems')
                 ->get()
                 ->sum('order_items_count'),
             
             'avg_order_value' => Order::completed()
-                ->whereBetween('created_at', [$dateFrom, $dateTo])
+                ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
                 ->avg('total_amount') ?? 0,
             
-            'new_users' => User::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+            'new_users' => User::whereBetween('created_at', [$dateFromQuery, $dateToQuery])->count(),
             
             'active_movies' => Movie::active()->byStatus(Movie::STATUS_NOW_PLAYING)->count(),
             
-            'conversion_rate' => $this->getConversionRate($dateFrom, $dateTo),
+            'conversion_rate' => $this->getConversionRate($dateFromQuery, $dateToQuery),
             
-            'customer_retention' => $this->getCustomerRetentionRate($dateFrom, $dateTo),
+            'customer_retention' => $this->getCustomerRetentionRate($dateFromQuery, $dateToQuery),
         ];
 
         // Growth metrics (compared to previous period)
-        $previousPeriodStart = Carbon::parse($dateFrom)->subDays(Carbon::parse($dateFrom)->diffInDays($dateTo) + 1);
-        $previousPeriodEnd = Carbon::parse($dateFrom)->subDay();
+        $previousPeriodStart = Carbon::parse($dateFromQuery)->subDays(Carbon::parse($dateFromQuery)->diffInDays($dateToQuery) + 1);
+        $previousPeriodEnd = Carbon::parse($dateFromQuery)->subDay();
 
         $growth = [
             'revenue_growth' => $this->calculateGrowth(
-                Order::completed()->whereBetween('created_at', [$dateFrom, $dateTo])->sum('total_amount'),
+                Order::completed()->whereBetween('created_at', [$dateFromQuery, $dateToQuery])->sum('total_amount'),
                 Order::completed()->whereBetween('created_at', [$previousPeriodStart, $previousPeriodEnd])->sum('total_amount')
             ),
             'orders_growth' => $this->calculateGrowth(
-                Order::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+                Order::whereBetween('created_at', [$dateFromQuery, $dateToQuery])->count(),
                 Order::whereBetween('created_at', [$previousPeriodStart, $previousPeriodEnd])->count()
             ),
             'users_growth' => $this->calculateGrowth(
-                User::whereBetween('created_at', [$dateFrom, $dateTo])->count(),
+                User::whereBetween('created_at', [$dateFromQuery, $dateToQuery])->count(),
                 User::whereBetween('created_at', [$previousPeriodStart, $previousPeriodEnd])->count()
             ),
         ];
 
         // Quick insights
         $insights = [
-            'top_movie' => $this->getTopMovie($dateFrom, $dateTo),
-            'top_cinema' => $this->getTopCinema($dateFrom, $dateTo),
-            'peak_day' => $this->getPeakDay($dateFrom, $dateTo),
-            'busiest_time' => $this->getBusiestTime($dateFrom, $dateTo),
+            'top_movie' => $this->getTopMovie($dateFromQuery, $dateToQuery),
+            'top_cinema' => $this->getTopCinema($dateFromQuery, $dateToQuery),
+            'peak_day' => $this->getPeakDay($dateFromQuery, $dateToQuery),
+            'busiest_time' => $this->getBusiestTime($dateFromQuery, $dateToQuery),
         ];
 
         return view('admin.reports.index', compact('kpis', 'growth', 'insights', 'dateFrom', 'dateTo'));
@@ -87,13 +96,22 @@ class ReportController extends Controller
      */
     public function sales(Request $request): View
     {
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
+        // Parse dates for query (with time)
+        $dateFromQuery = $request->input('date_from') 
+            ? Carbon::parse($request->input('date_from'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+        $dateToQuery = $request->input('date_to') 
+            ? Carbon::parse($request->input('date_to'))->endOfDay() 
+            : Carbon::now()->endOfMonth();
+        
+        // Format dates for input fields (Y-m-d only)
+        $dateFrom = $dateFromQuery->format('Y-m-d');
+        $dateTo = $dateToQuery->format('Y-m-d');
 
         // Daily revenue trend
         $dailyRevenue = Order::completed()
             ->selectRaw('DATE(created_at) as date, SUM(total_amount) as revenue, COUNT(*) as orders')
-            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -101,7 +119,7 @@ class ReportController extends Controller
         // Revenue by payment method
         $paymentMethodRevenue = Order::completed()
             ->selectRaw('payment_method, SUM(total_amount) as revenue, COUNT(*) as orders')
-            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
             ->whereNotNull('payment_method')
             ->groupBy('payment_method')
             ->orderByDesc('revenue')
@@ -114,7 +132,7 @@ class ReportController extends Controller
             ->join('cinemas', 'cinema_halls.cinema_id', '=', 'cinemas.id')
             ->join('cities', 'cinemas.city_id', '=', 'cities.id')
             ->selectRaw('cities.name as city, SUM(orders.total_amount) as revenue, COUNT(orders.id) as orders')
-            ->whereBetween('orders.created_at', [$dateFrom, $dateTo])
+            ->whereBetween('orders.created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('cities.id', 'cities.name')
             ->orderByDesc('revenue')
             ->get();
@@ -125,7 +143,7 @@ class ReportController extends Controller
             ->join('cinema_halls', 'showtimes.cinema_hall_id', '=', 'cinema_halls.id')
             ->join('cinemas', 'cinema_halls.cinema_id', '=', 'cinemas.id')
             ->selectRaw('cinemas.name as cinema, SUM(orders.total_amount) as revenue, COUNT(orders.id) as orders')
-            ->whereBetween('orders.created_at', [$dateFrom, $dateTo])
+            ->whereBetween('orders.created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('cinemas.id', 'cinemas.name')
             ->orderByDesc('revenue')
             ->limit(10)
@@ -139,15 +157,24 @@ class ReportController extends Controller
      */
     public function movies(Request $request): View
     {
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
+        // Parse dates for query (with time)
+        $dateFromQuery = $request->input('date_from') 
+            ? Carbon::parse($request->input('date_from'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+        $dateToQuery = $request->input('date_to') 
+            ? Carbon::parse($request->input('date_to'))->endOfDay() 
+            : Carbon::now()->endOfMonth();
+        
+        // Format dates for input fields (Y-m-d only)
+        $dateFrom = $dateFromQuery->format('Y-m-d');
+        $dateTo = $dateToQuery->format('Y-m-d');
 
         // Top performing movies
         $topMovies = Order::completed()
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.title, movies.genre, movies.rating, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold, AVG(orders.total_amount) as avg_ticket_price')
-            ->whereBetween('orders.created_at', [$dateFrom, $dateTo])
+            ->whereBetween('orders.created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('movies.id', 'movies.title', 'movies.genre', 'movies.rating')
             ->orderByDesc('revenue')
             ->limit(20)
@@ -158,7 +185,7 @@ class ReportController extends Controller
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.genre, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold')
-            ->whereBetween('orders.created_at', [$dateFrom, $dateTo])
+            ->whereBetween('orders.created_at', [$dateFromQuery, $dateToQuery])
             ->whereNotNull('movies.genre')
             ->groupBy('movies.genre')
             ->orderByDesc('revenue')
@@ -169,19 +196,19 @@ class ReportController extends Controller
             ->join('showtimes', 'orders.showtime_id', '=', 'showtimes.id')
             ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
             ->selectRaw('movies.rating, SUM(orders.total_amount) as revenue, COUNT(orders.id) as tickets_sold')
-            ->whereBetween('orders.created_at', [$dateFrom, $dateTo])
+            ->whereBetween('orders.created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('movies.rating')
             ->orderByDesc('revenue')
             ->get();
 
         // Showtime utilization
         $showtimeUtilization = Showtime::with(['movie', 'cinemaHall.cinema'])
-            ->withCount(['orderItems' => function ($query) use ($dateFrom, $dateTo) {
-                $query->whereHas('order', function ($q) use ($dateFrom, $dateTo) {
-                    $q->completed()->whereBetween('created_at', [$dateFrom, $dateTo]);
+            ->withCount(['orderItems' => function ($query) use ($dateFromQuery, $dateToQuery) {
+                $query->whereHas('order', function ($q) use ($dateFromQuery, $dateToQuery) {
+                    $q->completed()->whereBetween('created_at', [$dateFromQuery, $dateToQuery]);
                 });
             }])
-            ->whereBetween('show_date', [$dateFrom, $dateTo])
+            ->whereBetween('show_date', [$dateFromQuery, $dateToQuery])
             ->get()
             ->map(function ($showtime) {
                 $utilization = ($showtime->order_items_count / $showtime->cinemaHall->total_seats) * 100;
@@ -207,22 +234,31 @@ class ReportController extends Controller
      */
     public function users(Request $request): View
     {
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
+        // Parse dates for query (with time)
+        $dateFromQuery = $request->input('date_from') 
+            ? Carbon::parse($request->input('date_from'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+        $dateToQuery = $request->input('date_to') 
+            ? Carbon::parse($request->input('date_to'))->endOfDay() 
+            : Carbon::now()->endOfMonth();
+        
+        // Format dates for input fields (Y-m-d only)
+        $dateFrom = $dateFromQuery->format('Y-m-d');
+        $dateTo = $dateToQuery->format('Y-m-d');
 
         // User registration trend
         $userGrowth = User::selectRaw('DATE(created_at) as date, COUNT(*) as new_users')
-            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->whereBetween('created_at', [$dateFromQuery, $dateToQuery])
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
         // Top customers by spending
-        $topCustomers = User::withSum(['orders as total_spent' => function ($q) use ($dateFrom, $dateTo) {
-                $q->completed()->whereBetween('created_at', [$dateFrom, $dateTo]);
+        $topCustomers = User::withSum(['orders as total_spent' => function ($q) use ($dateFromQuery, $dateToQuery) {
+                $q->completed()->whereBetween('created_at', [$dateFromQuery, $dateToQuery]);
             }], 'total_amount')
-            ->withCount(['orders as total_orders' => function ($q) use ($dateFrom, $dateTo) {
-                $q->whereBetween('created_at', [$dateFrom, $dateTo]);
+            ->withCount(['orders as total_orders' => function ($q) use ($dateFromQuery, $dateToQuery) {
+                $q->whereBetween('created_at', [$dateFromQuery, $dateToQuery]);
             }])
             ->having('total_spent', '>', 0)
             ->orderByDesc('total_spent')
@@ -236,13 +272,13 @@ class ReportController extends Controller
                 ->groupBy('gender')
                 ->get(),
             'age_groups' => $this->getUserAgeGroups(),
-            'cities' => $this->getTopUserCities($dateFrom, $dateTo),
+            'cities' => $this->getTopUserCities($dateFromQuery, $dateToQuery),
         ];
 
         // Customer behavior
         $behavior = [
-            'avg_orders_per_user' => Order::whereBetween('created_at', [$dateFrom, $dateTo])->count() / (User::count() ?: 1),
-            'repeat_customers' => $this->getRepeatCustomers($dateFrom, $dateTo),
+            'avg_orders_per_user' => Order::whereBetween('created_at', [$dateFromQuery, $dateToQuery])->count() / (User::count() ?: 1),
+            'repeat_customers' => $this->getRepeatCustomers($dateFromQuery, $dateToQuery),
             'customer_lifetime_value' => $this->getCustomerLifetimeValue(),
         ];
 
@@ -255,8 +291,14 @@ class ReportController extends Controller
     public function getChartData(Request $request): JsonResponse
     {
         $type = $request->input('type');
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfMonth());
-        $dateTo = $request->input('date_to', Carbon::now()->endOfMonth());
+        
+        // Parse dates for query (with time)
+        $dateFrom = $request->input('date_from') 
+            ? Carbon::parse($request->input('date_from'))->startOfDay() 
+            : Carbon::now()->startOfMonth();
+        $dateTo = $request->input('date_to') 
+            ? Carbon::parse($request->input('date_to'))->endOfDay() 
+            : Carbon::now()->endOfMonth();
 
         switch ($type) {
             case 'revenue_trend':

@@ -135,7 +135,7 @@ class Order extends Model
      */
     public function scopePending($query)
     {
-        return $query->where('status', self::STATUS_PENDING);
+        return $query->where('orders.status', self::STATUS_PENDING);
     }
 
     /**
@@ -143,7 +143,7 @@ class Order extends Model
      */
     public function scopePaid($query)
     {
-        return $query->where('status', self::STATUS_PAID);
+        return $query->where('orders.status', self::STATUS_PAID);
     }
 
     /**
@@ -151,7 +151,7 @@ class Order extends Model
      */
     public function scopeConfirmed($query)
     {
-        return $query->where('status', self::STATUS_CONFIRMED);
+        return $query->where('orders.status', self::STATUS_CONFIRMED);
     }
 
     /**
@@ -159,7 +159,7 @@ class Order extends Model
      */
     public function scopeCompleted($query)
     {
-        return $query->whereIn('status', [self::STATUS_PAID, self::STATUS_CONFIRMED]);
+        return $query->whereIn('orders.status', [self::STATUS_PAID, self::STATUS_CONFIRMED]);
     }
 
     /**
@@ -167,7 +167,7 @@ class Order extends Model
      */
     public function scopeCancelled($query)
     {
-        return $query->where('status', self::STATUS_CANCELLED);
+        return $query->where('orders.status', self::STATUS_CANCELLED);
     }
 
     /**
