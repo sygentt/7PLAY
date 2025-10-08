@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Laporan & Analitik')
+@section('title', 'Laporan & Analisis')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
@@ -9,9 +9,9 @@
         <div class="mb-4 sm:mb-0">
             <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
                 <x-heroicon-o-chart-bar class="w-8 h-8 text-indigo-600" />
-                Laporan & Analitik
+                Laporan & Analisis
             </h1>
-            <p class="mt-2 text-gray-600">Wawasan bisnis komprehensif dan metrik performa</p>
+            <p class="mt-2 text-gray-600">Laporan dan analisis terkini dari sistem 7PLAY.</p>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Date From -->
                 <div>
-                    <label for="date_from" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
+                    <label for="date_from" class="block text-sm font-medium text-gray-700">Dari Tanggal (Mulai)</label>
                     <input type="date" 
                            name="date_from" 
                            id="date_from"
@@ -31,7 +31,7 @@
 
                 <!-- Date To -->
                 <div>
-                    <label for="date_to" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
+                    <label for="date_to" class="block text-sm font-medium text-gray-700">Sampai Tanggal (Selesai)</label>
                     <input type="date" 
                            name="date_to" 
                            id="date_to"
@@ -63,7 +63,7 @@
                     </div>
                     <div class="ml-4 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Pendapatan</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Pendapatan (Rp)</dt>
                             <dd class="text-2xl font-bold text-gray-900">Rp {{ number_format($kpis['total_revenue'], 0, ',', '.') }}</dd>
                             @if($growth['revenue_growth']['trend'] !== 'neutral')
                                 <dd class="flex items-center mt-1">
@@ -172,7 +172,7 @@
             <div class="p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Conversion Rate</p>
+                        <p class="text-sm font-medium text-gray-500">Tingkat Konversi</p>
                         <p class="text-xl font-bold text-indigo-600">{{ number_format($kpis['conversion_rate'], 1) }}%</p>
                     </div>
                     <x-heroicon-o-chart-bar-square class="w-8 h-8 text-indigo-500"/>
@@ -184,7 +184,7 @@
             <div class="p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Customer Retention</p>
+                        <p class="text-sm font-medium text-gray-500">Tingkat Retensi</p>
                         <p class="text-xl font-bold text-green-600">{{ number_format($kpis['customer_retention'], 1) }}%</p>
                     </div>
                     <x-heroicon-o-arrow-path class="w-8 h-8 text-green-500"/>
