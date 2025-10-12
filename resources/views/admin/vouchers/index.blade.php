@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelola Vouchers')
+@section('title', 'Manajemen Voucher')
+@section('page-title', 'Manajemen Voucher')
+@section('page-description', 'Kelola voucher diskon dan promosi')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

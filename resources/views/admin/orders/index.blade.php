@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelola Orders')
+@section('title', 'Manajemen Pesanan')
+@section('page-title', 'Manajemen Pesanan')
+@section('page-description', 'Kelola pesanan tiket dan transaksi pengguna')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

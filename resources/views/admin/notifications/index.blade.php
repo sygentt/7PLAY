@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelola Notifications')
+@section('title', 'Manajemen Notifikasi')
+@section('page-title', 'Manajemen Notifikasi')
+@section('page-description', 'Kelola notifikasi dan pengumuman untuk pengguna')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

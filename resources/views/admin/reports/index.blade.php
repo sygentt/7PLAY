@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Laporan & Analisis')
+@section('page-title', 'Laporan & Analisis')
+@section('page-description', 'Lihat laporan lengkap dan analisis data sistem')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

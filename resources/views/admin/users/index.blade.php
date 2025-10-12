@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelola Users')
+@section('title', 'Manajemen Pengguna')
+@section('page-title', 'Manajemen Pengguna')
+@section('page-description', 'Kelola pengguna dan hak akses sistem')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
