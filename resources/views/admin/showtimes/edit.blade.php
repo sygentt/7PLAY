@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Showtime')
+@section('title', 'Edit Jadwal Tayang')
+@section('page-title', 'Edit Jadwal Tayang')
+@section('page-description', 'Edit informasi jadwal tayang film')
 
 @section('content')
 <div class="py-6">

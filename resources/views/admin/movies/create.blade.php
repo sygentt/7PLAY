@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Tambah Film')
+@section('page-title', 'Tambah Film')
+@section('page-description', 'Tambah film baru ke dalam sistem')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

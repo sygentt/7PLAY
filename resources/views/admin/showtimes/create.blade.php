@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Tambah Jadwal Tayang')
+@section('page-title', 'Tambah Jadwal Tayang')
+@section('page-description', 'Tambah jadwal tayang film baru di bioskop')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

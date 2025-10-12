@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Detail Order - ' . $order->order_number)
+@section('title', 'Detail Order')
+@section('page-title', 'Detail Order')
+@section('page-description', 'Informasi lengkap order dan transaksi')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

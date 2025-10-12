@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Film - ' . $movie->title)
+@section('title', 'Edit Film')
+@section('page-title', 'Edit Film')
+@section('page-description', 'Edit informasi film yang sudah terdaftar')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">

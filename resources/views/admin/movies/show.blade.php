@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Detail Film - ' . $movie->title)
+@section('title', 'Detail Film')
+@section('page-title', 'Detail Film')
+@section('page-description', 'Informasi lengkap film dan jadwal tayang')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
