@@ -26,7 +26,7 @@
                     
                     <div class="absolute top-full left-0 mt-3 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-lg">
                         <div class="p-3">
-                            <a href="#now-playing" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group/item">
+                            <a href="#now-playing" class="smooth-scroll-link flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group/item">
                                 <div class="w-10 h-10 bg-gradient-to-br from-cinema-100 to-cinema-200 dark:from-cinema-900/30 dark:to-cinema-800/30 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-200">
                                     <x-heroicon-o-play-circle class="w-5 h-5 text-cinema-600 dark:text-cinema-400" />
                                 </div>
@@ -35,7 +35,7 @@
                                     <div class="text-xs text-gray-500 dark:text-gray-400">Film yang sedang tayang</div>
                                 </div>
                             </a>
-                            <a href="#coming-soon" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group/item">
+                            <a href="#coming-soon" class="smooth-scroll-link flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group/item">
                                 <div class="w-10 h-10 bg-gradient-to-br from-gold-100 to-gold-200 dark:from-gold-900/30 dark:to-gold-800/30 rounded-lg flex items-center justify-center group-hover/item:scale-110 transition-transform duration-200">
                                     <x-heroicon-o-calendar-days class="w-5 h-5 text-gold-600 dark:text-gold-400" />
                                 </div>
@@ -175,13 +175,13 @@
 
             <!-- Mobile Navigation -->
             <nav class="space-y-3">
-                <a href="#now-playing" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
+                <a href="#now-playing" class="smooth-scroll-link flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-cinema-100 to-cinema-200 dark:from-cinema-900/30 dark:to-cinema-800/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                         <x-heroicon-o-play-circle class="w-5 h-5 text-cinema-600 dark:text-cinema-400" />
                     </div>
                     <span class="font-medium">Sedang Tayang</span>
                 </a>
-                <a href="#coming-soon" class="flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
+                <a href="#coming-soon" class="smooth-scroll-link flex items-center space-x-4 px-4 py-3.5 text-gray-700 dark:text-gray-300 hover:bg-cinema-50 dark:hover:bg-cinema-900/20 hover:text-cinema-600 dark:hover:text-cinema-400 rounded-xl transition-all duration-200 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-gold-100 to-gold-200 dark:from-gold-900/30 dark:to-gold-800/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                         <x-heroicon-o-calendar-days class="w-5 h-5 text-gold-600 dark:text-gold-400" />
                     </div>
@@ -247,6 +247,43 @@
         // You can emit an event or call an API to update the content based on selected city
         window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityName } }));
     }
+
+    // Smooth scroll handler for anchor links
+    document.addEventListener('DOMContentLoaded', function() {
+        const smoothScrollLinks = document.querySelectorAll('.smooth-scroll-link');
+        
+        smoothScrollLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                // Check if it's an anchor link (starts with #)
+                if (href && href.startsWith('#')) {
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        e.preventDefault();
+                        
+                        // Close mobile menu if open
+                        const mobileMenu = document.getElementById('mobile-menu');
+                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                            toggleMobileMenu();
+                        }
+                        
+                        // Calculate offset for sticky header
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                        
+                        // Smooth scroll to target
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    });
 </script>
 
 <script>
