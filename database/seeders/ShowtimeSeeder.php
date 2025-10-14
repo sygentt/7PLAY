@@ -60,8 +60,15 @@ class ShowtimeSeeder extends Seeder
                         continue;
                     }
 
-                    // Random movie for this showtime
-                    $movie = $movies->random();
+                    // Get eligible movies for this date
+                    $eligibleMovies = $this->getEligibleMoviesForDate($movies, $date);
+                    
+                    if ($eligibleMovies->isEmpty()) {
+                        continue;
+                    }
+
+                    // Random movie for this showtime from eligible movies
+                    $movie = $eligibleMovies->random();
                     
                     // Base price based on hall type
                     $basePrice = $basePrices[$hall->type][array_rand($basePrices[$hall->type])];
@@ -89,11 +96,14 @@ class ShowtimeSeeder extends Seeder
             }
         }
 
-        // Ensure every active movie has at least one showtime per day for the next 7 days
+        // Ensure every eligible movie has at least one showtime per day for the next 7 days
         for ($day = 0; $day < 7; $day++) {
             $date = Carbon::now()->addDays($day);
+            
+            // Get eligible movies for this date
+            $eligibleMovies = $this->getEligibleMoviesForDate($movies, $date);
 
-            foreach ($movies as $movie) {
+            foreach ($eligibleMovies as $movie) {
                 $existsForDate = Showtime::where('movie_id', $movie->id)
                     ->whereDate('show_date', $date->format('Y-m-d'))
                     ->exists();
@@ -161,5 +171,53 @@ class ShowtimeSeeder extends Seeder
 
         $totalShowtimes = Showtime::count();
         $this->command->info("✅ Showtimes seeded successfully! Added {$totalShowtimes} showtimes for the next 30 days.");
+        $this->showShowtimeStatistics();
+    }
+
+    /**
+     * Get eligible movies for a specific date
+     * Coming soon movies can only have showtimes starting 3 days after release date
+     */
+    private function getEligibleMoviesForDate($movies, Carbon $date)
+    {
+        return $movies->filter(function ($movie) use ($date) {
+            // If movie is coming soon, check if date is at least 3 days after release date
+            if ($movie->status === Movie::STATUS_COMING_SOON) {
+                $releaseDate = Carbon::parse($movie->release_date);
+                $ticketSaleDate = $releaseDate->copy()->addDays(3);
+                
+                // Ticket can only be sold starting from release_date + 3 days
+                return $date->greaterThanOrEqualTo($ticketSaleDate);
+            }
+            
+            // For now playing and finished movies, always eligible
+            return true;
+        });
+    }
+
+    /**
+     * Show showtime statistics after seeding
+     */
+    private function showShowtimeStatistics(): void
+    {
+        $nowPlayingShowtimes = Showtime::whereHas('movie', function ($query) {
+            $query->where('status', Movie::STATUS_NOW_PLAYING);
+        })->count();
+
+        $comingSoonShowtimes = Showtime::whereHas('movie', function ($query) {
+            $query->where('status', Movie::STATUS_COMING_SOON);
+        })->count();
+
+        $this->command->info('');
+        $this->command->info('📊 Showtime Statistics:');
+        $this->command->info('┌─────────────────────┬───────┐');
+        $this->command->info('│ Category            │ Count │');
+        $this->command->info('├─────────────────────┼───────┤');
+        $this->command->info(sprintf('│ Now Playing Shows   │ %-5s │', $nowPlayingShowtimes));
+        $this->command->info(sprintf('│ Coming Soon Shows   │ %-5s │', $comingSoonShowtimes));
+        $this->command->info('└─────────────────────┴───────┘');
+        $this->command->info('');
+        $this->command->info('📅 Note: Coming Soon movie tickets are available 3 days after release date');
+        $this->command->info('');
     }
 }

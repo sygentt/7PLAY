@@ -265,15 +265,22 @@ class MovieSeeder extends Seeder
 
     /**
      * Generate release date based on status
+     * 
+     * Note: For COMING_SOON movies, tickets will be available 3 days after release_date
+     * Example: If release_date is Oct 19, tickets can be sold starting Oct 22
      */
     private function generateReleaseDate($faker, string $status): Carbon
     {
         switch ($status) {
             case Movie::STATUS_NOW_PLAYING:
+                // Already released, 1-60 days ago
                 return Carbon::now()->subDays($faker->numberBetween(1, 60));
             case Movie::STATUS_COMING_SOON:
+                // Will be released 7-90 days from now
+                // Tickets will be available starting from (release_date + 3 days)
                 return Carbon::now()->addDays($faker->numberBetween(7, 90));
             case Movie::STATUS_FINISHED:
+                // Finished showing, released 90-365 days ago
                 return Carbon::now()->subDays($faker->numberBetween(90, 365));
             default:
                 return Carbon::now();
