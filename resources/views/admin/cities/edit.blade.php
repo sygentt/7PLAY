@@ -2,7 +2,9 @@
 
 @section('title', 'Edit Kota')
 @section('page-title', 'Edit Kota')
-@section('page-description', 'Edit informasi kota {{ $city->name }}')
+@section('page-description')
+Edit informasi kota {{ $city->name }}
+@endsection
 
 @section('content')
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

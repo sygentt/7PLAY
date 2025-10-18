@@ -137,32 +137,32 @@
                             </div>
                             
                             <!-- Movie Info -->
-                            <div class="p-4">
+                            <div class="p-4 flex flex-col h-[160px]">
                                 <h3 class="font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-cinema-600 dark:group-hover:text-cinema-400 transition-colors duration-200">
                                     {{ $movie->title }}
                                 </h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-1">
                                     {{ $movie->genre }}
                                 </p>
-                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
                                     <div class="flex items-center space-x-1">
                                         <x-heroicon-o-clock class="w-4 h-4" />
                                         <span>{{ $movie->getFormattedDuration() }}</span>
                                     </div>
-                                    @if($movie->rating)
-                                        <div class="flex items-center space-x-1">
+                                    <div class="flex items-center space-x-1 min-w-[3rem]">
+                                        @if($movie->rating)
                                             <x-heroicon-o-star class="w-4 h-4 text-yellow-400" />
                                             <span>{{ $movie->rating }}</span>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </div>
+                                
+                                @auth
+                                <div class="flex justify-end mt-auto">
+                                    <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                                </div>
+                                @endauth
                             </div>
-                            
-                            @auth
-                            <div class="mt-3 flex justify-end">
-                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
-                            </div>
-                            @endauth
                             
                         @auth
                             </a>
@@ -238,20 +238,28 @@
                                                 </p>
                                             @endif
                                             
-                                            <div class="flex items-center space-x-3">
-                                                <span class="px-3 py-1 text-xs font-medium rounded-full {{ $movie->getStatusBadge()['class'] }}">
-                                                    {{ $movie->getStatusBadge()['text'] }}
-                                                </span>
-                                                @if($movie->director)
-                                                    <span class="text-sm text-gray-600 dark:text-gray-400">
-                                                        Dir: {{ $movie->director }}
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <span class="px-3 py-1 text-xs font-medium rounded-full {{ $movie->getStatusBadge()['class'] }}">
+                                                        {{ $movie->getStatusBadge()['text'] }}
                                                     </span>
-                                                @endif
+                                                    @if($movie->director)
+                                                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                                                            Dir: {{ $movie->director }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                
+                                                @auth
+                                                <div class="flex items-center">
+                                                    <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
+                                                </div>
+                                                @endauth
                                             </div>
                                         </div>
                                         
                                         <!-- Action Button -->
-                                        <div class="ml-4">
+                                        <div class="ml-4 flex-shrink-0">
                                             <div class="px-6 py-2.5 bg-gradient-to-r from-cinema-600 to-cinema-700 hover:from-cinema-700 hover:to-cinema-800 text-white font-semibold rounded-xl transition-all duration-200 text-sm">
                                                 {{ auth()->check() ? 'Beli Tiket' : 'Login' }}
                                             </div>
@@ -259,12 +267,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            @auth
-                            <div class="px-6 pb-4 -mt-4 flex justify-end">
-                                <x-movie.favorite-button :movie-id="$movie->id" :is-favorited="in_array($movie->id, $favoriteIds ?? [])" />
-                            </div>
-                            @endauth
                             
                         @auth
                             </a>
