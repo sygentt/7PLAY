@@ -70,9 +70,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
-                            <x-heroicon-o-chat-bubble-oval-left-ellipsis class="w-4 h-4" />
-                            <span>Live Chat</span>
+                        <a href="{{ route('about.index') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                            <x-heroicon-o-information-circle class="w-4 h-4" />
+                            <span>Tentang Kami</span>
                         </a>
                     </li>
                     <li>
@@ -105,7 +105,7 @@
                 
                 <!-- Footer Links -->
                 <div class="flex items-center space-x-1">
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
+                    <a href="{{ route('about.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Tentang Kami
                     </a>
                     <span class="text-gray-400 dark:text-gray-600">•</span>

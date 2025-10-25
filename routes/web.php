@@ -28,9 +28,11 @@ Route::get('/movies/{movie}', [MovieController::class, 'show'])->name('movies.sh
 // QR Code verification (public)
 Route::get('/qr/{token}', [App\Http\Controllers\QrVerificationController::class, 'verify'])->name('qr.verify');
 
-
 // Cinema (public)
 Route::get('/cinemas', [PublicCinemaController::class, 'index'])->name('cinemas.index');
+
+// About page (public)
+Route::get('/about', [App\Http\Controllers\AboutController::class, 'index'])->name('about.index');
 
 /*
 |--------------------------------------------------------------------------
