@@ -64,7 +64,7 @@
                 </h3>
                 <ul class="space-y-4">
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('static.faq') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-question-mark-circle class="w-4 h-4" />
                             <span>FAQ</span>
                         </a>
@@ -76,13 +76,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('static.contact') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-phone class="w-4 h-4" />
                             <span>Hubungi Kami</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
+                        <a href="{{ route('static.how-to-book') }}" class="text-gray-600 dark:text-gray-300 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 flex items-center space-x-2">
                             <x-heroicon-o-ticket class="w-4 h-4" />
                             <span>Cara Pesan Tiket</span>
                         </a>
@@ -109,15 +109,15 @@
                         Tentang Kami
                     </a>
                     <span class="text-gray-400 dark:text-gray-600">•</span>
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
+                    <a href="{{ route('static.contact') }}" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Hubungi Kami
                     </a>
                     <span class="text-gray-400 dark:text-gray-600">•</span>
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
+                    <a href="{{ route('static.privacy-policy') }}" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Kebijakan Privasi
                     </a>
                     <span class="text-gray-400 dark:text-gray-600">•</span>
-                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
+                    <a href="{{ route('static.terms-and-conditions') }}" class="text-gray-600 dark:text-gray-400 hover:text-cinema-600 dark:hover:text-cinema-400 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm">
                         Syarat & Ketentuan
                     </a>
                 </div>

@@ -31,8 +31,13 @@ Route::get('/qr/{token}', [App\Http\Controllers\QrVerificationController::class,
 // Cinema (public)
 Route::get('/cinemas', [PublicCinemaController::class, 'index'])->name('cinemas.index');
 
-// About page (public)
+// Static pages (public)
 Route::get('/about', [App\Http\Controllers\AboutController::class, 'index'])->name('about.index');
+Route::get('/faq', [App\Http\Controllers\StaticPageController::class, 'faq'])->name('static.faq');
+Route::get('/contact', [App\Http\Controllers\StaticPageController::class, 'contact'])->name('static.contact');
+Route::get('/how-to-book', [App\Http\Controllers\StaticPageController::class, 'howToBook'])->name('static.how-to-book');
+Route::get('/privacy-policy', [App\Http\Controllers\StaticPageController::class, 'privacyPolicy'])->name('static.privacy-policy');
+Route::get('/terms-and-conditions', [App\Http\Controllers\StaticPageController::class, 'termsAndConditions'])->name('static.terms-and-conditions');
 
 /*
 |--------------------------------------------------------------------------
