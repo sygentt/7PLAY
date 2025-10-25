@@ -71,7 +71,10 @@
                             <x-heroicon-o-ticket class="w-6 h-6" />
                             <span>Beli Tiket Sekarang</span>
                         </button>
-                        <button class="px-8 py-4 bg-white/10 backdrop-blur-lg border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-3">
+                        <button 
+                            onclick="openYoutubeModal('{{ $movie->trailer_url ?? 'https://youtu.be/6cWp9zVu28s?si=qqDkduV0ft25Urb-' }}', '{{ $movie->title }}')"
+                            class="px-8 py-4 bg-white/10 backdrop-blur-lg border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-3"
+                        >
                             <x-heroicon-o-play-circle class="w-6 h-6" />
                             <span>Tonton Trailer</span>
                         </button>

@@ -204,8 +204,10 @@ class MovieSeeder extends Seeder
         // Poster URL
         $posterUrl = $this->generatePosterUrl($faker, $title);
 
-        // Trailer URL (dummy YouTube links)
-        $trailerUrl = 'https://www.youtube.com/watch?v=' . $faker->regexify('[A-Za-z0-9]{11}');
+        // // Trailer URL (dummy YouTube links)
+        // $trailerUrl = 'https://www.youtube.com/watch?v=' . $faker->regexify('[A-Za-z0-9]{11}');
+
+        $trailerUrl = 'https://youtu.be/6cWp9zVu28s?si=qqDkduV0ft25Urb-';
 
         return [
             'title' => $title,

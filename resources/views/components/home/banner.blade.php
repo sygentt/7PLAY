@@ -74,7 +74,10 @@
                                     </button>
                                 @endauth
                                 
-                                <button class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-200">
+                                <button 
+                                    onclick="openYoutubeModal('{{ $movie['trailer_url'] ?? 'https://youtu.be/6cWp9zVu28s?si=qqDkduV0ft25Urb-' }}', '{{ $movie['title'] }}')"
+                                    class="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition-all duration-200"
+                                >
                                     <x-heroicon-o-play class="w-5 h-5" />
                                     <span>Tonton Trailer</span>
                                 </button>

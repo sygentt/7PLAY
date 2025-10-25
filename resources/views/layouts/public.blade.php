@@ -56,6 +56,9 @@
     <!-- Auth Modal -->
     <x-auth.modal-container />
     
+    <!-- YouTube Modal -->
+    <x-ui.youtube-modal />
+    
     <!-- Toast Component -->
     <x-ui.toast />
 
