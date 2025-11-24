@@ -108,7 +108,7 @@
         <!-- Cinemas Table -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             @if($cinemas->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto max-w-full">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>

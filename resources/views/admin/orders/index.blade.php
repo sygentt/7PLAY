@@ -19,7 +19,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-4 mb-8">
         <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="p-4">
                 <div class="flex items-center">
@@ -255,7 +255,7 @@
     <!-- Orders Table -->
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         @if($orders->count() > 0)
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto max-w-full">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>

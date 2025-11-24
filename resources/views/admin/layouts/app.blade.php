@@ -324,7 +324,7 @@
             </div>
             
             <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden">
                 <div class="py-6">
                     @yield('content')
                 </div>

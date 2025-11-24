@@ -230,7 +230,7 @@
                     </div>
                     @if($user->orders()->count() > 0)
                         <div class="overflow-hidden">
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto max-w-full">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
