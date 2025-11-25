@@ -16,6 +16,18 @@
     
     <!-- Additional Styles -->
     @stack('styles')
+    <style>
+        /* Fix admin content overflow */
+        .container {
+            max-width: 100% !important;
+            overflow-x: hidden;
+        }
+        @media (min-width: 1024px) {
+            .container {
+                max-width: calc(100vw - 16rem - 3rem) !important;
+            }
+        }
+    </style>
 </head>
 <body class="h-full bg-gray-50" x-data="{ sidebarOpen: false }">
     <div class="flex h-full">
@@ -325,7 +337,7 @@
             
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto overflow-x-hidden">
-                <div class="py-6">
+                <div class="py-6 w-full max-w-full">
                     @yield('content')
                 </div>
             </main>
