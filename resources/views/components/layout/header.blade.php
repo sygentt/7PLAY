@@ -251,6 +251,9 @@
     // Navigation scroll handler for anchor links
     document.addEventListener('DOMContentLoaded', function() {
         const navScrollLinks = document.querySelectorAll('.nav-scroll-link');
+        const homeUrl = '{{ route('home') }}';
+        const currentUrl = window.location.origin + window.location.pathname;
+        const isHomePage = currentUrl === homeUrl || currentUrl === homeUrl + '/';
         
         navScrollLinks.forEach(link => {
             link.addEventListener('click', function(e) {
@@ -260,30 +263,33 @@
                 if (href && href.includes('#')) {
                     const parts = href.split('#');
                     const targetId = parts[1];
-                    const targetElement = document.getElementById(targetId);
                     
-                    // If we're already on the page with the target element, smooth scroll
-                    if (targetElement) {
-                        e.preventDefault();
+                    // If we're on the home page, try to scroll
+                    if (isHomePage) {
+                        const targetElement = document.getElementById(targetId);
                         
-                        // Close mobile menu if open
-                        const mobileMenu = document.getElementById('mobile-menu');
-                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                            toggleMobileMenu();
+                        if (targetElement) {
+                            e.preventDefault();
+                            
+                            // Close mobile menu if open
+                            const mobileMenu = document.getElementById('mobile-menu');
+                            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                                toggleMobileMenu();
+                            }
+                            
+                            // Calculate offset for sticky header
+                            const headerHeight = document.querySelector('header').offsetHeight;
+                            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                            
+                            // Smooth scroll to target
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
                         }
-                        
-                        // Calculate offset for sticky header
-                        const headerHeight = document.querySelector('header').offsetHeight;
-                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
-                        
-                        // Smooth scroll to target
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
                     }
-                    // Otherwise, let the link navigate to home page with anchor
-                    // The browser will automatically scroll to the anchor after page load
+                    // If not on home page, let the browser navigate to home with anchor
+                    // The scroll will happen after page load
                 }
             });
         });
